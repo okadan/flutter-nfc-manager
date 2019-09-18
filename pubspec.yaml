@@ -1,8 +1,8 @@
 name: nfc_manager
-description: A new flutter plugin project.
-version: 0.0.1
-author:
-homepage:
+description: A Flutter plugin to use NFC on Android and iOS.
+version: 0.1.0
+author: Naoki Okada <naoki.okada@hotmail.com>
+homepage: https://github.com/okadan/flutter_nfc_manager.git
 
 environment:
   sdk: ">=2.1.0 <3.0.0"
