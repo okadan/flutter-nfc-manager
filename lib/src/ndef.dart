@@ -68,20 +68,21 @@ class NdefRecord {
   ];
 
   NdefRecord._(
-    Uint8List identifier,
     this.typeNameFormat,
     this.type,
+    this.identifier,
     this.payload,
-  ) : this.identifier = identifier ?? Uint8List.fromList([]);
-
-  final Uint8List identifier;
+  );
 
   final int typeNameFormat;
 
   final Uint8List type;
 
+  final Uint8List identifier;
+
   final Uint8List payload;
 
+  /// Length in bytes that stored on this record.
   int get byteLength {
     var length = 3 + type.length + identifier.length + payload.length;
 
@@ -102,42 +103,21 @@ class NdefRecord {
   /// since they perform validation that the record is correctly formatted as NDEF.
   /// However if you know what you are doing then this constructor offers the most flexibility.
   factory NdefRecord({
-    Uint8List identifier,
     int typeNameFormat,
     Uint8List type,
+    Uint8List identifier,
     Uint8List payload,
   }) {
+    final _type = type ?? Uint8List.fromList([]);
     final _identifier = identifier ?? Uint8List.fromList([]);
     final _payload = payload ?? Uint8List.fromList([]);
-    final _type = type ?? Uint8List.fromList([]);
 
-    switch (typeNameFormat) {
-      case 0x00:
-        if (_identifier.isNotEmpty || _payload.isNotEmpty || _type.isNotEmpty)
-          throw('unexpected data in TNF_EMPTY record');
-        break;
-      case 0x01:
-      case 0x02:
-      case 0x03:
-      case 0x04:
-        break;
-      case 0x05:
-      case 0x07:
-        if (_type.isNotEmpty)
-          throw('unexpected type field in TNF_UNKNOWN or TNF_RESERVE record');
-        break;
-      case 0x06:
-        throw('unexpected TNF_UNCHANGED in first chunk or logical record');
-      default:
-        throw('unexpected format value: $typeNameFormat');
-    }
+    _validateFormat(typeNameFormat, _type, _identifier, _payload);
 
-    return NdefRecord._(_identifier, typeNameFormat, _type, _payload);
+    return NdefRecord._(typeNameFormat, _type, _identifier, _payload);
   }
 
   /// Create an NDEF record containing external (applicattion-specific) data.
-  /// 
-  /// The exception may be thrown if the domain/type is empty.
   factory NdefRecord.createExternalRecord(String domain, String type, Uint8List data) {
     if (domain == null)
       throw('domain is null');
@@ -157,9 +137,9 @@ class NdefRecord {
     final bytes = domainBytes + ':'.codeUnits + typeBytes;
 
     return NdefRecord(
-      identifier: null,
       typeNameFormat: 0x04,
       type: bytes,
+      identifier: null,
       payload: data,
     );
   }
@@ -168,8 +148,6 @@ class NdefRecord {
   /// 
   /// Can either specify the languageCode for the provided text,
   /// or otherwise the corresponding to the cached locale will be used.
-  /// 
-  /// The exception may be thrown if the text is empty or the languageCode is too long.
   factory NdefRecord.createTextRecord(String text, {String languageCode}) {
     if (text == null)
       throw('test is null');
@@ -183,18 +161,14 @@ class NdefRecord {
     final textBytes = languageCodeBytes + utf8.encode(text);
 
     return NdefRecord(
-      identifier: null,
       typeNameFormat: 0x01,
       type: Uint8List.fromList([0x54]),
+      identifier: null,
       payload: Uint8List.fromList([languageCodeBytes.length] + textBytes),
     );
   }
 
   /// Create an NDEF record containing a uri.
-  /// 
-  /// The uri string will be normalized to set the scheme to lower case.
-  /// 
-  /// The exception may be thrown if the uri has serious problems, for example it is empty.
   factory NdefRecord.createUriRecord(Uri uri) {
     if (uri == null)
       throw('uri is null');
@@ -211,28 +185,51 @@ class NdefRecord {
     );
 
     return NdefRecord(
-      identifier: null,
       typeNameFormat: 0x01,
       type: Uint8List.fromList([0x55]),
+      identifier: null,
       payload: Uint8List.fromList([prefixIndex] + uriBytes),
     );
   }
 
   factory NdefRecord.fromJson(Map<String, dynamic> data) {
     return NdefRecord(
-      identifier: data['identifier'],
       typeNameFormat: data['typeNameFormat'],
       type: data['type'],
+      identifier: data['identifier'],
       payload: data['payload'],
     );
   }
 
   Map<String, dynamic> toJson() {
     return {
-      'identifier': identifier,
       'typeNameFormat': typeNameFormat,
       'type': type,
+      'identifier': identifier,
       'payload': payload,
     };
   }
 }
+
+void _validateFormat(int format, Uint8List type, Uint8List identifier, Uint8List payload) {
+    switch (format) {
+      case 0x00:
+        if (type.isNotEmpty || identifier.isNotEmpty || payload.isNotEmpty)
+          throw('unexpected data in TNF_EMPTY record');
+          break;
+      case 0x01:
+      case 0x02:
+      case 0x03:
+      case 0x04:
+        break;
+      case 0x05:
+      case 0x07:
+        if (type.isNotEmpty)
+          throw('unexpected type field in TNF_UNKNOWN or TNF_RESERVE record');
+        break;
+      case 0x06:
+        throw('unexpected TNF_UNCHANGED in first chunk or logical record');
+      default:
+        throw('unexpected format value: $format');
+    }
+  }
