@@ -27,11 +27,6 @@ class NfcManager {
   void Function(NfcTag) _onTagDiscovered;
 
   /// Start a reader session.
-  /// 
-  /// Requires Android API level 19 or iOS11.0.
-  /// 
-  /// On Android, this uses the `NfcAdapter#enableReaderMode`, and supporting NfcA/NfcB/NfcF/NfcV flags.
-  /// On iOS, this uses the `NFCTagReaderSession` for iOS 13.0 or newer, and `NFCNDEFReaderSession` otherwise.
   Future<bool> startSession({
     void Function(NfcTag) onTagDiscovered,
   }) {
@@ -41,9 +36,7 @@ class NfcManager {
 
   /// Stop a reader session.
   /// 
-  /// Requires API level 19 or iOS 11.0.
-  /// 
-  /// On iOS 13.0 or newer, you can display an `errorMessageIOS` to the user.
+  /// On iOS 13 or later, you can display an `errorMessageIOS` to the user.
   Future<bool> stopSession({
     String errorMessageIOS,
   }) {
@@ -116,8 +109,6 @@ class NfcNdef {
   final Map<String, dynamic> additionalData;
 
   /// Overwrite an NDEF message on this tag.
-  /// 
-  /// Requires any Android API level or iOS 13.0.
   Future<bool> writeNdef(NdefMessage message) {
     return _channel.invokeMethod('writeNdef', {
       'key': _tagKey,
@@ -126,8 +117,6 @@ class NfcNdef {
   }
 
   /// Make the tag read-only.
-  /// 
-  /// Requires any Android API level or iOS 13.0.
   /// 
   /// This is the permanent action that you cannot undo.
   /// After locking the tag, you can no longer write data to it.

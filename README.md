@@ -2,9 +2,15 @@
 
 A Flutter plugin to use NFC. Supported on both Android and iOS.
 
-Uses `NfcAdapter#enableReaderMode` on Android, `NFCNDEFReaderSession` on iOS11/12, and `NFCTagReaderSession` on iOS13 or later.
+## Requirements
 
-Requires Android API level 19 or iOS 11.0. Otherwise the error will be thrown.
+This plugins uses the following API to read the tag:
+
+* `NfcAdapter#enableReaderMode` (on Android)
+* `NFCNDEFReaderSession` (on iOS11/12)
+* `NFCTagReaderSession` (on iOS13 or later)
+
+Therefore, Android API level 19 or iOS 11.0 is required. Otherwise, the error will be thrown.
 
 ## Setup
 

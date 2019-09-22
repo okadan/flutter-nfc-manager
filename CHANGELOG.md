@@ -1,3 +1,7 @@
+## 0.1.0+2
+
+* document improvement.
+
 ## 0.1.0+1
 
 * document improvement.
