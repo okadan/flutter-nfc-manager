@@ -290,11 +290,16 @@ extension SwiftNfcManagerPlugin {
                         return
                     }
 
-                    data["ndef"] = [
-                        "cachedNdef": self.serializeNDEFMessage(message!),
+                    var ndefData: [String:Any?] = [
                         "isWritable": (status == .readWrite),
                         "maxSize": capacity
                     ]
+
+                    if let message = message {
+                        ndefData["cachedNdef"] = self.serializeNDEFMessage(message)
+                    }
+
+                    data["ndef"] = ndefData
 
                     completionHandler(data, nil)
                 }
