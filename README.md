@@ -2,9 +2,17 @@
 
 A Flutter plugin to use NFC. Supported on both Android and iOS.
 
+## Note
+
+This plugin is still under development.
+
+So please use with caution as there may be potential issues and breaking changes.
+
+Feedback is welcome.
+
 ## Requirements
 
-This plugins uses the following API to read the tag:
+This plugin currently uses the following APIs to read the tag:
 
 * `NfcAdapter#enableReaderMode` (on Android)
 * `NFCNDEFReaderSession` (on iOS11/12)
