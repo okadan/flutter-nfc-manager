@@ -215,7 +215,7 @@ void _validateFormat(int format, Uint8List type, Uint8List identifier, Uint8List
     switch (format) {
       case 0x00:
         if (type.isNotEmpty || identifier.isNotEmpty || payload.isNotEmpty)
-          throw('unexpected data in TNF_EMPTY record');
+          throw('unexpected data in EMPTY record');
           break;
       case 0x01:
       case 0x02:
@@ -225,10 +225,10 @@ void _validateFormat(int format, Uint8List type, Uint8List identifier, Uint8List
       case 0x05:
       case 0x07:
         if (type.isNotEmpty)
-          throw('unexpected type field in TNF_UNKNOWN or TNF_RESERVE record');
+          throw('unexpected type field in UNKNOWN or RESERVE record');
         break;
       case 0x06:
-        throw('unexpected TNF_UNCHANGED in first chunk or logical record');
+        throw('unexpected UNCHANGED in first chunk or logical record');
       default:
         throw('unexpected format value: $format');
     }

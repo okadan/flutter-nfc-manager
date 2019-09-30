@@ -23,8 +23,10 @@ class NfcManager {
   static NfcManager _instance;
   static NfcManager get instance => _instance ??= NfcManager._();
 
-  /// Checks whether the device supports NFC.
-  static Future<bool> isAvailable({String type = 'NDEF'}) {
+  /// Checks whether the session is available for specific type.
+  /// 
+  /// `type` argument must be either `NDEF` or `TAG`.
+  static Future<bool> isAvailable(String type) {
     assert(type == 'NDEF' || type == 'TAG');
     return _channel.invokeMethod('isAvailable', {
       'type': type,
@@ -35,7 +37,7 @@ class NfcManager {
 
   void Function(NfcNdef) _onNdefDiscovered;
 
-  /// Start a ndef reader session.
+  /// Start a reader session to detect ndef.
   Future<bool> startNdefSession({
     void Function(NfcNdef) onNdefDiscovered,
   }) {
@@ -43,7 +45,7 @@ class NfcManager {
     return _channel.invokeMethod('startNdefSession', {});
   }
 
-  /// Start a tag reader session.
+  /// Start a reader session to detect tag.
   Future<bool> startTagSession({
     void Function(NfcTag) onTagDiscovered,
   }) {
@@ -52,8 +54,6 @@ class NfcManager {
   }
 
   /// Stop a reader session.
-  /// 
-  /// On iOS 13 or later, you can display an `errorMessageIOS` to the user.
   Future<bool> stopSession({
     String errorMessageIOS,
   }) {
@@ -145,9 +145,6 @@ class NfcNdef {
   }
 
   /// Make the tag read-only.
-  /// 
-  /// This is the permanent action that you cannot undo.
-  /// After locking the tag, you can no longer write data to it.
   Future<bool> writeLock() {
     return _channel.invokeMethod('writeLock', {'key': _tagKey});
   }
