@@ -57,17 +57,17 @@ class _WritePageState extends State<WritePage> {
   }
 
   void _startToWrite() {
-    NfcManager.instance.startSession(
-      onTagDiscovered: (tag) async {
-        if (tag.ndef == null || tag.ndef.isWritable != true) {
-          final error = 'Tag is not ndef writable';
+    NfcManager.instance.startNdefSession(
+      onNdefDiscovered: (ndef) async {
+        if (ndef.isWritable != true) {
+          final error = 'ndef is not writable';
           NfcManager.instance.stopSession(errorMessageIOS: error);
           print(error);
           return;
         }
 
         try {
-          await tag.ndef.writeNdef(NdefMessage(_records));
+          await ndef.writeNdef(NdefMessage(_records));
           NfcManager.instance.stopSession();
           print('Write success');
         } on PlatformException catch (e) {

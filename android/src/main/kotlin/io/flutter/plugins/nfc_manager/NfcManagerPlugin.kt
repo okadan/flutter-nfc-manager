@@ -41,7 +41,8 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         println("=== ${call.method} ===")
         when (call.method) {
             "isAvailable" -> handleIsAvailable(result)
-            "startSession" -> handleStartSession(result)
+            "startNdefSession" -> handleStartNdefSession(result)
+            "startTagSession" -> handleStartTagSession(result)
             "stopSession" -> handleStopSession(result)
             "writeNdef" -> handleWriteNdef(result, call.argument("key")!!, call.argument("message")!!)
             "writeLock" -> handleWriteLock(result, call.argument("key")!!)
@@ -54,7 +55,21 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         result.success(adapter != null && adapter.isEnabled)
     }
 
-    private fun handleStartSession(result: Result) {
+    private fun handleStartNdefSession(result: Result) {
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+            result.error("", "Requires API level KITKAT", null)
+        } else {
+            adapter.enableReaderMode(
+                registrar.activity(), {
+                if (!it.techList.contains(Ndef::class.java.name)) { return@enableReaderMode }
+                val key = UUID.randomUUID().toString()
+                cachedTags[key] = it
+                registrar.activity().runOnUiThread { channel.invokeMethod("onNdefDiscovered", serializeTag(key, it)) }
+            }, getFlags(), null)
+        }
+    }
+
+    private fun handleStartTagSession(result: Result) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             result.error("", "Requires API level KITKAT", null)
         } else {

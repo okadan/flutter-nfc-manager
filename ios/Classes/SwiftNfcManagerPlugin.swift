@@ -27,10 +27,13 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch call.method {
         case "isAvailable":
-            handleIsAvailable(result)
+            handleIsAvailable(result, call.arguments as! [String:Any?])
             break
-        case "startSession":
-            handleStartSession(result)
+        case "startNdefSession":
+            handleStartNdefSession(result, call.arguments as! [String:Any?])
+            break
+        case "startTagSession":
+            handleStartTagSession(result, call.arguments as! [String:Any?])
             break
         case "stopSession":
             handleStopSession(result, call.arguments as! [String:Any?])
@@ -49,30 +52,43 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
         }
     }
 
-    private func handleIsAvailable(_ result: FlutterResult) {
-        guard #available(iOS 11.0, *) else {
-            result(FlutterError(code: "", message: "Only available on iOS 11.0 or newer", details: nil))
-            return
-        }
+    private func handleIsAvailable(_ result: FlutterResult, _ arguments: [String:Any?]) {
+        let type = arguments["type"] as! String
 
-        guard #available(iOS 13.0, *) else {
+        switch type {
+        case "NDEF":
+            guard #available(iOS 11.0, *) else {
+                result(FlutterError(code: "", message: "Only available on iOS 11.0 or newer", details: nil))
+                return
+            }
             result(NFCNDEFReaderSession.readingAvailable)
-            return
+            break
+        case "TAG":
+            guard #available(iOS 13.0, *) else {
+                result(FlutterError(code: "", message: "Only available on iOS 13.0 or newer", details: nil))
+                return
+            }
+            result(NFCTagReaderSession.readingAvailable)
+            break
+        default:
+            result(FlutterError(code: "", message: "Invalid argument: type=\(type)", details: nil))
         }
-
-        result(NFCTagReaderSession.readingAvailable)
     }
 
-    private func handleStartSession(_ result: FlutterResult) {
+    private func handleStartNdefSession(_ result: FlutterResult, _ arguments: [String:Any?]) {
         guard #available(iOS 11.0, *) else {
             result(FlutterError(code: "", message: "Only available on iOS 11.0 or newer", details: nil))
             return
         }
 
+        session = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
+        session!.begin()
+        result(true)
+    }
+
+    private func handleStartTagSession(_ result: FlutterResult, _ arguments: [String:Any?]) {
         guard #available(iOS 13.0, *) else {
-            session = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
-            session!.begin()
-            result(true)
+            result(FlutterError(code: "", message: "Only available on iOS 13.0 or newer", details: nil))
             return
         }
 
@@ -110,32 +126,18 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
             return
         }
 
-        guard let session = session as? NFCTagReaderSession else {
-            result(FlutterError(code: "", message: "No active NFCTagReaderSession", details: nil))
-            return
-        }
-
         let key = arguments["key"] as! String
-        let message = arguments["message"] as! [String:Any?]
+        let message = deserializeNDEFMessage(arguments["message"] as! [String:Any?])
 
-        guard let tag = cachedTags[key], let tech = cachedTechs[key] else {
-            result(FlutterError(code: "", message: "Tag is not found", details: nil))
-            return
-        }
-
-        session.connect(to: tag) { error in
-            if let error = error {
-                result(FlutterError(code: "", message: error.localizedDescription, details: nil))
-                return
-            }
-
-            tech.writeNDEF(self.deserializeNDEFMessage(message)) { error in
-                if let error = error {
-                    result(FlutterError(code: "", message: error.localizedDescription, details: nil))
-                    return
-                }
-                result(true)
-            }
+        switch session {
+        case let session as NFCNDEFReaderSession:
+            handleWriteNdef__Ndef(result, session, key, message)
+            break
+        case let session as NFCTagReaderSession:
+            handleWriteNdef__Tag(result, session, key, message)
+            break
+        default:
+            result(FlutterError(code: "", message: "No valid session", details: nil))
         }
     }
 
@@ -145,31 +147,17 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
             return
         }
 
-        guard let session = session as? NFCTagReaderSession else {
-            result(FlutterError(code: "", message: "No active NFCTagReaderSession", details: nil))
-            return
-        }
-
         let key = arguments["key"] as! String
 
-        guard let tag = cachedTags[key], let tech = cachedTechs[key] else {
-            result(FlutterError(code: "", message: "Tag is not found", details: nil))
-            return
-        }
-
-        session.connect(to: tag) { error in
-            if let error = error {
-                result(FlutterError(code: "", message: error.localizedDescription, details: nil))
-                return
-            }
-
-            tech.writeLock { error in
-                if let error = error {
-                    result(FlutterError(code: "", message: error.localizedDescription, details: nil))
-                    return
-                }
-                result(true)
-            }
+        switch session {
+        case let session as NFCNDEFReaderSession:
+            handleWriteLock__Ndef(result, session, key)
+            break
+        case let session as NFCTagReaderSession:
+            handleWriteLock__Tag(result, session, key)
+            break
+        default:
+            result(FlutterError(code: "", message: "No valid session", details: nil))
         }
     }
 
@@ -190,54 +178,176 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
         cachedTechs.removeValue(forKey: key)
         result(true)
     }
-}
 
-@available(iOS 11.0, *)
-extension SwiftNfcManagerPlugin: NFCNDEFReaderSessionDelegate {
-    public func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {}
+    @available(iOS 13.0, *)
+    private func handleWriteNdef__Ndef(_ result: @escaping FlutterResult, _ session: NFCNDEFReaderSession, _ key: String, _ message: NFCNDEFMessage) {
+        guard let tech = cachedTechs[key] else {
+            result(FlutterError(code: "", message: "Tag is not found", details: nil))
+            return
+        }
 
-    public func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
-        let key = NSUUID().uuidString
-        let arguments: [String:Any?] = ["key": key, "ndef": ["cachedNdef": serializeNDEFMessage(messages.first!)]]
-        channel.invokeMethod("onTagDiscovered", arguments: arguments)
+        session.connect(to: tech) { error in
+            if let error = error {
+                result(FlutterError(code: "", message: error.localizedDescription, details: nil))
+                return
+            }
+
+            tech.writeNDEF(message) { error in
+                if let error = error {
+                    result(FlutterError(code: "", message: error.localizedDescription, details: nil))
+                    return
+                }
+                result(true)
+            }
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleWriteNdef__Tag(_ result: @escaping FlutterResult, _ session: NFCTagReaderSession, _ key: String, _ message: NFCNDEFMessage) {
+        guard let tag = cachedTags[key], let tech = cachedTechs[key] else {
+            result(FlutterError(code: "", message: "Tag is not found", details: nil))
+            return
+        }
+
+        session.connect(to: tag) { error in
+            if let error = error {
+                result(FlutterError(code: "", message: error.localizedDescription, details: nil))
+                return
+            }
+
+            tech.writeNDEF(message) { error in
+                if let error = error {
+                    result(FlutterError(code: "", message: error.localizedDescription, details: nil))
+                    return
+                }
+                result(true)
+            }
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleWriteLock__Ndef(_ result: @escaping FlutterResult, _ session: NFCNDEFReaderSession, _ key: String) {
+        guard let tech = cachedTechs[key] else {
+            result(FlutterError(code: "", message: "Tag is not found", details: nil))
+            return
+        }
+
+        session.connect(to: tech) { error in
+            if let error = error {
+                result(FlutterError(code: "", message: error.localizedDescription, details: nil))
+                return
+            }
+
+            tech.writeLock { error in
+                if let error = error {
+                    result(FlutterError(code: "", message: error.localizedDescription, details: nil))
+                    return
+                }
+                result(true)
+            }
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleWriteLock__Tag(_ result: @escaping FlutterResult, _ session: NFCTagReaderSession, _ key: String) {
+        guard let tag = cachedTags[key], let tech = cachedTechs[key] else {
+            result(FlutterError(code: "", message: "Tag is not found", details: nil))
+            return
+        }
+
+        session.connect(to: tag) { error in
+            if let error = error {
+                result(FlutterError(code: "", message: error.localizedDescription, details: nil))
+                return
+            }
+
+            tech.writeLock { error in
+                if let error = error {
+                    result(FlutterError(code: "", message: error.localizedDescription, details: nil))
+                    return
+                }
+                result(true)
+            }
+        }
     }
 }
 
-@available(iOS 13.0, *)
+extension SwiftNfcManagerPlugin: NFCNDEFReaderSessionDelegate {
+    @available(iOS 13.0, *)
+    public func readerSessionDidBecomeActive(_ session: NFCNDEFReaderSession) {
+    }
+
+    @available(iOS 11.0, *)
+    public func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {}
+
+    @available(iOS 11.0, *)
+    public func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
+        let key = NSUUID().uuidString
+        let arguments: [String:Any?] = ["key": key, "ndef": ["cachedNdef": serializeNDEFMessage(messages.first!)]]
+        channel.invokeMethod("onNdefDiscovered", arguments: arguments)
+    }
+
+    @available(iOS 13.0, *)
+    public func readerSession(_ session: NFCNDEFReaderSession, didDetect tags: [NFCNDEFTag]) {
+        let key = NSUUID().uuidString
+        let tech = tags.first!
+
+        session.connect(to: tech) { error in
+            if let error = error {
+                print(error)
+                return
+            }
+
+            self.serializeTech(tech) { data, error in
+                if let error = error {
+                    print(error)
+                    return
+                }
+
+                self.cachedTechs[key] = tech
+                self.channel.invokeMethod("onNdefDiscovered", arguments: data.merging(["key": key]) { cur, _ in cur })
+            }
+        }
+    }
+}
+
 extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
+    @available(iOS 13.0, *)
     public func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {}
 
+    @available(iOS 13.0, *)
     public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {}
 
+    @available(iOS 13.0, *)
     public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
-        let tag = tags.first!
         let key = NSUUID().uuidString
 
-        cachedTags[key] = tag
+        var tech: NFCNDEFTag?
 
-        func invokeMethod(_ data: [String:Any?], _ error: Error?) {
-            // TODO: error handing
-            let arguments = data.merging(["key": key]) { cur, _ in cur }
-            channel.invokeMethod("onTagDiscovered", arguments: arguments)
+        switch tags.first! {
+        case .feliCa(let tag):
+            tech = tag
+        case .iso7816(let tag):
+            tech = tag
+        case .iso15693(let tag):
+            tech = tag
+        case .miFare(let tag):
+            tech = tag
         }
 
-        switch tag {
-        case .feliCa(let tech):
-            cachedTechs[key] = tech
-            serializeTag(tag, tech, invokeMethod)
-            break
-        case .iso15693(let tech):
-            cachedTechs[key] = tech
-            serializeTag(tag, tech, invokeMethod)
-            break
-        case .iso7816(let tech):
-            cachedTechs[key] = tech
-            serializeTag(tag, tech, invokeMethod)
-            break
-        case .miFare(let tech):
-            cachedTechs[key] = tech
-            serializeTag(tag, tech, invokeMethod)
-            break
+        session.connect(to: tags.first!) { error in
+            if let error = error {
+                print(error)
+                return
+            }
+
+            self.serializeTech(tech!) { data, error in
+                if let error = error {
+                    print(error)
+                    return
+                }
+                self.channel.invokeMethod("onTagDiscovered", arguments: data.merging(["key": key]) { cur, _ in cur })
+            }
         }
     }
 }
@@ -259,84 +369,72 @@ extension SwiftNfcManagerPlugin {
     }
 
     @available(iOS 13.0, *)
-    private func serializeTag(_ tag: NFCTag, _ tech: NFCNDEFTag, _ completionHandler: @escaping ([String:Any?], Error?) -> Void) {
-        var data: [String:Any?] = serializeNDEFTag(tech)
+    private func serializeTech(_ tech: NFCNDEFTag, _ completionHandler: @escaping ([String:Any?], Error?) -> Void) {
+        var data: [String:Any?] = serializeTech(tech)
 
-        guard let session = session as? NFCTagReaderSession else {
-            completionHandler(data, nil) // TODO: passing error object
-            return
-        }
-
-        session.connect(to: tag) { error in
+        tech.queryNDEFStatus { status, capacity, error in
             if let error = error {
                 completionHandler(data, error)
                 return
             }
 
-            tech.queryNDEFStatus { status, capacity, error in
+            if status == .notSupported {
+                completionHandler(data, nil)
+                return
+            }
+
+            tech.readNDEF { message, error in
                 if let error = error {
                     completionHandler(data, error)
                     return
                 }
 
-                if status == .notSupported {
-                    completionHandler(data, nil)
-                    return
+                var ndefData: [String:Any?] = [
+                    "isWritable": (status == .readWrite),
+                    "maxSize": capacity
+                ]
+
+                if let message = message {
+                    ndefData["cachedNdef"] = self.serializeNDEFMessage(message)
                 }
 
-                tech.readNDEF { message, error in
-                    if let error = error {
-                        completionHandler(data, error)
-                        return
-                    }
+                data["ndef"] = ndefData
 
-                    var ndefData: [String:Any?] = [
-                        "isWritable": (status == .readWrite),
-                        "maxSize": capacity
-                    ]
-
-                    if let message = message {
-                        ndefData["cachedNdef"] = self.serializeNDEFMessage(message)
-                    }
-
-                    data["ndef"] = ndefData
-
-                    completionHandler(data, nil)
-                }
+                completionHandler(data, nil)
             }
         }
     }
 
     @available(iOS 13.0, *)
-    private func serializeNDEFTag(_ tag: NFCNDEFTag) -> [String:Any?] {
-        if let tag = tag as? NFCFeliCaTag {
+    private func serializeTech(_ tech: NFCNDEFTag) -> [String:Any?] {
+        if let tech = tech as? NFCFeliCaTag {
             return [
                 "type": "feliCa",
-                "currentIDm": tag.currentIDm,
-                "currentSystemCode": tag.currentSystemCode
+                "currentIDm": tech.currentIDm,
+                "currentSystemCode": tech.currentSystemCode
             ]
-        } else if let tag = tag as? NFCISO15693Tag {
+        } else if let tech = tech as? NFCISO15693Tag {
             return [
                 "type": "iso15693",
-                "icManufacturerCode": tag.icManufacturerCode,
-                "icSerialNumber": tag.icSerialNumber,
-                "identifier": tag.identifier
+                "icManufacturerCode": tech.icManufacturerCode,
+                "icSerialNumber": tech.icSerialNumber,
+                "identifier": tech.identifier
             ]
-        } else if let tag = tag as? NFCISO7816Tag {
+        } else if let tech = tech as? NFCISO7816Tag {
             return [
                 "type": "iso7816",
-                "applicationData": tag.applicationData,
-                "historicalBytes": tag.historicalBytes,
-                "identifier": tag.identifier,
-                "initialSelectedAID": tag.initialSelectedAID,
-                "proprietaryApplicationDataCoding": tag.proprietaryApplicationDataCoding
+                "applicationData": tech.applicationData,
+                "historicalBytes": tech.historicalBytes,
+                "identifier": tech.identifier,
+                "initialSelectedAID": tech.initialSelectedAID,
+                "proprietaryApplicationDataCoding": tech.proprietaryApplicationDataCoding
             ]
-        } else if let tag = tag as? NFCMiFareTag {
+        } else if let tech = tech as? NFCMiFareTag {
             return [
                 "type": "miFare",
-                "historicalBytes": tag.historicalBytes,
-                "identifier": tag.identifier,
-                "mifareFamily": tag.mifareFamily.rawValue
+                "historicalBytes": tech.historicalBytes,
+                "identifier": tech.identifier,
+                "mifareFamily": tech.mifareFamily.rawValue
             ]
         } else {
             return [:]

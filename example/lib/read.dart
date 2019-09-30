@@ -55,7 +55,7 @@ class _ReadPageState extends State<ReadPage> {
   }
 
   void _startToRead() {
-    NfcManager.instance.startSession(
+    NfcManager.instance.startTagSession(
       onTagDiscovered: (tag) {
         setState(() => _tag = tag);
         NfcManager.instance.stopSession();

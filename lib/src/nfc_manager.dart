@@ -8,6 +8,9 @@ class NfcManager {
   NfcManager._() {
     _channel.setMethodCallHandler((call) async {
       switch (call.method) {
+        case 'onNdefDiscovered':
+          _handleOnNdefDiscovered(Map<String, dynamic>.from(call.arguments));
+          break;
         case 'onTagDiscovered':
           _handleOnTagDiscovered(Map<String, dynamic>.from(call.arguments));
           break;
@@ -21,17 +24,31 @@ class NfcManager {
   static NfcManager get instance => _instance ??= NfcManager._();
 
   /// Checks whether the device supports NFC.
-  static Future<bool> isAvailable() =>
-    _channel.invokeMethod('isAvailable');
+  static Future<bool> isAvailable({String type = 'NDEF'}) {
+    assert(type == 'NDEF' || type == 'TAG');
+    return _channel.invokeMethod('isAvailable', {
+      'type': type,
+    });
+  }
 
   void Function(NfcTag) _onTagDiscovered;
 
-  /// Start a reader session.
-  Future<bool> startSession({
+  void Function(NfcNdef) _onNdefDiscovered;
+
+  /// Start a ndef reader session.
+  Future<bool> startNdefSession({
+    void Function(NfcNdef) onNdefDiscovered,
+  }) {
+    _onNdefDiscovered = onNdefDiscovered;
+    return _channel.invokeMethod('startNdefSession', {});
+  }
+
+  /// Start a tag reader session.
+  Future<bool> startTagSession({
     void Function(NfcTag) onTagDiscovered,
   }) {
     _onTagDiscovered = onTagDiscovered;
-    return _channel.invokeMethod('startSession');
+    return _channel.invokeMethod('startTagSession', {});
   }
 
   /// Stop a reader session.
@@ -40,17 +57,31 @@ class NfcManager {
   Future<bool> stopSession({
     String errorMessageIOS,
   }) {
+    _onNdefDiscovered = null;
     _onTagDiscovered = null;
     return _channel.invokeMethod('stopSession', {
       'errorMessageIOS': errorMessageIOS,
     });
   }
 
+  Future<bool> _dispose(String key) {
+    return _channel.invokeMethod('dispose', {
+      'key': key,
+    });
+  }
+
+  Future<void> _handleOnNdefDiscovered(Map<String, dynamic> arguments) async {
+    final ndef = NfcNdef._fromJson(arguments['key'], Map<String, dynamic>.from(arguments['ndef']));
+    if (_onNdefDiscovered != null)
+      _onNdefDiscovered(ndef);
+    await _dispose(ndef._tagKey);
+  }
+
   Future<void> _handleOnTagDiscovered(Map<String, dynamic> arguments) async {
     final tag = NfcTag._fromJson(arguments);
     if (_onTagDiscovered != null)
       _onTagDiscovered(tag);
-    await tag._dispose();
+    await _dispose(tag._key);
   }
 }
 
@@ -77,9 +108,6 @@ class NfcTag {
       : null;
     return NfcTag._(key, ndef, data);
   }
-
-  Future<bool> _dispose() =>
-    _channel.invokeMethod('dispose', {'key': _key});
 }
 
 class NfcNdef {
