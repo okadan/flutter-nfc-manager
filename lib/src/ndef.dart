@@ -144,6 +144,28 @@ class NdefRecord {
     );
   }
 
+  /// Create an NDEF record containing a mime data
+  factory NdefRecord.createMimeRecord(String type, Uint8List data) {
+    if (type == null)
+      throw('type is null');
+    final normalized = type.toLowerCase().trim().split(';').first;
+    if (normalized.isEmpty)
+      throw('type is empty');
+
+    final slashIndex = normalized.indexOf('/');
+    if (slashIndex == 0)
+      throw('type must have major type');
+    if (slashIndex == normalized.length - 1)
+      throw('type must have minor type');
+
+    return NdefRecord(
+      typeNameFormat: 0x02,
+      type: ascii.encode(type),
+      identifier: null,
+      payload: data,
+    );
+  }
+
   /// Create an NDEF record containing a UTF-8 text.
   /// 
   /// Can either specify the languageCode for the provided text,
