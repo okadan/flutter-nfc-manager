@@ -40,26 +40,35 @@ class NfcManager {
   /// Start a reader session to detect ndef.
   Future<bool> startNdefSession({
     void Function(NfcNdef) onNdefDiscovered,
+    String alertMessageIOS,
   }) {
     _onNdefDiscovered = onNdefDiscovered;
-    return _channel.invokeMethod('startNdefSession', {});
+    return _channel.invokeMethod('startNdefSession', {
+      'alertMessageIOS': alertMessageIOS,
+    });
   }
 
   /// Start a reader session to detect tag.
   Future<bool> startTagSession({
     void Function(NfcTag) onTagDiscovered,
+    String alertMessageIOS,
   }) {
     _onTagDiscovered = onTagDiscovered;
-    return _channel.invokeMethod('startTagSession', {});
+    return _channel.invokeMethod('startTagSession', {
+      'alertMessageIOS': alertMessageIOS,
+    });
   }
 
   /// Stop a reader session.
   Future<bool> stopSession({
+    String alertMessageIOS,
     String errorMessageIOS,
   }) {
+    assert(!(alertMessageIOS != null && errorMessageIOS != null));
     _onNdefDiscovered = null;
     _onTagDiscovered = null;
     return _channel.invokeMethod('stopSession', {
+      'alertMessageIOS': alertMessageIOS,
       'errorMessageIOS': errorMessageIOS,
     });
   }

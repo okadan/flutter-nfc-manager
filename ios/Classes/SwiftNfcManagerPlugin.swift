@@ -82,7 +82,11 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
         }
 
         session = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
-        session!.begin()
+
+        if let alertMessage = arguments["alertMessageIOS"] as? String {
+            session?.alertMessage = alertMessage
+        }
+        session?.begin()
         result(true)
     }
 
@@ -93,7 +97,11 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
         }
 
         session = NFCTagReaderSession(pollingOption: [.iso14443, .iso15693, .iso18092], delegate: self)
-        session!.begin()
+
+        if let alertMessage = arguments["alertMessageIOS"] as? String {
+            session?.alertMessage = alertMessage
+        }
+        session?.begin()
         result(true)
     }
 
@@ -108,14 +116,18 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
             return
         }
 
-        guard #available(iOS 13.0, *), let errorMessage = arguments["errorMessageIOS"] as? String else {
-            session.invalidate()
+        if #available(iOS 13.0, *), let errorMessage = arguments["errorMessageIOS"] as? String {
+            session.invalidate(errorMessage: errorMessage)
             self.session = nil
             result(true)
             return
         }
 
-        session.invalidate(errorMessage: errorMessage)
+        if let alertMessage = arguments["alertMessageIOS"] as? String {
+            session.alertMessage = alertMessage
+        }
+
+        session.invalidate()
         self.session = nil
         result(true)
     }
