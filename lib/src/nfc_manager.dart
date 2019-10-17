@@ -159,7 +159,7 @@ class NfcNdef {
   }
 
   factory NfcNdef._fromJson(String key, Map<String, dynamic> data) {
-    final ndefMessage = data.containsKey('cachedNdef')
+    final ndefMessage = data['cachedNdef'] != null
       ? NdefMessage.fromJson(Map<String, dynamic>.from(data.remove('cachedNdef')))
       : null;
     final isWritable = data.remove('isWritable') as bool;
