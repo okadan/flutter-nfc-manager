@@ -1,25 +1,31 @@
+## 0.3.0
+
+* add `NdefRecord#createMimeRecord`.
+* add optional parameters `alertMessageIOS` and `errorMessageIOS` displayed in iOS system UI. 
+* fix error on deserializing null message on dart side.
+
 ## 0.2.0
 
 * split `startSession` into `startNdefSession` and `startTagSession`.
-* document improvement.
+* improve doc.
 
 ## 0.1.1
 
-* [iOS] fix crash on serializing nil message.
+* fix crash on serializing nil message on ios side.
 * add example project.
-* document improvement.
+* improve doc.
 
 ## 0.1.0+2
 
-* document improvement.
+* improve doc.
 
 ## 0.1.0+1
 
-* document improvement.
+* improve doc.
 
 ## 0.1.0
 
-* iOS 13 support.
+* add iOS 13 features.
 
 ## 0.0.1
 
