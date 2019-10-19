@@ -463,10 +463,10 @@ extension SwiftNfcManagerPlugin {
     @available(iOS 11.0, *)
     private func serializeNDEFPayload(_ payload: NFCNDEFPayload) -> [String:Any?] {
         return [
+            "typeNameFormat": payload.typeNameFormat.rawValue,
+            "type": payload.type,
             "identifier": payload.identifier,
             "payload": payload.payload,
-            "type": payload.type,
-            "typeNameFormat": payload.typeNameFormat.rawValue
         ]
     }
 }

@@ -200,34 +200,27 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
     private fun serializeTag(key: String, tag: Tag): Map<String, Any?> {
         val data = mutableMapOf<String, Any?>(
             "key" to key,
-            "id" to tag.id,
-            "techList" to tag.techList.toList()
+            "id" to tag.id
         )
-        tag.techList.map {
-            getTechFromTag(tag, it)?.let { tech ->
-                if (tech is Ndef) {
-                    data["ndef"] = serializeTech(tech)
-                } else {
-                    data.putAll(serializeTech(tech))
-                }
-            }
+        tag.techList.forEach {
+            // tech key will be normalized (e.g. android.nfc.tech.NfcA => nfca)
+            data[it.toLowerCase(Locale.ROOT).split(".").last()] = serializeTech(getTechFromTag(tag, it)!!)
         }
         return data
     }
 
     private fun serializeNdefMessage(message: NdefMessage): Map<String, Any?> {
         return mapOf(
-            "byteArrayLength" to message.byteArrayLength,
             "records" to message.records.map { serializeNdefRecord(it) }.toList()
         )
     }
 
     private fun serializeNdefRecord(record: NdefRecord): Map<String, Any?> {
         return mapOf(
-            "identifier" to record.id,
-            "payload" to record.payload,
+            "typeNameFormat" to record.tnf,
             "type" to record.type,
-            "typeNameFormat" to record.tnf
+            "identifier" to record.id,
+            "payload" to record.payload
         )
     }
 

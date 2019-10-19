@@ -1,4 +1,4 @@
-import 'dart:convert';
+import 'dart:convert' show ascii, utf8;
 import 'dart:typed_data';
 import 'dart:ui' show Locale;
 
@@ -234,24 +234,24 @@ class NdefRecord {
 }
 
 void _validateFormat(int format, Uint8List type, Uint8List identifier, Uint8List payload) {
-    switch (format) {
-      case 0x00:
-        if (type.isNotEmpty || identifier.isNotEmpty || payload.isNotEmpty)
-          throw('unexpected data in EMPTY record');
-          break;
-      case 0x01:
-      case 0x02:
-      case 0x03:
-      case 0x04:
+  switch (format) {
+    case 0x00:
+      if (type.isNotEmpty || identifier.isNotEmpty || payload.isNotEmpty)
+        throw('unexpected data in EMPTY record');
         break;
-      case 0x05:
-      case 0x07:
-        if (type.isNotEmpty)
-          throw('unexpected type field in UNKNOWN or RESERVE record');
-        break;
-      case 0x06:
-        throw('unexpected UNCHANGED in first chunk or logical record');
-      default:
-        throw('unexpected format value: $format');
-    }
+    case 0x01:
+    case 0x02:
+    case 0x03:
+    case 0x04:
+      break;
+    case 0x05:
+    case 0x07:
+      if (type.isNotEmpty)
+        throw('unexpected type field in UNKNOWN or RESERVE record');
+      break;
+    case 0x06:
+      throw('unexpected UNCHANGED in first chunk or logical record');
+    default:
+      throw('unexpected format value: $format');
   }
+}
