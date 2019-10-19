@@ -55,6 +55,7 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
     private func handleIsAvailable(_ result: FlutterResult, _ arguments: [String:Any?]) {
         let type = arguments["type"] as! Int
 
+        // Sync with `NfcSessionType` enum on Dart side.
         switch type {
         case 0:
             guard #available(iOS 11.0, *) else {
@@ -96,7 +97,9 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
             return
         }
 
-        session = NFCTagReaderSession(pollingOption: [.iso14443, .iso15693, .iso18092], delegate: self)
+        let pollingOptions = arguments["pollingOptions"] as! [Int]
+
+        session = NFCTagReaderSession(pollingOption: parsePollingOptions(pollingOptions), delegate: self)
 
         if let alertMessage = arguments["alertMessageIOS"] as? String {
             session?.alertMessage = alertMessage
@@ -365,6 +368,27 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
 }
 
 extension SwiftNfcManagerPlugin {
+
+    // Sync with `NfcTagPollingOption` enum on Dart side
+    @available(iOS 13.0, *)
+    private func parsePollingOptions(_ options: [Int]) -> NFCTagReaderSession.PollingOption {
+        var option: NFCTagReaderSession.PollingOption = []
+
+        if options.contains(0) {
+            option.insert(NFCTagReaderSession.PollingOption.iso14443)
+        }
+
+        if options.contains(1) {
+            option.insert(NFCTagReaderSession.PollingOption.iso15693)
+        }
+
+        if options.contains(2) {
+            option.insert(NFCTagReaderSession.PollingOption.iso18092)
+        }
+
+        return option
+    }
+
     @available(iOS 13.0, *)
     private func deserializeNDEFMessage(_ data: [String:Any?]) -> NFCNDEFMessage {
         return NFCNDEFMessage.init(records: (data["records"] as! Array).map { deserializeNDEFPayload($0) })

@@ -42,7 +42,7 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         when (call.method) {
             "isAvailable" -> handleIsAvailable(result)
             "startNdefSession" -> handleStartNdefSession(result)
-            "startTagSession" -> handleStartTagSession(result)
+            "startTagSession" -> handleStartTagSession(result, call.argument("pollingOptions")!!)
             "stopSession" -> handleStopSession(result)
             "writeNdef" -> handleWriteNdef(result, call.argument("key")!!, call.argument("message")!!)
             "writeLock" -> handleWriteLock(result, call.argument("key")!!)
@@ -69,7 +69,7 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         }
     }
 
-    private fun handleStartTagSession(result: Result) {
+    private fun handleStartTagSession(result: Result, options: List<Int>) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             result.error("", "Requires API level KITKAT", null)
         } else {
@@ -77,7 +77,7 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
                 val key = UUID.randomUUID().toString()
                 cachedTags[key] = it
                 registrar.activity().runOnUiThread { channel.invokeMethod("onTagDiscovered", serializeTag(key, it)) }
-            }, getFlags(), null)
+            }, getFlags(options), null)
             result.success(true)
         }
     }
@@ -147,12 +147,27 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         result.success(true)
     }
 
+    // Sync with `NfcTagPollingOption` enum on Dart side.
     @TargetApi(Build.VERSION_CODES.KITKAT)
-    private fun getFlags(): Int {
-        return NfcAdapter.FLAG_READER_NFC_A or
-            NfcAdapter.FLAG_READER_NFC_B or
-            NfcAdapter.FLAG_READER_NFC_F or
-            NfcAdapter.FLAG_READER_NFC_V
+    private fun getFlags(options: List<Int> = listOf(0, 1, 2)): Int {
+        var flag = 0
+
+        // iso14443
+        if (options.contains(0)) {
+            flag = flag or NfcAdapter.FLAG_READER_NFC_A or NfcAdapter.FLAG_READER_NFC_B
+        }
+
+        // iso15693
+        if (options.contains(1)) {
+            flag = flag or NfcAdapter.FLAG_READER_NFC_V
+        }
+
+        // iso18092
+        if (options.contains(2)) {
+            flag = flag or NfcAdapter.FLAG_READER_NFC_F
+        }
+
+        return flag
     }
 
     private fun getTechFromTag(tag: Tag, tech: String): TagTechnology? {

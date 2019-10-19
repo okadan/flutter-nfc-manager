@@ -9,6 +9,12 @@ enum NfcSessionType {
   tag,
 }
 
+enum NfcTagPollingOption {
+  iso14443,
+  iso15693,
+  iso18092,
+}
+
 class NfcManager {
   NfcManager._() {
     _channel.setMethodCallHandler((call) async {
@@ -53,10 +59,17 @@ class NfcManager {
   /// Start a reader session to detect tag.
   Future<bool> startTagSession({
     void Function(NfcTag) onTagDiscovered,
+    Set<NfcTagPollingOption> pollingOptions,
     String alertMessageIOS,
   }) {
     _onTagDiscovered = onTagDiscovered;
+
+    final effectiveOptions = pollingOptions != null && pollingOptions.isNotEmpty
+      ? pollingOptions.toList()
+      : NfcTagPollingOption.values;
+
     return _channel.invokeMethod('startTagSession', {
+      'pollingOptions': effectiveOptions.map((e) => e.index).toList(),
       'alertMessageIOS': alertMessageIOS,
     });
   }
