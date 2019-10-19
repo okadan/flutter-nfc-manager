@@ -4,6 +4,11 @@ import './ndef.dart';
 
 const _channel = MethodChannel('plugins.flutter.io/nfc_manager');
 
+enum NfcSessionType {
+  ndef,
+  tag,
+}
+
 class NfcManager {
   NfcManager._() {
     _channel.setMethodCallHandler((call) async {
@@ -24,12 +29,9 @@ class NfcManager {
   static NfcManager get instance => _instance ??= NfcManager._();
 
   /// Checks whether the session is available for specific type.
-  /// 
-  /// `type` argument must be either `NDEF` or `TAG`.
-  static Future<bool> isAvailable(String type) {
-    assert(type == 'NDEF' || type == 'TAG');
+  static Future<bool> isAvailable(NfcSessionType type) {
     return _channel.invokeMethod('isAvailable', {
-      'type': type,
+      'type': type.index,
     });
   }
 

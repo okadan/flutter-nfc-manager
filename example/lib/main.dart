@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
         appBar: AppBar(title: Text('NfcManager Example')),
         body: SafeArea(
           child: FutureBuilder<bool>(
-            future: NfcManager.isAvailable('NDEF'),
+            future: NfcManager.isAvailable(NfcSessionType.ndef),
             builder: (context, ss) {
               if (!ss.hasData) return Container();
               if (!ss.data)  return Center(child: Text('Not available on the current device'));

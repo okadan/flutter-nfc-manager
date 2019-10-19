@@ -53,17 +53,17 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
     }
 
     private func handleIsAvailable(_ result: FlutterResult, _ arguments: [String:Any?]) {
-        let type = arguments["type"] as! String
+        let type = arguments["type"] as! Int
 
         switch type {
-        case "NDEF":
+        case 0:
             guard #available(iOS 11.0, *) else {
                 result(FlutterError(code: "", message: "Only available on iOS 11.0 or newer", details: nil))
                 return
             }
             result(NFCNDEFReaderSession.readingAvailable)
             break
-        case "TAG":
+        case 1:
             guard #available(iOS 13.0, *) else {
                 result(FlutterError(code: "", message: "Only available on iOS 13.0 or newer", details: nil))
                 return
