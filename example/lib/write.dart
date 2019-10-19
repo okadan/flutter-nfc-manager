@@ -58,7 +58,7 @@ class _WritePageState extends State<WritePage> {
 
   void _startToWrite() {
     NfcManager.instance.startNdefSession(
-      onDiscovered: (ndef) async {
+      onNdefDiscovered: (ndef) async {
         if (ndef.isWritable != true) {
           final error = 'ndef is not writable';
           NfcManager.instance.stopSession(errorMessageIOS: error);
