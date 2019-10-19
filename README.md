@@ -14,41 +14,12 @@ Feedback is welcome.
 
 ### Android Setup
 
-* Add permission to your `AndroidMenifest.xml`:
-
-``` xml
-<uses-permission android:name="android.permission.NFC" />
-```
+* Add [android.permission.NFC](https://developer.android.com/reference/android/Manifest.permission.html#NFC) to your `AndroidMenifest.xml`.
 
 ### iOS Setup
 
-* Add [NFCReaderUsageDescription](https://developer.apple.com/documentation/bundleresources/information_property_list/nfcreaderusagedescription) to your `Info.plist`:
+* Add [Near Field Communication Tag Reader Session Formats Entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_nfc_readersession_formats) to your entitlements.
 
-``` xml
-<key>NFCReaderUsageDescription</key>
-<string>[YOUR DESCRIPTION]</string>
-```
+* Add [NFCReaderUsageDescription](https://developer.apple.com/documentation/bundleresources/information_property_list/nfcreaderusagedescription) to your `Info.plist`.
 
-* Add [Near Field Communication Tag Reader Session Formats Entitlements](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_nfc_readersession_formats) to your entitlements:
-
-``` xml
-<key>com.apple.developer.nfc.readersession.formats</key>
-<array>
-    <string>NDEF</string>
-    <string>TAG</string> <!-- To use `NfcManager#startTagSession` -->
-</array>
-```
-
-* To use `NfcManager#startTagSession`, add [com.apple.developer.nfc.readersession.iso7816.select-identifiers](https://developer.apple.com/documentation/bundleresources/information_property_list/select-identifiers) and [com.apple.developer.nfc.readersession.felica.systemcodes](https://developer.apple.com/documentation/bundleresources/information_property_list/systemcodes) to your `Info.plist` as you need:
-
-``` xml
-<key>com.apple.developer.nfc.readersession.iso7816.select-identifiers</key>
-<array>
-    <string>[AID]</string>
-</array>
-
-<key>com.apple.developer.nfc.readersession.felica.systemcodes</key>
-<array>
-    <string>[SYSTEM CODE]</string>
-</array>
-```
+* If you use `NfcManager#startTagSession` with `NfcTagPollingOption.iso18092`, you must add [com.apple.developer.nfc.readersession.felica.systemcodes](https://developer.apple.com/documentation/bundleresources/information_property_list/systemcodes) to your `Info.plist`.
