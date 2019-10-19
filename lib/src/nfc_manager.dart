@@ -15,15 +15,19 @@ enum NfcTagPollingOption {
   iso18092,
 }
 
+typedef void NfcNdefDiscoveredCallback(NfcNdef ndef);
+
+typedef void NfcTagDiscoveredCallback(NfcTag tag);
+
 class NfcManager {
   NfcManager._() {
     _channel.setMethodCallHandler((call) async {
       switch (call.method) {
         case 'onNdefDiscovered':
-          _handleOnNdefDiscovered(Map<String, dynamic>.from(call.arguments));
+          _handleNdefDiscovered(Map<String, dynamic>.from(call.arguments));
           break;
         case 'onTagDiscovered':
-          _handleOnTagDiscovered(Map<String, dynamic>.from(call.arguments));
+          _handleTagDiscovered(Map<String, dynamic>.from(call.arguments));
           break;
         default:
           throw('Not implemented: ${call.method}');
@@ -41,16 +45,16 @@ class NfcManager {
     });
   }
 
-  void Function(NfcTag) _onTagDiscovered;
+  NfcNdefDiscoveredCallback _onNdefDiscovered;
 
-  void Function(NfcNdef) _onNdefDiscovered;
+  NfcTagDiscoveredCallback _onTagDiscovered;
 
   /// Start a reader session to detect ndef.
   Future<bool> startNdefSession({
-    void Function(NfcNdef) onNdefDiscovered,
+    NfcNdefDiscoveredCallback onDiscovered,
     String alertMessageIOS,
   }) {
-    _onNdefDiscovered = onNdefDiscovered;
+    _onNdefDiscovered = onDiscovered;
     return _channel.invokeMethod('startNdefSession', {
       'alertMessageIOS': alertMessageIOS,
     });
@@ -58,11 +62,11 @@ class NfcManager {
 
   /// Start a reader session to detect tag.
   Future<bool> startTagSession({
-    void Function(NfcTag) onTagDiscovered,
+    NfcTagDiscoveredCallback onDiscovered,
     Set<NfcTagPollingOption> pollingOptions,
     String alertMessageIOS,
   }) {
-    _onTagDiscovered = onTagDiscovered;
+    _onTagDiscovered = onDiscovered;
 
     final effectiveOptions = pollingOptions != null && pollingOptions.isNotEmpty
       ? pollingOptions.toList()
@@ -94,14 +98,14 @@ class NfcManager {
     });
   }
 
-  Future<void> _handleOnNdefDiscovered(Map<String, dynamic> arguments) async {
+  Future<void> _handleNdefDiscovered(Map<String, dynamic> arguments) async {
     final ndef = NfcNdef._fromJson(arguments['key'], Map<String, dynamic>.from(arguments['ndef']));
     if (_onNdefDiscovered != null)
       _onNdefDiscovered(ndef);
     await _dispose(ndef._tagKey);
   }
 
-  Future<void> _handleOnTagDiscovered(Map<String, dynamic> arguments) async {
+  Future<void> _handleTagDiscovered(Map<String, dynamic> arguments) async {
     final tag = NfcTag._fromJson(arguments);
     if (_onTagDiscovered != null)
       _onTagDiscovered(tag);
