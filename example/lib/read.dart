@@ -36,9 +36,9 @@ class _ReadPageState extends State<ReadPage> {
                 Text('Writable: ${_tag.ndef.isWritable}'),
                 Text('MaxSize: ${_tag.ndef.maxSize}'),
                 Text('AdditionalData(Ndef): ${_tag.ndef.additionalData}'),
-                if (_tag.ndef.cachedNdef != null) ...[
-                  Text('ByteLength: ${_tag.ndef.cachedNdef.byteLength}'),
-                  ..._tag.ndef.cachedNdef.records.map((e) => Text(
+                if (_tag.ndef.cachedMessage != null) ...[
+                  Text('ByteLength: ${_tag.ndef.cachedMessage.byteLength}'),
+                  ..._tag.ndef.cachedMessage.records.map((e) => Text(
                     '\n'
                     'Format: ${e.typeNameFormat}\n'
                     'Type: ${e.type}\n'

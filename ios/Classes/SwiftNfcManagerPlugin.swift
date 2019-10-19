@@ -295,7 +295,7 @@ extension SwiftNfcManagerPlugin: NFCNDEFReaderSessionDelegate {
     @available(iOS 11.0, *)
     public func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
         let key = NSUUID().uuidString
-        let arguments: [String:Any?] = ["key": key, "ndef": ["cachedNdef": serializeNDEFMessage(messages.first!)]]
+        let arguments: [String:Any?] = ["key": key, "ndef": ["cachedMessage": serializeNDEFMessage(messages.first!)]]
         channel.invokeMethod("onNdefDiscovered", arguments: arguments)
     }
 
@@ -407,7 +407,7 @@ extension SwiftNfcManagerPlugin {
                 ]
 
                 if let message = message {
-                    ndefData["cachedNdef"] = self.serializeNDEFMessage(message)
+                    ndefData["cachedMessage"] = self.serializeNDEFMessage(message)
                 }
 
                 data["ndef"] = ndefData

@@ -276,7 +276,7 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
                 "type" to tech.type
             )
             is Ndef -> mapOf(
-                "cachedNdef" to if (tech.cachedNdefMessage == null) null else serializeNdefMessage(tech.cachedNdefMessage),
+                "cachedMessage" to if (tech.cachedNdefMessage == null) null else serializeNdefMessage(tech.cachedNdefMessage),
                 "canMakeReadOnly" to tech.canMakeReadOnly(),
                 "isWritable" to tech.isWritable,
                 "maxSize" to tech.maxSize,

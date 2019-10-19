@@ -122,7 +122,7 @@ class NfcTag {
 class NfcNdef {
   NfcNdef._(
     this._tagKey,
-    this.cachedNdef,
+    this.cachedMessage,
     this.isWritable,
     this.maxSize,
     this.additionalData,
@@ -131,7 +131,7 @@ class NfcNdef {
   final String _tagKey;
 
   /// An NDEF message that was read from the tag at discovery time.
-  final NdefMessage cachedNdef;
+  final NdefMessage cachedMessage;
 
   /// Whether the tag is NDEF writable.
   final bool isWritable;
@@ -159,8 +159,8 @@ class NfcNdef {
   }
 
   factory NfcNdef._fromJson(String key, Map<String, dynamic> data) {
-    final ndefMessage = data['cachedNdef'] != null
-      ? NdefMessage.fromJson(Map<String, dynamic>.from(data.remove('cachedNdef')))
+    final ndefMessage = data['cachedMessage'] != null
+      ? NdefMessage.fromJson(Map<String, dynamic>.from(data.remove('cachedMessage')))
       : null;
     final isWritable = data.remove('isWritable') as bool;
     final maxSize = data.remove('maxSize') as int;
