@@ -42,11 +42,11 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         when (call.method) {
             "isAvailable" -> handleIsAvailable(result)
             "startNdefSession" -> handleStartNdefSession(result)
-            "startTagSession" -> handleStartTagSession(result, call.argument("pollingOptions")!!)
+            "startTagSession" -> handleStartTagSession(result, call)
             "stopSession" -> handleStopSession(result)
-            "writeNdef" -> handleWriteNdef(result, call.argument("key")!!, call.argument("message")!!)
-            "writeLock" -> handleWriteLock(result, call.argument("key")!!)
-            "dispose" -> handleDispose(result, call.argument("key")!!)
+            "writeNdef" -> handleWriteNdef(result, call)
+            "writeLock" -> handleWriteLock(result, call)
+            "dispose" -> handleDispose(result, call)
             else -> result.notImplemented()
         }
     }
@@ -69,7 +69,9 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         }
     }
 
-    private fun handleStartTagSession(result: Result, options: List<Int>) {
+    private fun handleStartTagSession(result: Result, call: MethodCall) {
+        val options = call.argument<List<Int>>("pollingOptions")!!
+
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
             result.error("", "Requires API level KITKAT", null)
         } else {
@@ -91,7 +93,10 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         }
     }
 
-    private fun handleWriteNdef(result: Result, key: String, data: Map<String, Any?>) {
+    private fun handleWriteNdef(result: Result, call: MethodCall) {
+        val key = call.argument<String>("key")!!
+        val message = deserializeNdefMessage(call.argument<Map<String, Any?>>("message")!!)
+
         val tag = cachedTags[key] ?: run {
             result.error("", "Tag is not found", null)
             return
@@ -104,14 +109,16 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
 
         try {
             forceConnect(tech)
-            tech.writeNdefMessage(deserializeNdefMessage(data))
+            tech.writeNdefMessage(message)
             result.success(true)
         } catch (e: IOException) {
             result.error("", e.localizedMessage, null)
         }
     }
 
-    private fun handleWriteLock(result: Result, key: String) {
+    private fun handleWriteLock(result: Result, call: MethodCall) {
+        val key = call.argument<String>("key")!!
+
         val tag = cachedTags[key] ?: run {
             result.error("", "Tag is not found", null)
             return
@@ -131,7 +138,9 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         }
     }
 
-    private fun handleDispose(result: Result, key: String) {
+    private fun handleDispose(result: Result, call: MethodCall) {
+        val key = call.argument<String>("key")!!
+
         val tag = cachedTags.remove(key) ?: run {
             result.success(true)
             return
