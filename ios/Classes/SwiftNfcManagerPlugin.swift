@@ -336,21 +336,22 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
     @available(iOS 13.0, *)
     public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
         let key = NSUUID().uuidString
+        let tag = tags.first!
 
         var tech: NFCNDEFTag?
 
-        switch tags.first! {
-        case .feliCa(let tag):
-            tech = tag
-        case .iso7816(let tag):
-            tech = tag
-        case .iso15693(let tag):
-            tech = tag
-        case .miFare(let tag):
-            tech = tag
+        switch tag {
+        case .feliCa(let t):
+            tech = t
+        case .iso7816(let t):
+            tech = t
+        case .iso15693(let t):
+            tech = t
+        case .miFare(let t):
+            tech = t
         }
 
-        session.connect(to: tags.first!) { error in
+        session.connect(to: tag) { error in
             if let error = error {
                 print(error)
                 return
@@ -361,6 +362,8 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
                     print(error)
                     return
                 }
+                self.cachedTags[key] = tag
+                self.cachedTechs[key] = tech
                 self.channel.invokeMethod("onTagDiscovered", arguments: data.merging(["key": key]) { cur, _ in cur })
             }
         }
