@@ -1,3 +1,9 @@
+## 0.4.0
+
+* rename `NfcNdef#cachedNdef` to `NfcNdef#cachedMessage`.
+* add `NfcSessionType` enum.
+* add `NfcTagPollingOption` enum.
+
 ## 0.3.0
 
 * add `NdefRecord#createMimeRecord`.
