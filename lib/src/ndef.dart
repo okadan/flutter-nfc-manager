@@ -172,7 +172,7 @@ class NdefRecord {
   /// or otherwise the corresponding to the cached locale will be used.
   factory NdefRecord.createTextRecord(String text, {String languageCode}) {
     if (text == null)
-      throw('test is null');
+      throw('text is null');
 
     final languageCodeBytes = ascii.encode(
       languageCode ?? Locale.cachedLocale.languageCode,
