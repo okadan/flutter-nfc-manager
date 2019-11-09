@@ -1,3 +1,7 @@
+## 0.4.0+2
+
+* fix typo on README
+
 ## 0.4.0+1
 
 * update README

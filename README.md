@@ -69,7 +69,7 @@ NfcManager.instance.startNdefSession(
 ``` dart
 NfcManager.instance.startTagSession(
   alertMessageIOS: '...',
-  pollingOpitons: {NfcTagPollingOption.iso14443, NfcTagPollingOption.iso15693, NfcTagPollingOption.iso18092},
+  pollingOptions: {NfcTagPollingOption.iso14443, NfcTagPollingOption.iso15693, NfcTagPollingOption.iso18092},
   onTagDiscovered: (NfcTag tag) {
     print(tag);
     print(tag.ndef); // You can also read NDEF.
