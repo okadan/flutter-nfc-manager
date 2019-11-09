@@ -1,3 +1,7 @@
+## 0.4.0+1
+
+* update README
+
 ## 0.4.0
 
 * rename `NfcNdef#cachedNdef` to `NfcNdef#cachedMessage`.
