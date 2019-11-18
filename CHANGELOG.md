@@ -1,6 +1,11 @@
+## 0.5.1
+
+* update flutter project files.
+* additional fix for migration to AndroidX.
+
 ## 0.5.0
 
-* Migrate to AndroidX.
+* migrate to AndroidX.
 
 ## 0.4.0+2
 
@@ -19,7 +24,7 @@
 ## 0.3.0
 
 * add `NdefRecord#createMimeRecord`.
-* add optional parameters `alertMessageIOS` and `errorMessageIOS` displayed in iOS system UI. 
+* add optional parameters `alertMessageIOS` and `errorMessageIOS` displayed in iOS system UI.
 * fix error on deserializing null message on dart side.
 
 ## 0.2.0
