@@ -1,3 +1,7 @@
+## 0.5.0
+
+* Migrate to AndroidX.
+
 ## 0.4.0+2
 
 * fix typo on README
