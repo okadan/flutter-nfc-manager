@@ -1,6 +1,6 @@
 name: nfc_manager_example
 description: Demonstrates how to use the nfc_manager plugin.
-version: 0.0.1+1
+version: 1.0.0+1
 publish_to: 'none'
 
 environment:
@@ -9,8 +9,6 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  cupertino_icons:
 
 dev_dependencies:
   flutter_test:
@@ -21,4 +19,3 @@ dev_dependencies:
 
 flutter:
   uses-material-design: true
-
