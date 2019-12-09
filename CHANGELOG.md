@@ -1,3 +1,10 @@
+## 1.0.0
+
+* added platform-tag-specific operations.
+* removed `NfcSessionType` enum.
+* renamed `NfcManager` to `Nfc`.
+* renamed `onTagDiscovered` and `onNdefDiscovered` to `onDiscovered`.
+
 ## 0.5.1
 
 * update flutter project files.
