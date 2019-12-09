@@ -8,6 +8,6 @@ import 'package:flutter/foundation.dart' show required;
 import 'package:flutter/services.dart' show MethodChannel, MethodCall;
 
 part 'src/ndef.dart';
-part 'src/nfc.dart';
+part 'src/nfc_manager.dart';
 part 'src/tag.dart';
 part 'src/translator.dart';

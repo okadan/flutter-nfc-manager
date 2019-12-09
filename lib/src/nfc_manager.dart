@@ -12,10 +12,10 @@ enum TagPollingOption {
   iso18092,
 }
 
-class Nfc {
-  Nfc._() { _channel.setMethodCallHandler(_handleMethodCall); }
-  static Nfc _instance;
-  static Nfc get instance => _instance ??= Nfc._();
+class NfcManager {
+  NfcManager._() { _channel.setMethodCallHandler(_handleMethodCall); }
+  static NfcManager _instance;
+  static NfcManager get instance => _instance ??= NfcManager._();
 
   NdefDiscoveredCallback _onNdefDiscovered;
 

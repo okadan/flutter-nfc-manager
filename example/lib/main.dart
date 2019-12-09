@@ -20,9 +20,9 @@ class MyAppState extends State<MyApp> {
         appBar: AppBar(title: Text('NfcManager Plugin Example')),
         body: SafeArea(
           child: FutureBuilder<bool>(
-            future: Nfc.instance.isAvailable(),
+            future: NfcManager.instance.isAvailable(),
             builder: (context, ss) => ss.data != true
-              ? Center(child: Text('Nfc.isAvailable(): ${ss.data}'))
+              ? Center(child: Text('NfcManager.isAvailable(): ${ss.data}'))
               : Flex(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 direction: Axis.vertical,
@@ -65,18 +65,18 @@ class MyAppState extends State<MyApp> {
   }
 
   void _tagRead() {
-    Nfc.instance.startTagSession(onDiscovered: (NfcTag tag) {
+    NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) {
       result.value = tag.data;
-      Nfc.instance.stopSession();
+      NfcManager.instance.stopSession();
     });
   }
 
   void _ndefWrite() {
-    Nfc.instance.startTagSession(onDiscovered: (NfcTag tag) async {
+    NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) async {
       Ndef ndef = Ndef.fromTag(tag);
       if (ndef == null) {
         result.value = 'Tag is not ndef';
-        Nfc.instance.stopSession(errorMessageIOS: result.value);
+        NfcManager.instance.stopSession(errorMessageIOS: result.value);
         return;
       }
 
@@ -90,31 +90,31 @@ class MyAppState extends State<MyApp> {
       try {
         await ndef.write(message);
         result.value = 'Success to "Ndef Write"';
-        Nfc.instance.stopSession();
+        NfcManager.instance.stopSession();
       } catch (e) {
         result.value = e;
-        Nfc.instance.stopSession(errorMessageIOS: result.value.toString());
+        NfcManager.instance.stopSession(errorMessageIOS: result.value.toString());
         return;
       }
     });
   }
 
   void _ndefWriteLock() {
-    Nfc.instance.startTagSession(onDiscovered: (NfcTag tag) async {
+    NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) async {
       Ndef ndef = Ndef.fromTag(tag);
       if (ndef == null) {
         result.value = 'Tag is not ndef';
-        Nfc.instance.stopSession(errorMessageIOS: result.value.toString());
+        NfcManager.instance.stopSession(errorMessageIOS: result.value.toString());
         return;
       }
 
       try {
         await ndef.writeLock();
         result.value = 'Success to "Ndef Write Lock"';
-        Nfc.instance.stopSession();
+        NfcManager.instance.stopSession();
       } catch (e) {
         result.value = e;
-        Nfc.instance.stopSession(errorMessageIOS: result.value.toString());
+        NfcManager.instance.stopSession(errorMessageIOS: result.value.toString());
         return;
       }
     });
