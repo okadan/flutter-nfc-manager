@@ -1,8 +1,4 @@
-import 'dart:convert' show ascii, utf8;
-import 'dart:typed_data';
-import 'dart:ui' show Locale;
-
-import 'package:flutter/widgets.dart';
+part of nfc_manager;
 
 class NdefMessage {
   NdefMessage(this.records);
@@ -12,19 +8,6 @@ class NdefMessage {
   int get byteLength => records.isEmpty
     ? 0
     : records.map((e) => e.byteLength).reduce((x, y) => x+y);
-
-  factory NdefMessage.fromJson(Map<String, dynamic> data) {
-    return NdefMessage(
-      (data['records'] as List)
-        .map((e) => NdefRecord.fromJson(Map<String, dynamic>.from(e))).toList(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'records': records.map((e) => e.toJson()).toList(),
-    };
-  }
 }
 
 class NdefRecord {
@@ -82,7 +65,6 @@ class NdefRecord {
 
   final Uint8List payload;
 
-  /// Length in bytes that stored on this record.
   int get byteLength {
     var length = 3 + type.length + identifier.length + payload.length;
 
@@ -97,11 +79,6 @@ class NdefRecord {
     return length;
   }
 
-  /// Create an NDEF record from its component fields.
-  /// 
-  /// Recommended to use other factory constructors such as `createExternalRecord` where possible,
-  /// since they perform validation that the record is correctly formatted as NDEF.
-  /// However if you know what you are doing then this constructor offers the most flexibility.
   factory NdefRecord({
     int typeNameFormat,
     Uint8List type,
@@ -117,7 +94,6 @@ class NdefRecord {
     return NdefRecord._(typeNameFormat, _type, _identifier, _payload);
   }
 
-  /// Create an NDEF record containing external (applicattion-specific) data.
   factory NdefRecord.createExternalRecord(String domain, String type, Uint8List data) {
     if (domain == null)
       throw('domain is null');
@@ -138,13 +114,12 @@ class NdefRecord {
 
     return NdefRecord(
       typeNameFormat: 0x04,
-      type: bytes,
+      type: Uint8List.fromList(bytes),
       identifier: null,
       payload: data,
     );
   }
 
-  /// Create an NDEF record containing a mime data
   factory NdefRecord.createMimeRecord(String type, Uint8List data) {
     if (type == null)
       throw('type is null');
@@ -166,10 +141,6 @@ class NdefRecord {
     );
   }
 
-  /// Create an NDEF record containing a UTF-8 text.
-  /// 
-  /// Can either specify the languageCode for the provided text,
-  /// or otherwise the corresponding to the cached locale will be used.
   factory NdefRecord.createTextRecord(String text, {String languageCode}) {
     if (text == null)
       throw('text is null');
@@ -190,7 +161,6 @@ class NdefRecord {
     );
   }
 
-  /// Create an NDEF record containing a uri.
   factory NdefRecord.createUriRecord(Uri uri) {
     if (uri == null)
       throw('uri is null');
@@ -212,24 +182,6 @@ class NdefRecord {
       identifier: null,
       payload: Uint8List.fromList([prefixIndex] + uriBytes),
     );
-  }
-
-  factory NdefRecord.fromJson(Map<String, dynamic> data) {
-    return NdefRecord(
-      typeNameFormat: data['typeNameFormat'],
-      type: data['type'],
-      identifier: data['identifier'],
-      payload: data['payload'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'typeNameFormat': typeNameFormat,
-      'type': type,
-      'identifier': identifier,
-      'payload': payload,
-    };
   }
 }
 

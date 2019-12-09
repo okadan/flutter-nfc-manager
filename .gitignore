@@ -33,4 +33,5 @@ GeneratedPluginRegistrant.m
 GeneratedPluginRegistrant.java
 build/
 .flutter-plugins
+.flutter-plugins-dependencies
 
