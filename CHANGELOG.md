@@ -1,8 +1,7 @@
-## 1.0.0
+## 1.0.0-dev
 
 * added platform-tag-specific operations.
 * removed `NfcSessionType` enum.
-* renamed `NfcManager` to `Nfc`.
 * renamed `onTagDiscovered` and `onNdefDiscovered` to `onDiscovered`.
 
 ## 0.5.1
