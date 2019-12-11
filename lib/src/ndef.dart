@@ -145,9 +145,7 @@ class NdefRecord {
     if (text == null)
       throw('text is null');
 
-    final languageCodeBytes = ascii.encode(
-      languageCode ?? Locale.cachedLocale.languageCode,
-    );
+    final languageCodeBytes = ascii.encode(languageCode ?? 'en');
     if (languageCodeBytes.length >= 64)
       throw('languageCode is too long');
 
