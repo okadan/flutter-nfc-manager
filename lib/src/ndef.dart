@@ -188,7 +188,7 @@ void _validateFormat(int format, Uint8List type, Uint8List identifier, Uint8List
     case 0x00:
       if (type.isNotEmpty || identifier.isNotEmpty || payload.isNotEmpty)
         throw('unexpected data in EMPTY record');
-        break;
+      break;
     case 0x01:
     case 0x02:
     case 0x03:
