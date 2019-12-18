@@ -80,10 +80,10 @@ class NdefRecord {
     return length;
   }
 
-  /// Create an ndef record from its component fields.
+  /// Create an NDEF record from its component fields.
   ///
   /// Recommended to use other factory constructors such as `createExternalRecord` where possible,
-  /// since they perform validation that the record is correctly formatted as ndef.
+  /// since they perform validation that the record is correctly formatted as NDEF.
   /// However if you know what you are doing then this constructor offers the most flexibility.
   factory NdefRecord({
     int typeNameFormat,
@@ -100,7 +100,7 @@ class NdefRecord {
     return NdefRecord._(typeNameFormat, _type, _identifier, _payload);
   }
 
-  /// Create an ndef record containing external (applicattion-specific) data.
+  /// Create an NDEF record containing external (applicattion-specific) data.
   factory NdefRecord.createExternalRecord(String domain, String type, Uint8List data) {
     if (domain == null)
       throw('domain is null');
@@ -127,7 +127,7 @@ class NdefRecord {
     );
   }
 
-  /// Create an ndef record containing a mime data.
+  /// Create an NDEF record containing a mime data.
   factory NdefRecord.createMimeRecord(String type, Uint8List data) {
     if (type == null)
       throw('type is null');
@@ -149,9 +149,9 @@ class NdefRecord {
     );
   }
 
-  /// Create an ndef record containing a UTF-8 text.
+  /// Create an NDEF record containing a UTF-8 text.
   ///
-  /// Can specify the `languageCode` for the provided text. Default to 'en'.
+  /// Can specify the `languageCode` for the provided text. The default is 'en'.
   factory NdefRecord.createTextRecord(String text, {String languageCode}) {
     if (text == null)
       throw('text is null');
@@ -170,7 +170,7 @@ class NdefRecord {
     );
   }
 
-  /// Create an ndef record containing a uri.
+  /// Create an NDEF record containing a uri.
   factory NdefRecord.createUriRecord(Uri uri) {
     if (uri == null)
       throw('uri is null');

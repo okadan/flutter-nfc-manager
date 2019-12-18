@@ -8,25 +8,25 @@ class NfcTag {
 
   /// Raw values that can be obtained on the native platform.
   ///
-  /// Typically accessed from specific-tag-type that you instantiated (eg NfcA.fromTag).
+  /// Typically accessed from specific-tag-type that you instantiated from tag (eg NfcA.fromTag).
   ///
   /// This property is experimental and may be changed without announcement in the future.
   /// Not recommended for use directly.
   final Map<String, dynamic> data;
 }
 
-/// Provides access to ndef operations on the tag.
+/// Provides access to NDEF operations on the tag.
 ///
-/// Acquire `Ndef` object using `fromTag(tag)`.
+/// Acquire `Ndef` instance using `fromTag(tag)`.
 class Ndef {
   Ndef._(this._tag, this.cachedMessage, this.isWritable, this.maxSize);
 
   final NfcTag _tag;
 
-  /// An ndef message that was read from the tag at discovery time.
+  /// An NDEF message that was read from the tag at discovery time.
   final NdefMessage cachedMessage;
 
-  /// Indicates whether the the tag can be written with ndef.
+  /// Indicates whether the the tag can be written with NDEF Message.
   final bool isWritable;
 
   /// The maximum NDEF message size in bytes, that you can store.
@@ -34,10 +34,10 @@ class Ndef {
 
   /// Get an instance of `Ndef` for the given tag.
   ///
-  /// Returns null if the tag is not compatible with ndef.
+  /// Returns null if the tag is not compatible with NDEF.
   factory Ndef.fromTag(NfcTag tag) => _$ndefFromTag(tag);
 
-  /// Overwrite an ndef message on this tag.
+  /// Overwrite an NDEF message on this tag.
   ///
   /// On iOS, iOS13.0 or later is required.
   Future<bool> write(NdefMessage message) async {
@@ -59,7 +59,7 @@ class Ndef {
 
 /// (Android only) Provides access to NFC-A operations on the tag.
 ///
-/// Acquire `NfcA` object using `fromTag(tag)`.
+/// Acquire `NfcA` instance using `fromTag(tag)`.
 class NfcA {
   NfcA._(
     this._tag,
@@ -95,7 +95,7 @@ class NfcA {
 
 /// (Android only) Provides access to NFC-B operations on the tag.
 ///
-/// Acquire `NfcB` object using `fromTag(tag)`.
+/// Acquire `NfcB` instance using `fromTag(tag)`.
 class NfcB {
   NfcB._(
     this._tag,
@@ -131,7 +131,7 @@ class NfcB {
 
 /// (Android only) Provides access to NFC-F operations on the tag.
 ///
-/// Acquire `NfcF` object using `fromTag(tag)`.
+/// Acquire `NfcF` instance using `fromTag(tag)`.
 class NfcF {
   NfcF._(
     this._tag,
@@ -167,7 +167,7 @@ class NfcF {
 
 /// (Android only) Provides access to NFC-V operations on the tag.
 ///
-/// Acquire `NfcV` object using `fromTag(tag)`.
+/// Acquire `NfcV` instance using `fromTag(tag)`.
 class NfcV {
   NfcV._(
     this._tag,
@@ -201,9 +201,9 @@ class NfcV {
   }
 }
 
-/// (Android only) Provides access to ISO 14443-4 operations on the tag.
+/// (Android only) Provides access to ISO14443-4 operations on the tag.
 ///
-/// Acquire `IsoDep` object using `fromTag(tag)`.
+/// Acquire `IsoDep` instance using `fromTag(tag)`.
 class IsoDep {
   IsoDep._(
     this._tag,
@@ -240,9 +240,9 @@ class IsoDep {
   }
 }
 
-/// (iOS only) Provides access to MiFare operations on the tag.
+/// (iOS13.0 or later only) Provides access to MiFare operations on the tag.
 ///
-/// Acquire `MiFare` object using `fromTag(tag)`.
+/// Acquire `MiFare` instance using `fromTag(tag)`.
 class MiFare {
   MiFare._(
     this._tag,
@@ -264,7 +264,7 @@ class MiFare {
   /// Returns null if the tag is not compatible with MiFare.
   factory MiFare.fromTag(NfcTag tag) => _$miFareFromTag(tag);
 
-  /// Send native MIFARE command to the tag.
+  /// Send native MiFare command to the tag.
   ///
   /// This wraps the iOS platform `NFCMiFareTag.sendMiFareCommand` API.
   /// See: https://developer.apple.com/documentation/corenfc/nfcmifaretag/3043838-sendmifarecommand
@@ -275,7 +275,7 @@ class MiFare {
     });
   }
 
-  /// Send ISO7816 command apdu to the tag.
+  /// Send APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCMiFareTag.sendMiFareISO7816Command` API.
   /// See: https://developer.apple.com/documentation/corenfc/nfcmifaretag/3153114-sendmifareiso7816command
@@ -297,7 +297,7 @@ class MiFare {
     });
   }
 
-  /// Send ISO7816 raw command apdu to the tag.
+  /// Send raw APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCMiFareTag.sendMiFareISO7816Command` API with apdu instantiated with raw bytes.
   /// See: https://developer.apple.com/documentation/corenfc/nfcmifaretag/3153114-sendmifareiso7816command
@@ -309,9 +309,9 @@ class MiFare {
   }
 }
 
-/// (iOS only) Provides access to FeliCa operations on the tag.
+/// (iOS13.0 or later only) Provides access to FeliCa operations on the tag.
 ///
-/// Acquire `FeliCa` object using `fromTag(tag)`.
+/// Acquire `FeliCa` instance using `fromTag(tag)`.
 class FeliCa {
   FeliCa._(
     this._tag,
@@ -342,9 +342,9 @@ class FeliCa {
   }
 }
 
-/// (iOS only) Provides access to ISO15693 operations on the tag.
+/// (iOS13.0 or later only) Provides access to ISO15693 operations on the tag.
 ///
-/// Acquire `ISO15693` object using `fromTag(tag)`.
+/// Acquire `ISO15693` instance using `fromTag(tag)`.
 class ISO15693 {
   ISO15693._(
     this._tag,
@@ -380,9 +380,9 @@ class ISO15693 {
   }
 }
 
-/// (iOS only) Provides access to ISO7816 operations on the tag.
+/// (iOS13.0 only) Provides access to ISO7816 operations on the tag.
 ///
-/// Acquire `ISO7816` object using `fromTag(tag)`.
+/// Acquire `ISO7816` instance using `fromTag(tag)`.
 class ISO7816 {
   ISO7816._(
     this._tag,
@@ -410,7 +410,7 @@ class ISO7816 {
   /// Returns null if the tag is not compatible with ISO7816.
   factory ISO7816.fromTag(NfcTag tag) => _$iso7816FromTag(tag);
 
-  /// Send apdu to the tag.
+  /// Send APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCISO7816Tag.sendCommand` API.
   /// See: https://developer.apple.com/documentation/corenfc/nfciso7816tag/3043835-sendcommand
@@ -433,7 +433,7 @@ class ISO7816 {
     });
   }
 
-  /// Send raw apdu to the tag.
+  /// Send raw APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCISO7816Tag.sendCommand` API.
   /// See: https://developer.apple.com/documentation/corenfc/nfciso7816tag/3043835-sendcommand
