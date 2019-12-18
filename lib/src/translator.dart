@@ -117,7 +117,7 @@ IsoDep _$isoDepFromTag(NfcTag tag) {
   );
 }
 
-MiFareTag _$miFareTagFromTag(NfcTag tag) {
+MiFare _$miFareFromTag(NfcTag tag) {
   if (tag.data['type'] != 'miFare')
     return null;
 
@@ -125,7 +125,7 @@ MiFareTag _$miFareTagFromTag(NfcTag tag) {
   Uint8List identifier = tag.data['identifier'];
   Uint8List historicalBytes = tag.data['historicalBytes'];
 
-  return MiFareTag._(
+  return MiFare._(
     tag,
     mifareFamily,
     identifier,
@@ -133,21 +133,21 @@ MiFareTag _$miFareTagFromTag(NfcTag tag) {
   );
 }
 
-FeliCaTag _$felicaTagFromTag(NfcTag tag) {
+FeliCa _$felicaFromTag(NfcTag tag) {
   if (tag.data['type'] != 'feliCa')
     return null;
 
   Uint8List currentSystemCode = tag.data['currentSystemCode'];
   Uint8List currentIDm = tag.data['currentIDm'];
 
-  return FeliCaTag._(
+  return FeliCa._(
     tag,
     currentSystemCode,
     currentIDm,
   );
 }
 
-ISO15693Tag _$iso15693TagFromTag(NfcTag tag) {
+ISO15693 _$iso15693FromTag(NfcTag tag) {
   if (tag.data['type'] != 'iso15693')
     return null;
 
@@ -155,7 +155,7 @@ ISO15693Tag _$iso15693TagFromTag(NfcTag tag) {
   Uint8List icSerialNumber = tag.data['icSerialNumber'];
   Uint8List identifier = tag.data['identifier'];
 
-  return ISO15693Tag._(
+  return ISO15693._(
     tag,
     icManufacturerCode,
     icSerialNumber,
@@ -163,7 +163,7 @@ ISO15693Tag _$iso15693TagFromTag(NfcTag tag) {
   );
 }
 
-ISO7816Tag _$iso7816TagFromTag(NfcTag tag) {
+ISO7816 _$iso7816FromTag(NfcTag tag) {
   if (tag.data['type'] != 'iso7816')
     return null;
 
@@ -173,7 +173,7 @@ ISO7816Tag _$iso7816TagFromTag(NfcTag tag) {
   Uint8List applicationData = tag.data['applicationData'];
   bool proprietaryApplicationDataCoding = tag.data['proprietaryApplicationDataCoding'];
 
-  return ISO7816Tag._(
+  return ISO7816._(
     tag,
     initialSelectedAID,
     identifier,

@@ -242,9 +242,9 @@ class IsoDep {
 
 /// (iOS only) Provides access to MiFare operations on the tag.
 ///
-/// Acquire `MiFareTag` object using `fromTag(tag)`.
-class MiFareTag {
-  MiFareTag._(
+/// Acquire `MiFare` object using `fromTag(tag)`.
+class MiFare {
+  MiFare._(
     this._tag,
     this.mifareFamily,
     this.identifier,
@@ -259,10 +259,10 @@ class MiFareTag {
 
   final Uint8List historicalBytes;
 
-  /// Get an instance of `MiFareTag` for the given tag.
+  /// Get an instance of `MiFare` for the given tag.
   ///
   /// Returns null if the tag is not compatible with MiFare.
-  factory MiFareTag.fromTag(NfcTag tag) => _$miFareTagFromTag(tag);
+  factory MiFare.fromTag(NfcTag tag) => _$miFareFromTag(tag);
 
   /// Send native MIFARE command to the tag.
   ///
@@ -311,9 +311,9 @@ class MiFareTag {
 
 /// (iOS only) Provides access to FeliCa operations on the tag.
 ///
-/// Acquire `FeliCaTag` object using `fromTag(tag)`.
-class FeliCaTag {
-  FeliCaTag._(
+/// Acquire `FeliCa` object using `fromTag(tag)`.
+class FeliCa {
+  FeliCa._(
     this._tag,
     this.currentSystemCode,
     this.currentIDm,
@@ -325,10 +325,10 @@ class FeliCaTag {
 
   final Uint8List currentIDm;
 
-  /// Get an instance of `FeliCaTag` for the given tag.
+  /// Get an instance of `FeliCa` for the given tag.
   ///
   /// Returns null if the tag is not compatible with FeliCa.
-  factory FeliCaTag.fromTag(NfcTag tag) => _$felicaTagFromTag(tag);
+  factory FeliCa.fromTag(NfcTag tag) => _$felicaFromTag(tag);
 
   /// Send FeliCa command to the tag.
   ///
@@ -344,9 +344,9 @@ class FeliCaTag {
 
 /// (iOS only) Provides access to ISO15693 operations on the tag.
 ///
-/// Acquire `ISO15693Tag` object using `fromTag(tag)`.
-class ISO15693Tag {
-  ISO15693Tag._(
+/// Acquire `ISO15693` object using `fromTag(tag)`.
+class ISO15693 {
+  ISO15693._(
     this._tag,
     this.icManufacturerCode,
     this.icSerialNumber,
@@ -361,10 +361,10 @@ class ISO15693Tag {
 
   final Uint8List identifier;
 
-  /// Get an instance of `ISO15693Tag` for the given tag.
+  /// Get an instance of `ISO15693` for the given tag.
   ///
   /// Returns null if the tag is not compatible with ISO15693.
-  factory ISO15693Tag.fromTag(NfcTag tag) => _$iso15693TagFromTag(tag);
+  factory ISO15693.fromTag(NfcTag tag) => _$iso15693FromTag(tag);
 
   /// Send custom command (0xA0 to 0xDF command code) to the tag.
   ///
@@ -382,9 +382,9 @@ class ISO15693Tag {
 
 /// (iOS only) Provides access to ISO7816 operations on the tag.
 ///
-/// Acquire `ISO7816Tag` object using `fromTag(tag)`.
-class ISO7816Tag {
-  ISO7816Tag._(
+/// Acquire `ISO7816` object using `fromTag(tag)`.
+class ISO7816 {
+  ISO7816._(
     this._tag,
     this.initialSelectedAID,
     this.identifier,
@@ -405,10 +405,10 @@ class ISO7816Tag {
 
   final bool proprietaryApplicationDataCoding;
 
-  /// Get an instance of `ISO7816Tag` for the given tag.
+  /// Get an instance of `ISO7816` for the given tag.
   ///
   /// Returns null if the tag is not compatible with ISO7816.
-  factory ISO7816Tag.fromTag(NfcTag tag) => _$iso7816TagFromTag(tag);
+  factory ISO7816.fromTag(NfcTag tag) => _$iso7816FromTag(tag);
 
   /// Send apdu to the tag.
   ///
