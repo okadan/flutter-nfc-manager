@@ -2,16 +2,27 @@ part of nfc_manager;
 
 const MethodChannel _channel = MethodChannel('plugins.flutter.io/nfc_manager');
 
+/// Callback type for handling ndef detection.
 typedef NdefDiscoveredCallback = void Function(Ndef ndef);
 
+/// Callback type for handling tag detection.
 typedef TagDiscoveredCallback = void Function(NfcTag tag);
 
+/// Used with `NfcManager#startTagSession`.
+///
+/// Wraps `NFCTagReaderSession.PollingOption` on iOS and `NfcAdapter.FLAG_READER_*` on Android.
 enum TagPollingOption {
+  /// Supports NFC type A and B.
   iso14443,
-  iso15693,
+
+  /// Supports NFC type F.
   iso18092,
+
+  /// Supports NFC type V.
+  iso15693,
 }
 
+/// Plugin for managing NFC sessions.
 class NfcManager {
   NfcManager._() { _channel.setMethodCallHandler(_handleMethodCall); }
   static NfcManager _instance;
@@ -21,10 +32,17 @@ class NfcManager {
 
   TagDiscoveredCallback _onTagDiscovered;
 
+  /// Checks whether the NFC is available on the device.
   Future<bool> isAvailable() async {
     return _channel.invokeMethod('isAvailable', {});
   }
 
+  /// Start a session and register an ndef discovered callback.
+  ///
+  /// On iOS, this uses the `NFCNDEFReaderSession` API.
+  ///
+  /// On Android, this uses the `NfcAdapter#enableReaderMode` API.
+  /// Android API Level 19 or later is required.
   Future<bool> startNdefSession({
     @required NdefDiscoveredCallback onDiscovered,
     String alertMessageIOS,
@@ -35,6 +53,13 @@ class NfcManager {
     });
   }
 
+  /// Start a session and register a tag discovered callback.
+  ///
+  /// On iOS, this uses the `NFCTagReaderSession` API.
+  /// iOS13.0 or later is required.
+  ///
+  /// On Android, this uses the `NfcAdapter#enableReaderMode` API.
+  /// Android API Level 19 or later is required.
   Future<bool> startTagSession({
     @required TagDiscoveredCallback onDiscovered,
     Set<TagPollingOption> pollingOptions,
@@ -47,6 +72,7 @@ class NfcManager {
     });
   }
 
+  /// Stop a session and unregister a tag/ndef discovered callback.
   Future<bool> stopSession({
     String errorMessageIOS,
     String alertMessageIOS,

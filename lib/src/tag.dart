@@ -1,26 +1,45 @@
 part of nfc_manager;
 
+/// Represents the tag detected by the session.
 class NfcTag {
   NfcTag._(this._handle, this.data);
 
   final String _handle;
 
+  /// Raw values that can be obtained on the native platform.
+  ///
+  /// Typically accessed from specific-tag-type that you instantiated (eg NfcA.fromTag).
+  ///
+  /// This property is experimental and may be changed without announcement in the future.
+  /// Not recommended for use directly.
   final Map<String, dynamic> data;
 }
 
+/// Provides access to ndef operations on the tag.
+///
+/// Acquire `Ndef` object using `fromTag(tag)`.
 class Ndef {
   Ndef._(this._tag, this.cachedMessage, this.isWritable, this.maxSize);
 
   final NfcTag _tag;
 
+  /// An ndef message that was read from the tag at discovery time.
   final NdefMessage cachedMessage;
 
+  /// Indicates whether the the tag can be written with ndef.
   final bool isWritable;
 
+  /// The maximum NDEF message size in bytes, that you can store.
   final int maxSize;
 
+  /// Get an instance of `Ndef` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with ndef.
   factory Ndef.fromTag(NfcTag tag) => _$ndefFromTag(tag);
 
+  /// Overwrite an ndef message on this tag.
+  ///
+  /// On iOS, iOS13.0 or later is required.
   Future<bool> write(NdefMessage message) async {
     return _channel.invokeMethod('Ndef#write', {
       'handle': _tag._handle,
@@ -28,6 +47,9 @@ class Ndef {
     });
   }
 
+  /// Make the tag read-only.
+  ///
+  /// On iOS, iOS13.0 or later is required.
   Future<bool> writeLock() async {
     return _channel.invokeMethod('Ndef#writeLock', {
       'handle': _tag._handle,
@@ -35,6 +57,9 @@ class Ndef {
   }
 }
 
+/// (Android only) Provides access to NFC-A operations on the tag.
+///
+/// Acquire `NfcA` object using `fromTag(tag)`.
 class NfcA {
   NfcA._(
     this._tag,
@@ -51,8 +76,15 @@ class NfcA {
 
   final int sak;
 
+  /// Get an instance of `NfcA` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with NFC-A.
   factory NfcA.fromTag(NfcTag tag) => _$nfcAFromTag(tag);
 
+  /// Send raw NFC-A commands to the tag.
+  ///
+  /// This wraps the Android platform `NfcA.transceive` API.
+  /// See: https://developer.android.com/reference/android/nfc/tech/NfcA#transceive(byte%5B%5D)
   Future<Uint8List> transceive(Uint8List data) async {
     return _channel.invokeMethod('NfcA#transceive', {
       'handle': _tag._handle,
@@ -61,6 +93,9 @@ class NfcA {
   }
 }
 
+/// (Android only) Provides access to NFC-B operations on the tag.
+///
+/// Acquire `NfcB` object using `fromTag(tag)`.
 class NfcB {
   NfcB._(
     this._tag,
@@ -77,8 +112,15 @@ class NfcB {
 
   final Uint8List protocolInfo;
 
+  /// Get an instance of `NfcB` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with NFC-B.
   factory NfcB.fromTag(NfcTag tag) => _$nfcBFromTag(tag);
 
+  /// Send raw NFC-B commands to the tag.
+  ///
+  /// This wraps the Android platform `NfcB.transceive` API.
+  /// See: https://developer.android.com/reference/android/nfc/tech/NfcB#transceive(byte%5B%5D)
   Future<Uint8List> transceive(Uint8List data) async {
     return _channel.invokeMethod('NfcB#transceive', {
       'handle': _tag._handle,
@@ -87,6 +129,9 @@ class NfcB {
   }
 }
 
+/// (Android only) Provides access to NFC-F operations on the tag.
+///
+/// Acquire `NfcF` object using `fromTag(tag)`.
 class NfcF {
   NfcF._(
     this._tag,
@@ -103,8 +148,15 @@ class NfcF {
 
   final Uint8List systemCode;
 
+  /// Get an instance of `NfcF` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with NFC-F.
   factory NfcF.fromTag(NfcTag tag) => _$nfcFFromTag(tag);
 
+  /// Send raw NFC-F commands to the tag.
+  ///
+  /// This wraps the Android platform `NfcF.transceive` API.
+  /// See: https://developer.android.com/reference/android/nfc/tech/NfcF#transceive(byte%5B%5D)
   Future<Uint8List> transceive(Uint8List data) async {
     return _channel.invokeMethod('NfcF#transceive', {
       'handle': _tag._handle,
@@ -113,6 +165,9 @@ class NfcF {
   }
 }
 
+/// (Android only) Provides access to NFC-V operations on the tag.
+///
+/// Acquire `NfcV` object using `fromTag(tag)`.
 class NfcV {
   NfcV._(
     this._tag,
@@ -129,8 +184,15 @@ class NfcV {
 
   final int responseFlags;
 
+  /// Get an instance of `NfcV` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with NFC-V.
   factory NfcV.fromTag(NfcTag tag) => _$nfcVFromTag(tag);
 
+  /// Send raw NFC-V commands to the tag.
+  ///
+  /// This wraps the Android platform `NfcV.transceive` API.
+  /// See: https://developer.android.com/reference/android/nfc/tech/NfcV#transceive(byte%5B%5D)
   Future<Uint8List> transceive(Uint8List data) async {
     return _channel.invokeMethod('NfcV#transceive', {
       'handle': _tag._handle,
@@ -139,6 +201,9 @@ class NfcV {
   }
 }
 
+/// (Android only) Provides access to ISO 14443-4 operations on the tag.
+///
+/// Acquire `IsoDep` object using `fromTag(tag)`.
 class IsoDep {
   IsoDep._(
     this._tag,
@@ -158,8 +223,15 @@ class IsoDep {
 
   final bool isExtendedLengthApduSupported;
 
+  /// Get an instance of `IsoDep` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with ISO14443-4.
   factory IsoDep.fromTag(NfcTag tag) => _$isoDepFromTag(tag);
 
+  /// Send raw ISO-DEP data to the tag.
+  ///
+  /// This wraps the Android platform `IsoDep.transceive` API.
+  /// See: https://developer.android.com/reference/android/nfc/tech/IsoDep#transceive(byte%5B%5D)
   Future<Uint8List> transceive(Uint8List data) async {
     return _channel.invokeMethod('IsoDep#transceive', {
       'handle': _tag._handle,
@@ -168,6 +240,9 @@ class IsoDep {
   }
 }
 
+/// (iOS only) Provides access to MiFare operations on the tag.
+///
+/// Acquire `MiFareTag` object using `fromTag(tag)`.
 class MiFareTag {
   MiFareTag._(
     this._tag,
@@ -184,8 +259,15 @@ class MiFareTag {
 
   final Uint8List historicalBytes;
 
+  /// Get an instance of `MiFareTag` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with MiFare.
   factory MiFareTag.fromTag(NfcTag tag) => _$miFareTagFromTag(tag);
 
+  /// Send native MIFARE command to the tag.
+  ///
+  /// This wraps the iOS platform `NFCMiFareTag.sendMiFareCommand` API.
+  /// See: https://developer.apple.com/documentation/corenfc/nfcmifaretag/3043838-sendmifarecommand
   Future<Uint8List> sendMiFareCommand(Uint8List commandPacket) async {
     return _channel.invokeMethod('MiFare#sendMiFareCommand', {
       'handle': _tag._handle,
@@ -193,6 +275,10 @@ class MiFareTag {
     });
   }
 
+  /// Send ISO7816 command apdu to the tag.
+  ///
+  /// This wraps the iOS platform `NFCMiFareTag.sendMiFareISO7816Command` API.
+  /// See: https://developer.apple.com/documentation/corenfc/nfcmifaretag/3153114-sendmifareiso7816command
   Future<Map<String, dynamic>> sendMiFareISO7816Command(
     int instructionClass,
     int instructionCode,
@@ -211,6 +297,10 @@ class MiFareTag {
     });
   }
 
+  /// Send ISO7816 raw command apdu to the tag.
+  ///
+  /// This wraps the iOS platform `NFCMiFareTag.sendMiFareISO7816Command` API with apdu instantiated with raw bytes.
+  /// See: https://developer.apple.com/documentation/corenfc/nfcmifaretag/3153114-sendmifareiso7816command
   Future<Map<String, dynamic>> sendMiFareISO7816CommandRow(Uint8List data) async {
     return _channel.invokeMethod('ISO7816#sendCommand', {
       'handle': _tag._handle,
@@ -219,6 +309,9 @@ class MiFareTag {
   }
 }
 
+/// (iOS only) Provides access to FeliCa operations on the tag.
+///
+/// Acquire `FeliCaTag` object using `fromTag(tag)`.
 class FeliCaTag {
   FeliCaTag._(
     this._tag,
@@ -232,8 +325,15 @@ class FeliCaTag {
 
   final Uint8List currentIDm;
 
+  /// Get an instance of `FeliCaTag` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with FeliCa.
   factory FeliCaTag.fromTag(NfcTag tag) => _$felicaTagFromTag(tag);
 
+  /// Send FeliCa command to the tag.
+  ///
+  /// This wraps the iOS platform `NFCFeliCaTag.sendFeliCaCommand` API.
+  /// See: https://developer.apple.com/documentation/corenfc/nfcfelicatag/3043786-sendfelicacommand
   Future<Uint8List> sendFeliCaCommand(Uint8List commandPacket) async {
     return _channel.invokeMethod('FeliCa#sendFeliCaCommand', {
       'handle': _tag._handle,
@@ -242,6 +342,9 @@ class FeliCaTag {
   }
 }
 
+/// (iOS only) Provides access to ISO15693 operations on the tag.
+///
+/// Acquire `ISO15693Tag` object using `fromTag(tag)`.
 class ISO15693Tag {
   ISO15693Tag._(
     this._tag,
@@ -258,8 +361,15 @@ class ISO15693Tag {
 
   final Uint8List identifier;
 
+  /// Get an instance of `ISO15693Tag` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with ISO15693.
   factory ISO15693Tag.fromTag(NfcTag tag) => _$iso15693TagFromTag(tag);
 
+  /// Send custom command (0xA0 to 0xDF command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.customCommand` API.
+  /// See: https://developer.apple.com/documentation/corenfc/nfciso15693tag/3043799-customcommand
   Future<Uint8List> customCommand(Set<int> requestFlags, int commandCode, Uint8List parameters) async {
     return _channel.invokeMethod('ISO15693#customCommand', {
       'handle': _tag._handle,
@@ -270,6 +380,9 @@ class ISO15693Tag {
   }
 }
 
+/// (iOS only) Provides access to ISO7816 operations on the tag.
+///
+/// Acquire `ISO7816Tag` object using `fromTag(tag)`.
 class ISO7816Tag {
   ISO7816Tag._(
     this._tag,
@@ -292,8 +405,15 @@ class ISO7816Tag {
 
   final bool proprietaryApplicationDataCoding;
 
+  /// Get an instance of `ISO7816Tag` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with ISO7816.
   factory ISO7816Tag.fromTag(NfcTag tag) => _$iso7816TagFromTag(tag);
 
+  /// Send apdu to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO7816Tag.sendCommand` API.
+  /// See: https://developer.apple.com/documentation/corenfc/nfciso7816tag/3043835-sendcommand
   Future<Map<String, dynamic>> sendCommand(
     int instructionClass,
     int instructionCode,
@@ -313,6 +433,10 @@ class ISO7816Tag {
     });
   }
 
+  /// Send raw apdu to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO7816Tag.sendCommand` API.
+  /// See: https://developer.apple.com/documentation/corenfc/nfciso7816tag/3043835-sendcommand
   Future<Map<String, dynamic>> sendCommandRow(Uint8List data) async {
     return _channel.invokeMethod('ISO7816#sendCommand', {
       'handle': _tag._handle,
