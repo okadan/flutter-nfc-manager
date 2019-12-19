@@ -4,6 +4,7 @@
 * removed `NfcSessionType` enum.
 * renamed `NfcTagPollingOption` to `TagPollingOption`.
 * renamed `onTagDiscovered` and `onNdefDiscovered` to `onDiscovered`.
+* migrate to pubspec platforms manifest.
 
 ## 0.5.1
 
