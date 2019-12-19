@@ -21,7 +21,7 @@ A Flutter plugin to use NFC. Supported on both Android and iOS.
 ### Starting and Stopping Session
 
 ``` dart
-// Starting session and register tag discovered callback.
+// Start session and register callback.
 NfcManager.instance.startTagSession(
   alertMessageIOS: '...',
   pollingOptions: {TagPollingOption.iso14443, TagPollingOption.iso18092, TagPollingOption.iso15693},
@@ -30,17 +30,17 @@ NfcManager.instance.startTagSession(
   },
 );
 
-// Stoppling session and unregister tag discovered callback.
+// Stop session and unregister callback.
 NfcManager.instance.stopSession(
   alertMessageIOS: '...',
   errorMessageIOS: '...',
 );
 ```
 
-### Manipulating NDEF
+### Reading and Writing NDEF
 
 ``` dart
-// Obtain an Ndef instance
+// Obtain an Ndef instance from tag
 Ndef ndef = Ndef.fromTag(tag);
 
 if (ndef == null) {
@@ -48,7 +48,7 @@ if (ndef == null) {
   return;
 }
 
-// Get an NdefMessage object cached at discovery time
+// Read an NdefMessage object cached at discovery time
 print(ndef.cachedMessage);
 
 if (!ndef.isWritable) {
@@ -66,14 +66,6 @@ NdefMessage messageToWrite = NdefMessage([
 // Write an NdefMessage
 try {
   await ndef.write(messageToWrite);
-} catch (e) {
-  // handle error
-  return;
-}
-
-// Make the tag read-only
-try {
-  await ndef.writeLock();
 } catch (e) {
   // handle error
   return;
@@ -102,7 +94,6 @@ The following platform-specific-tag classes are available:
 **Example**
 
 ``` dart
-// Obtaing a MiFare instance
 MiFare miFare = MiFare.fromTag(tag);
 
 if (miFare == null) {

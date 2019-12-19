@@ -1,4 +1,4 @@
-## 1.0.0-dev
+## 1.0.0-dev.*
 
 * added platform-tag-specific operations.
 * removed `NfcSessionType` enum.
