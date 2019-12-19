@@ -2,14 +2,6 @@
 
 A Flutter plugin to use NFC. Supported on both Android and iOS.
 
-## Note
-
-This plugin is still under development.
-
-So please use with caution as there may be potential issues and breaking changes.
-
-Feedback is welcome.
-
 ## Setup
 
 ### Android Setup
@@ -26,63 +18,93 @@ Feedback is welcome.
 
 ## Usage
 
-### Reading NDEF
+### Starting and Stopping Session
 
 ``` dart
-NfcManager.instance.startNdefSession(
-  alertMessageIOS: '[Any message displayed on the iOS system UI]',
-  onNdefDiscovered: (NfcNdef ndef) {
-    print(ndef);
-  },
-);
-```
-
-### Writing NDEF
-
-``` dart
-NfcManager.instance.startNdefSession(
-  alertMessageIOS: '...',
-  onNdefDiscovered: (NfcNdef ndef) async {
-    if (!ndef.isWritable) {
-      print('Tag is not ndef writable.');
-      return;
-    }
-
-    final NdefMessage message = NdefMessage([
-      NdefRecord.createTextRecord('Hello World'),
-      NdefRecord.createUriRecord(Uri.parse('https://flutter.dev')),
-      NdefRecord.createMimeRecord('plain/text', Uint8List.fromList('Hello World'.codeUnits)),
-      NdefRecord.createExternalRecord([domain string], [type string], [data uint8list]),
-    ]);
-
-    try {
-      await ndef.writeNdef(message);
-    } catch (e) {
-      // handle error
-    }
-  },
-);
-```
-
-### Reading Tag
-
-``` dart
+// Starting session and register tag discovered callback.
 NfcManager.instance.startTagSession(
   alertMessageIOS: '...',
-  pollingOptions: {NfcTagPollingOption.iso14443, NfcTagPollingOption.iso15693, NfcTagPollingOption.iso18092},
-  onTagDiscovered: (NfcTag tag) {
-    print(tag);
-    print(tag.ndef); // You can also read NDEF.
+  pollingOptions: {TagPollingOption.iso14443, TagPollingOption.iso18092, TagPollingOption.iso15693},
+  onDiscovered: (NfcTag tag) {
+    // Manipulating tag
   },
 );
-```
 
-### Stop Session
-
-``` dart
+// Stoppling session and unregister tag discovered callback.
 NfcManager.instance.stopSession(
-  alertMessageIOS: [success message string],
-  errorMessageIOS: [error message string],
+  alertMessageIOS: '...',
+  errorMessageIOS: '...',
 );
 ```
 
+### Manipulating NDEF
+
+``` dart
+// Obtain an Ndef instance
+Ndef ndef = Ndef.fromTag(tag);
+
+if (ndef == null) {
+  print('Tag is not ndef');
+  return;
+}
+
+// Get an NdefMessage object cached at discovery time
+print(ndef.cachedMessage);
+
+if (!ndef.isWritable) {
+  print('Tag is not ndef writable');
+  return;
+}
+
+NdefMessage messageToWrite = NdefMessage([
+  NdefRecord.createTextRecord('Hello'),
+  NdefRecord.createUriRecord(Uri.parse('https://flutter.dev')),
+  NdefRecord.createMimeRecord('text/plain', Uint8List.fromList('Hello'.codeUnits)),
+  NdefRecord.createExternalRecord('mydomain', 'mytype', Uint8List.fromList('mydata'.codeUnits)),
+]);
+
+// Write an NdefMessage
+try {
+  await ndef.write(messageToWrite);
+} catch (e) {
+  // handle error
+  return;
+}
+
+// Make the tag read-only
+try {
+  await ndef.writeLock();
+} catch (e) {
+  // handle error
+  return;
+}
+```
+
+### Manipulating Platform-Specific-Tag
+
+The following platform-specific-tag classes are available:
+
+**iOS**
+* MiFare
+* FeliCa
+* ISO15693
+* ISO7816
+
+**Android**
+* NfcA
+* NfcB
+* NfcF
+* NfcV
+* IsoDep
+
+``` dart
+// Obtaing a MiFare instance
+MiFare miFare = MiFare.fromTag(tag);
+
+if (miFare == null) {
+  print('MiFare is not available on this tag');
+  return;
+}
+
+Uint8List response = await miFare.sendMiFareCommand(...);
+```
