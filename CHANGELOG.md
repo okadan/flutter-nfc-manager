@@ -2,6 +2,7 @@
 
 * added platform-tag-specific operations.
 * removed `NfcSessionType` enum.
+* renamed `NfcTagPollingOption` to `TagPollingOption`.
 * renamed `onTagDiscovered` and `onNdefDiscovered` to `onDiscovered`.
 
 ## 0.5.1

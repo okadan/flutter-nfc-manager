@@ -85,17 +85,21 @@ try {
 The following platform-specific-tag classes are available:
 
 **iOS**
+
 * MiFare
 * FeliCa
 * ISO15693
 * ISO7816
 
 **Android**
+
 * NfcA
 * NfcB
 * NfcF
 * NfcV
 * IsoDep
+
+**Example**
 
 ``` dart
 // Obtaing a MiFare instance
