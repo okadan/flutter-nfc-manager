@@ -1,6 +1,9 @@
-part of nfc_manager;
+import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
-const MethodChannel _channel = MethodChannel('plugins.flutter.io/nfc_manager');
+import '../channel.dart';
+import '../translator.dart';
+import '../nfc_tags/nfc_tags.dart' show NfcTag, Ndef;
 
 /// Callback type for handling ndef detection.
 typedef NdefDiscoveredCallback = void Function(Ndef ndef);
@@ -10,21 +13,21 @@ typedef TagDiscoveredCallback = void Function(NfcTag tag);
 
 /// Used with `NfcManager#startTagSession`.
 ///
-/// Wraps `NFCTagReaderSession.PollingOption` on iOS and `NfcAdapter.FLAG_READER_*` on Android.
+/// This wraps `NFCTagReaderSession.PollingOption` on iOS and `NfcAdapter.FLAG_READER_*` on Android.
 enum TagPollingOption {
-  /// Supports NFC type A and B.
+  /// Represents `iso14443` on iOS, and `FLAG_READER_A` and `FLAG_READER_B` on Android.
   iso14443,
 
-  /// Supports NFC type F.
+  /// Represents `iso18092` on iOS, and `FLAG_READER_F` on Android.
   iso18092,
 
-  /// Supports NFC type V.
+  /// Represents `iso15693` on iOS, and `FLAG_READER_V` on Android.
   iso15693,
 }
 
-/// Plugin for managing NFC sessions.
+/// Plugin for managing NFC session.
 class NfcManager {
-  NfcManager._() { _channel.setMethodCallHandler(_handleMethodCall); }
+  NfcManager._() { channel.setMethodCallHandler(_handleMethodCall); }
   static NfcManager _instance;
   static NfcManager get instance => _instance ??= NfcManager._();
 
@@ -34,52 +37,55 @@ class NfcManager {
 
   /// Checks whether the NFC is available on the device.
   Future<bool> isAvailable() async {
-    return _channel.invokeMethod('isAvailable', {});
+    return channel.invokeMethod('isAvailable', {});
   }
 
-  /// Start a session and register an ndef discovered callback.
+  /// Start session and register ndef discovered callback.
   ///
   /// On iOS, this uses the `NFCNDEFReaderSession` API.
   ///
   /// On Android, this uses the `NfcAdapter#enableReaderMode` API.
-  /// Android API Level 19 or later is required.
+  ///
+  /// Requires iOS 11.0 or Android API level 19, or later.
   Future<bool> startNdefSession({
     @required NdefDiscoveredCallback onDiscovered,
     String alertMessageIOS,
   }) async {
     _onNdefDiscovered = onDiscovered;
-    return _channel.invokeMethod('startNdefSession', {
+    return channel.invokeMethod('startNdefSession', {
       'alertMessageIOS': alertMessageIOS,
     });
   }
 
-  /// Start a session and register a tag discovered callback.
+  /// Start session and register tag discovered callback.
   ///
   /// On iOS, this uses the `NFCTagReaderSession` API.
-  /// iOS13.0 or later is required.
   ///
   /// On Android, this uses the `NfcAdapter#enableReaderMode` API.
-  /// Android API Level 19 or later is required.
+  ///
+  /// Requires iOS 13.0 or Android API level 19, or later.
   Future<bool> startTagSession({
     @required TagDiscoveredCallback onDiscovered,
     Set<TagPollingOption> pollingOptions,
     String alertMessageIOS,
   }) async {
     _onTagDiscovered = onDiscovered;
-    return _channel.invokeMethod('startTagSession', {
+    return channel.invokeMethod('startTagSession', {
       'pollingOptions': (pollingOptions?.toList() ?? TagPollingOption.values).map((e) => e.index).toList(),
       'alertMessageIOS': alertMessageIOS,
     });
   }
 
-  /// Stop a session and unregister a tag/ndef discovered callback.
+  /// Stop session and unregister tag/ndef discovered callback.
+  ///
+  /// Requires iOS 11.0 or Android API level 19, or later.
   Future<bool> stopSession({
     String errorMessageIOS,
     String alertMessageIOS,
   }) async {
     _onNdefDiscovered = null;
     _onTagDiscovered = null;
-    return _channel.invokeMethod('stopSession', {
+    return channel.invokeMethod('stopSession', {
       'errorMessageIOS': errorMessageIOS,
       'alertMessageIOS': alertMessageIOS,
     });
@@ -97,23 +103,23 @@ class NfcManager {
   }
 
   Future<void> _handleNdefDiscovered(Map<String, dynamic> arguments) async {
-    NfcTag tag = _$nfcTagFromJson(arguments);
-    Ndef ndef = _$ndefFromTag(tag);
+    NfcTag tag = $nfcTagFromJson(arguments);
+    Ndef ndef = $ndefFromTag(tag);
     if (ndef != null && _onNdefDiscovered != null)
       _onNdefDiscovered(ndef);
     _disposeTag(tag);
   }
 
   Future<void> _handleOnTagDiscovered(Map<String, dynamic> arguments) async {
-    NfcTag tag = _$nfcTagFromJson(arguments);
+    NfcTag tag = $nfcTagFromJson(arguments);
     if (_onTagDiscovered != null)
       _onTagDiscovered(tag);
     _disposeTag(tag);
   }
 
   Future<bool> _disposeTag(NfcTag tag) async {
-    return _channel.invokeMethod('disposeTag', {
-      'handle': tag._handle,
+    return channel.invokeMethod('disposeTag', {
+      'handle': tag.handle,
     });
   }
 }

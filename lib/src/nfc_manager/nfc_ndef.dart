@@ -1,5 +1,7 @@
-part of nfc_manager;
+import 'dart:convert' show utf8, ascii;
+import 'dart:typed_data';
 
+/// Represents the NDEF Message that is specified by the NFC Forum.
 class NdefMessage {
   NdefMessage(this.records);
 
@@ -10,6 +12,7 @@ class NdefMessage {
     : records.map((e) => e.byteLength).reduce((x, y) => x+y);
 }
 
+/// Represents the NDEF Record that is specified by the NFC Forum.
 class NdefRecord {
   static const URI_PREFIX_LIST = [
     '',

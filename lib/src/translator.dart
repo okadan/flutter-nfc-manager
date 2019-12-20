@@ -1,31 +1,34 @@
-part of nfc_manager;
+import 'dart:typed_data';
 
-NfcTag _$nfcTagFromJson(Map<String, dynamic> data) {
+import './nfc_manager/nfc_ndef.dart';
+import './nfc_tags/nfc_tags.dart';
+
+NfcTag $nfcTagFromJson(Map<String, dynamic> data) {
   String handle = data.remove('handle');
-  return NfcTag._(handle, data);
+  return NfcTag(handle: handle, data: data);
 }
 
-Ndef _$ndefFromTag(NfcTag tag) {
+Ndef $ndefFromTag(NfcTag tag) {
   if (tag.data['ndef'] == null)
     return null;
 
   Map<String, dynamic> data = Map<String, dynamic>.from(tag.data['ndef']);
 
   NdefMessage cachedMessage = data['cachedMessage'] != null
-    ? _$ndefMessageFromJson(Map<String, dynamic>.from(data['cachedMessage']))
+    ? $ndefMessageFromJson(Map<String, dynamic>.from(data['cachedMessage']))
     : null;
   bool isWritable = data['isWritable'];
   int maxSize = data['maxSize'];
 
-  return Ndef._(
-    tag,
-    cachedMessage,
-    isWritable,
-    maxSize,
+  return Ndef(
+    tag: tag,
+    cachedMessage: cachedMessage,
+    isWritable: isWritable,
+    maxSize: maxSize,
   );
 }
 
-NfcA _$nfcAFromTag(NfcTag tag) {
+NfcA $nfcAFromTag(NfcTag tag) {
   if (tag.data['nfca'] == null)
     return null;
 
@@ -35,15 +38,15 @@ NfcA _$nfcAFromTag(NfcTag tag) {
   Uint8List atqa = data['atqa'];
   int sak = data['sak'];
 
-  return NfcA._(
-    tag,
-    identifier,
-    atqa,
-    sak,
+  return NfcA(
+    tag: tag,
+    identifier: identifier,
+    atqa: atqa,
+    sak: sak,
   );
 }
 
-NfcB _$nfcBFromTag(NfcTag tag) {
+NfcB $nfcBFromTag(NfcTag tag) {
   if (tag.data['nfcb'] == null)
     return null;
 
@@ -53,15 +56,15 @@ NfcB _$nfcBFromTag(NfcTag tag) {
   Uint8List applicationData = data['applicationData'];
   Uint8List protocolInfo = data['protocolInfo'];
 
-  return NfcB._(
-    tag,
-    identifier,
-    applicationData,
-    protocolInfo,
+  return NfcB(
+    tag: tag,
+    identifier: identifier,
+    applicationData: applicationData,
+    protocolInfo: protocolInfo,
   );
 }
 
-NfcF _$nfcFFromTag(NfcTag tag) {
+NfcF $nfcFFromTag(NfcTag tag) {
   if (tag.data['nfcf'] == null)
     return null;
 
@@ -71,15 +74,15 @@ NfcF _$nfcFFromTag(NfcTag tag) {
   Uint8List manufacturer = data['manufacturer'];
   Uint8List systemCode = data['systemCode'];
 
-  return NfcF._(
-    tag,
-    identifier,
-    manufacturer,
-    systemCode,
+  return NfcF(
+    tag: tag,
+    identifier: identifier,
+    manufacturer: manufacturer,
+    systemCode: systemCode,
   );
 }
 
-NfcV _$nfcVFromTag(NfcTag tag) {
+NfcV $nfcVFromTag(NfcTag tag) {
   if (tag.data['nfcv'] == null)
     return null;
 
@@ -89,15 +92,15 @@ NfcV _$nfcVFromTag(NfcTag tag) {
   int dsfId = data['dsfId'];
   int responseFlags = data['responseFlags'];
 
-  return NfcV._(
-    tag,
-    identifier,
-    dsfId,
-    responseFlags,
+  return NfcV(
+    tag: tag,
+    identifier: identifier,
+    dsfId: dsfId,
+    responseFlags: responseFlags,
   );
 }
 
-IsoDep _$isoDepFromTag(NfcTag tag) {
+IsoDep $isoDepFromTag(NfcTag tag) {
   if (tag.data['isodep'] == null)
     return null;
 
@@ -108,16 +111,16 @@ IsoDep _$isoDepFromTag(NfcTag tag) {
   Uint8List historicalBytes = data['historicalBytes'];
   bool isExtendedLengthApduSupported = data['isExtendedLengthApduSupported'];
 
-  return IsoDep._(
-    tag,
-    identifier,
-    hiLayerResponse,
-    historicalBytes,
-    isExtendedLengthApduSupported,
+  return IsoDep(
+    tag: tag,
+    identifier: identifier,
+    hiLayerResponse: hiLayerResponse,
+    historicalBytes: historicalBytes,
+    isExtendedLengthApduSupported: isExtendedLengthApduSupported,
   );
 }
 
-MiFare _$miFareFromTag(NfcTag tag) {
+MiFare $miFareFromTag(NfcTag tag) {
   if (tag.data['type'] != 'miFare')
     return null;
 
@@ -125,29 +128,29 @@ MiFare _$miFareFromTag(NfcTag tag) {
   Uint8List identifier = tag.data['identifier'];
   Uint8List historicalBytes = tag.data['historicalBytes'];
 
-  return MiFare._(
-    tag,
-    mifareFamily,
-    identifier,
-    historicalBytes,
+  return MiFare(
+    tag: tag,
+    mifareFamily: mifareFamily,
+    identifier: identifier,
+    historicalBytes: historicalBytes,
   );
 }
 
-FeliCa _$felicaFromTag(NfcTag tag) {
+FeliCa $felicaFromTag(NfcTag tag) {
   if (tag.data['type'] != 'feliCa')
     return null;
 
   Uint8List currentSystemCode = tag.data['currentSystemCode'];
   Uint8List currentIDm = tag.data['currentIDm'];
 
-  return FeliCa._(
-    tag,
-    currentSystemCode,
-    currentIDm,
+  return FeliCa(
+    tag: tag,
+    currentSystemCode: currentSystemCode,
+    currentIDm: currentIDm,
   );
 }
 
-ISO15693 _$iso15693FromTag(NfcTag tag) {
+ISO15693 $iso15693FromTag(NfcTag tag) {
   if (tag.data['type'] != 'iso15693')
     return null;
 
@@ -155,15 +158,15 @@ ISO15693 _$iso15693FromTag(NfcTag tag) {
   Uint8List icSerialNumber = tag.data['icSerialNumber'];
   Uint8List identifier = tag.data['identifier'];
 
-  return ISO15693._(
-    tag,
-    icManufacturerCode,
-    icSerialNumber,
-    identifier,
+  return ISO15693(
+    tag: tag,
+    icManufacturerCode: icManufacturerCode,
+    icSerialNumber: icSerialNumber,
+    identifier: identifier,
   );
 }
 
-ISO7816 _$iso7816FromTag(NfcTag tag) {
+ISO7816 $iso7816FromTag(NfcTag tag) {
   if (tag.data['type'] != 'iso7816')
     return null;
 
@@ -173,27 +176,27 @@ ISO7816 _$iso7816FromTag(NfcTag tag) {
   Uint8List applicationData = tag.data['applicationData'];
   bool proprietaryApplicationDataCoding = tag.data['proprietaryApplicationDataCoding'];
 
-  return ISO7816._(
-    tag,
-    initialSelectedAID,
-    identifier,
-    historicalBytes,
-    applicationData,
-    proprietaryApplicationDataCoding,
+  return ISO7816(
+    tag: tag,
+    initialSelectedAID: initialSelectedAID,
+    identifier: identifier,
+    historicalBytes: historicalBytes,
+    applicationData: applicationData,
+    proprietaryApplicationDataCoding: proprietaryApplicationDataCoding,
   );
 }
 
-NdefMessage _$ndefMessageFromJson(Map<String, dynamic> data) {
+NdefMessage $ndefMessageFromJson(Map<String, dynamic> data) {
   return NdefMessage((data['records'] as List)
-    .map((e) => _$ndefRecordFromJson(Map<String, dynamic>.from(e))).toList()
+    .map((e) => $ndefRecordFromJson(Map<String, dynamic>.from(e))).toList()
   );
 }
 
-Map<String, dynamic> _$ndefMessageToJson(NdefMessage message) {
-  return {'records': message.records.map(_$ndefRecordToJson).toList()};
+Map<String, dynamic> $ndefMessageToJson(NdefMessage message) {
+  return {'records': message.records.map($ndefRecordToJson).toList()};
 }
 
-NdefRecord _$ndefRecordFromJson(Map<String, dynamic> data) {
+NdefRecord $ndefRecordFromJson(Map<String, dynamic> data) {
   return NdefRecord(
     typeNameFormat: data['typeNameFormat'],
     type: data['type'],
@@ -202,7 +205,7 @@ NdefRecord _$ndefRecordFromJson(Map<String, dynamic> data) {
   );
 }
 
-Map<String, dynamic> _$ndefRecordToJson(NdefRecord record) {
+Map<String, dynamic> $ndefRecordToJson(NdefRecord record) {
   return {
     'typeNameFormat': record.typeNameFormat,
     'type': record.type,

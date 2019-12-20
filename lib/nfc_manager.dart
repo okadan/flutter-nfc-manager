@@ -1,12 +1,6 @@
 library nfc_manager;
 
-import 'dart:convert' show utf8, ascii;
-import 'dart:typed_data' show Uint8List;
+export 'src/nfc_manager/nfc_manager.dart';
+export 'src/nfc_manager/nfc_ndef.dart';
 
-import 'package:flutter/foundation.dart' show required;
-import 'package:flutter/services.dart' show MethodChannel, MethodCall;
-
-part 'src/ndef.dart';
-part 'src/nfc_manager.dart';
-part 'src/tag.dart';
-part 'src/translator.dart';
+export 'src/nfc_tags/nfc_tags.dart' show NfcTag, Ndef;
