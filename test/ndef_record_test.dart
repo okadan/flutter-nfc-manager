@@ -5,7 +5,7 @@ import 'package:nfc_manager/nfc_manager.dart';
 
 void main() {
   test('create_text_record', () {
-    NdefRecord record = NdefRecord.createTextRecord('text');
+    NdefRecord record = NdefRecord.createText('text');
     expect(record.typeNameFormat, 0x01);
     expect(record.type, [0x54]);
     expect(record.identifier, []);
@@ -13,7 +13,7 @@ void main() {
   });
 
   test('create_text_record_languageCode', () {
-    NdefRecord record = NdefRecord.createTextRecord('text', languageCode: 'zh');
+    NdefRecord record = NdefRecord.createText('text', languageCode: 'zh');
     expect(record.typeNameFormat, 0x01);
     expect(record.type, [0x54]);
     expect(record.identifier, []);
@@ -21,7 +21,7 @@ void main() {
   });
 
   test('create_uri_record', () {
-    NdefRecord record = NdefRecord.createUriRecord(Uri.parse('https://flutter.dev'));
+    NdefRecord record = NdefRecord.createUri(Uri.parse('https://flutter.dev'));
     expect(record.typeNameFormat, 0x01);
     expect(record.type, [0x55]);
     expect(record.identifier, []);
@@ -29,7 +29,7 @@ void main() {
   });
 
   test('create_uri_record_unknown_prefix', () {
-    NdefRecord record = NdefRecord.createUriRecord(Uri.parse('unknown://flutter.dev'));
+    NdefRecord record = NdefRecord.createUri(Uri.parse('unknown://flutter.dev'));
     expect(record.typeNameFormat, 0x01);
     expect(record.type, [0x55]);
     expect(record.identifier, []);
@@ -37,7 +37,7 @@ void main() {
   });
 
   test('create_mime_record', () {
-    NdefRecord record = NdefRecord.createMimeRecord('text/plain', Uint8List.fromList('hello'.codeUnits));
+    NdefRecord record = NdefRecord.createMime('text/plain', Uint8List.fromList('hello'.codeUnits));
     expect(record.typeNameFormat, 0x02);
     expect(record.type, 'text/plain'.codeUnits);
     expect(record.identifier, []);
@@ -45,7 +45,7 @@ void main() {
   });
 
   test('create_external_record', () {
-    NdefRecord record = NdefRecord.createExternalRecord('com.mydomain', 'mytype', Uint8List.fromList('hello'.codeUnits));
+    NdefRecord record = NdefRecord.createExternal('com.mydomain', 'mytype', Uint8List.fromList('hello'.codeUnits));
     expect(record.typeNameFormat, 0x04);
     expect(record.type, 'com.mydomain:mytype'.codeUnits);
     expect(record.identifier, []);

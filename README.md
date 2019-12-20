@@ -57,10 +57,10 @@ if (!ndef.isWritable) {
 }
 
 NdefMessage messageToWrite = NdefMessage([
-  NdefRecord.createTextRecord('Hello'),
-  NdefRecord.createUriRecord(Uri.parse('https://flutter.dev')),
-  NdefRecord.createMimeRecord('text/plain', Uint8List.fromList('Hello'.codeUnits)),
-  NdefRecord.createExternalRecord('mydomain', 'mytype', Uint8List.fromList('mydata'.codeUnits)),
+  NdefRecord.createText('Hello'),
+  NdefRecord.createUri(Uri.parse('https://flutter.dev')),
+  NdefRecord.createMime('text/plain', Uint8List.fromList('Hello'.codeUnits)),
+  NdefRecord.createExternal('mydomain', 'mytype', Uint8List.fromList('mydata'.codeUnits)),
 ]);
 
 // Write an NdefMessage

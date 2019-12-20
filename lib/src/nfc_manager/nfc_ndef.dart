@@ -104,7 +104,7 @@ class NdefRecord {
   }
 
   /// Create an NDEF record containing external (applicattion-specific) data.
-  factory NdefRecord.createExternalRecord(String domain, String type, Uint8List data) {
+  factory NdefRecord.createExternal(String domain, String type, Uint8List data) {
     if (domain == null)
       throw('domain is null');
     if (type == null)
@@ -131,7 +131,7 @@ class NdefRecord {
   }
 
   /// Create an NDEF record containing a mime data.
-  factory NdefRecord.createMimeRecord(String type, Uint8List data) {
+  factory NdefRecord.createMime(String type, Uint8List data) {
     if (type == null)
       throw('type is null');
     final normalized = type.toLowerCase().trim().split(';').first;
@@ -155,7 +155,7 @@ class NdefRecord {
   /// Create an NDEF record containing a UTF-8 text.
   ///
   /// Can specify the `languageCode` for the provided text. The default is 'en'.
-  factory NdefRecord.createTextRecord(String text, {String languageCode}) {
+  factory NdefRecord.createText(String text, {String languageCode}) {
     if (text == null)
       throw('text is null');
 
@@ -174,7 +174,7 @@ class NdefRecord {
   }
 
   /// Create an NDEF record containing a uri.
-  factory NdefRecord.createUriRecord(Uri uri) {
+  factory NdefRecord.createUri(Uri uri) {
     if (uri == null)
       throw('uri is null');
 

@@ -81,10 +81,10 @@ class MyAppState extends State<MyApp> {
       }
 
       NdefMessage message = NdefMessage([
-        NdefRecord.createTextRecord('Hello World!'),
-        NdefRecord.createUriRecord(Uri.parse('https://flutter.dev')),
-        NdefRecord.createMimeRecord('text/plain', Uint8List.fromList('Hello'.codeUnits)),
-        NdefRecord.createExternalRecord('com.example', 'mytype', Uint8List.fromList('mydata'.codeUnits)),
+        NdefRecord.createText('Hello World!'),
+        NdefRecord.createUri(Uri.parse('https://flutter.dev')),
+        NdefRecord.createMime('text/plain', Uint8List.fromList('Hello'.codeUnits)),
+        NdefRecord.createExternal('com.example', 'mytype', Uint8List.fromList('mydata'.codeUnits)),
       ]);
 
       try {
