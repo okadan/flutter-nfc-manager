@@ -14,11 +14,11 @@ A Flutter plugin to use NFC. Supported on both Android and iOS.
 
 * Add [NFCReaderUsageDescription](https://developer.apple.com/documentation/bundleresources/information_property_list/nfcreaderusagedescription) to your `Info.plist`.
 
-* If you use `NfcManager#startTagSession` with `NfcTagPollingOption.iso18092`, you must add [com.apple.developer.nfc.readersession.felica.systemcodes](https://developer.apple.com/documentation/bundleresources/information_property_list/systemcodes) to your `Info.plist`.
+* Add [com.apple.developer.nfc.readersession.felica.systemcodes](https://developer.apple.com/documentation/bundleresources/information_property_list/systemcodes) and [com.apple.developer.nfc.readersession.iso7816.select-identifiers](https://developer.apple.com/documentation/bundleresources/information_property_list/select-identifiers) to your `Info.plist` as needed.
 
 ## Usage
 
-### Starting and Stopping Session
+### Managing Session
 
 ``` dart
 // Start session and register callback.
@@ -37,7 +37,7 @@ NfcManager.instance.stopSession(
 );
 ```
 
-### Reading and Writing NDEF
+### Manipulating NDEF
 
 ``` dart
 // Obtain an Ndef instance from tag
