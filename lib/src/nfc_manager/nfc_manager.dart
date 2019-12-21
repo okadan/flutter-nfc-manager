@@ -18,11 +18,11 @@ enum TagPollingOption {
   /// Represents `iso14443` on iOS, and `FLAG_READER_A` and `FLAG_READER_B` on Android.
   iso14443,
 
-  /// Represents `iso18092` on iOS, and `FLAG_READER_F` on Android.
-  iso18092,
-
   /// Represents `iso15693` on iOS, and `FLAG_READER_V` on Android.
   iso15693,
+
+  /// Represents `iso18092` on iOS, and `FLAG_READER_F` on Android.
+  iso18092,
 }
 
 /// Plugin for managing NFC session.
