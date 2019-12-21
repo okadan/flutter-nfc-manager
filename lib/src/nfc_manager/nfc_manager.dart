@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../channel.dart';
 import '../translator.dart';
-import '../nfc_tags/nfc_tags.dart' show NfcTag, Ndef;
+import './nfc_ndef.dart';
 
 /// Callback type for handling ndef detection.
 typedef NdefDiscoveredCallback = void Function(Ndef ndef);
@@ -119,6 +119,74 @@ class NfcManager {
 
   Future<bool> _disposeTag(NfcTag tag) async {
     return channel.invokeMethod('disposeTag', {
+      'handle': tag.handle,
+    });
+  }
+}
+
+/// Represents the tag detected by the session.
+class NfcTag {
+  NfcTag({
+    @required this.handle,
+    @required this.data,
+  });
+
+  /// String value used by this plugin internally.
+  ///
+  /// Don`t use in your application code.
+  final String handle;
+
+  /// Raw values that can be obtained on the native platform.
+  ///
+  /// Typically accessed from specific-tag that you instantiated from tag. (eg MiFare.fromTag)
+  ///
+  /// This property is experimental and may be changed without announcement in the future.
+  /// Not recommended for use directly.
+  final Map<String, dynamic> data;
+}
+
+/// Provides access to NDEF operations on the tag.
+///
+/// Acquire `Ndef` instance using `Ndef.fromTag(tag)`.
+class Ndef {
+  Ndef({
+    @required this.tag,
+    @required this.cachedMessage,
+    @required this.isWritable,
+    @required this.maxSize,
+  });
+
+  final NfcTag tag;
+
+  /// NDEF message that was read from the tag at discovery time.
+  final NdefMessage cachedMessage;
+
+  /// Indicates whether the the tag can be written with NDEF Message.
+  final bool isWritable;
+
+  /// The maximum NDEF message size in bytes, that you can store.
+  final int maxSize;
+
+  /// Get an instance of `Ndef` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with NDEF.
+  factory Ndef.fromTag(NfcTag tag) => $ndefFromTag(tag);
+
+  /// Overwrite an NDEF message on this tag.
+  ///
+  /// Requires iOS 13.0 or later, on iOS.
+  Future<bool> write(NdefMessage message) async {
+    return channel.invokeMethod('Ndef#write', {
+      'handle': tag.handle,
+      'message': $ndefMessageToJson(message),
+    });
+  }
+
+  /// Make the tag read-only.
+  ///
+  /// Requires iOS 13.0 or later, on iOS.
+  Future<bool> writeLock() async {
+    return channel.invokeMethod('Ndef#writeLock', {
       'handle': tag.handle,
     });
   }
