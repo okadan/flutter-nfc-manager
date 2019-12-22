@@ -70,7 +70,7 @@ class NdefRecord {
 
   /// Length in bytes that stored on this record.
   int get byteLength {
-    var length = 3 + type.length + identifier.length + payload.length;
+    int length = 3 + type.length + identifier.length + payload.length;
 
     // Not Short Record
     if (payload.length >= 256)
@@ -94,9 +94,9 @@ class NdefRecord {
     Uint8List identifier,
     Uint8List payload,
   }) {
-    final _type = type ?? Uint8List.fromList([]);
-    final _identifier = identifier ?? Uint8List.fromList([]);
-    final _payload = payload ?? Uint8List.fromList([]);
+    Uint8List _type = type ?? Uint8List.fromList([]);
+    Uint8List _identifier = identifier ?? Uint8List.fromList([]);
+    Uint8List _payload = payload ?? Uint8List.fromList([]);
 
     _validateFormat(typeNameFormat, _type, _identifier, _payload);
 
@@ -110,17 +110,17 @@ class NdefRecord {
     if (type == null)
       throw('type is null');
 
-    final _domain = domain.trim().toLowerCase();
-    final _type = type.trim().toLowerCase();
+    String _domain = domain.trim().toLowerCase();
+    String _type = type.trim().toLowerCase();
 
     if (_domain.isEmpty)
       throw('domain is empty');
     if (_type.isEmpty)
       throw('type is empty');
 
-    final domainBytes = utf8.encode(_domain);
-    final typeBytes = utf8.encode(_type);
-    final bytes = domainBytes + ':'.codeUnits + typeBytes;
+    List<int> domainBytes = utf8.encode(_domain);
+    List<int> typeBytes = utf8.encode(_type);
+    List<int> bytes = domainBytes + ':'.codeUnits + typeBytes;
 
     return NdefRecord(
       typeNameFormat: 0x04,
@@ -134,11 +134,11 @@ class NdefRecord {
   factory NdefRecord.createMime(String type, Uint8List data) {
     if (type == null)
       throw('type is null');
-    final normalized = type.toLowerCase().trim().split(';').first;
+    String normalized = type.toLowerCase().trim().split(';').first;
     if (normalized.isEmpty)
       throw('type is empty');
 
-    final slashIndex = normalized.indexOf('/');
+    int slashIndex = normalized.indexOf('/');
     if (slashIndex == 0)
       throw('type must have major type');
     if (slashIndex == normalized.length - 1)
@@ -159,11 +159,11 @@ class NdefRecord {
     if (text == null)
       throw('text is null');
 
-    final languageCodeBytes = ascii.encode(languageCode ?? 'en');
+    List<int> languageCodeBytes = ascii.encode(languageCode ?? 'en');
     if (languageCodeBytes.length >= 64)
       throw('languageCode is too long');
 
-    final textBytes = languageCodeBytes + utf8.encode(text);
+    List<int> textBytes = languageCodeBytes + utf8.encode(text);
 
     return NdefRecord(
       typeNameFormat: 0x01,
@@ -178,14 +178,14 @@ class NdefRecord {
     if (uri == null)
       throw('uri is null');
 
-    final uriString = uri.normalizePath().toString();
+    String uriString = uri.normalizePath().toString();
     if (uriString.length < 1)
       throw('uri is empty');
 
-    var prefixIndex = URI_PREFIX_LIST.indexWhere((e) => uriString.startsWith(e), 1);
+    int prefixIndex = URI_PREFIX_LIST.indexWhere((e) => uriString.startsWith(e), 1);
     if (prefixIndex < 0) prefixIndex = 0;
 
-    final uriBytes = utf8.encode(
+    List<int> uriBytes = utf8.encode(
       uriString.substring(URI_PREFIX_LIST[prefixIndex].length),
     );
 
