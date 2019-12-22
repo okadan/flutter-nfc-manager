@@ -310,13 +310,13 @@ class ISO15693 {
   ///
   /// This wraps the iOS platform `NFCISO15693Tag.customCommand` API.
   Future<Uint8List> customCommand({
-    @required Set<int> requestFlags,
+    @required Set<ISO15693RequestFlag> requestFlags,
     @required int commandCode,
     @required Uint8List parameters,
   }) async {
     return channel.invokeMethod('ISO15693#customCommand', {
       'handle': tag.handle,
-      'requestFlags': requestFlags.toList(),
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
       'commandCode': commandCode,
       'parameters': parameters,
     });
@@ -384,4 +384,14 @@ class ISO7816 {
       'data': data,
     });
   }
+}
+
+/// Represents iOS platform `NFCISO15693Tag.RequestFlag`.
+enum ISO15693RequestFlag {
+  dualSubCarriers,
+  highDataRate,
+  protocolExtension,
+  select,
+  address,
+  option,
 }
