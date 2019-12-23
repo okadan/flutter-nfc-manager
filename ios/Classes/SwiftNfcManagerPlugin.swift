@@ -288,26 +288,22 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
         }
 
         if let connectedTech = techs[handle] as? NFCISO7816Tag {
-            connectedTech.sendCommand(apdu: apdu) { data, sw1, sw2, error in
+            connectedTech.sendCommand(apdu: apdu) { data, _, _, error in
                 if let error = error {
                     result(error.toFlutterError())
                     return
                 }
 
-                result([
-                    "data": data,
-                    "sw1": sw1,
-                    "sw2": sw2,
-                ])
+                result(data)
             }
         } else if let connectedTech = techs[handle] as? NFCMiFareTag {
-            connectedTech.sendMiFareISO7816Command(apdu) { data, sw1, sw2, error in
+            connectedTech.sendMiFareISO7816Command(apdu) { data, _, _, error in
                 if let error = error {
                     result(error.toFlutterError())
                     return
                 }
 
-                result([:])
+                result(data)
             }
         } else {
             result(FlutterError(code: "not_found", message: "Tag is not found.", details: nil))

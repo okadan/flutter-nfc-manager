@@ -242,7 +242,7 @@ class MiFare {
   /// Send raw APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCMiFareTag.sendMiFareISO7816Command` API with apdu instantiated with raw bytes.
-  Future<Map<String, dynamic>> sendMiFareISO7816CommandRow(Uint8List data) async {
+  Future<Uint8List> sendMiFareISO7816CommandRow(Uint8List data) async {
     return channel.invokeMethod('ISO7816#sendCommand', {
       'handle': tag.handle,
       'data': data,
@@ -378,7 +378,7 @@ class ISO7816 {
   /// Send raw APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCISO7816Tag.sendCommand` API.
-  Future<Map<String, dynamic>> sendCommandRow(Uint8List data) async {
+  Future<Uint8List> sendCommandRow(Uint8List data) async {
     return channel.invokeMethod('ISO7816#sendCommand', {
       'handle': tag.handle,
       'data': data,
