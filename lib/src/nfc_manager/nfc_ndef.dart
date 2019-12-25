@@ -1,9 +1,7 @@
-import 'dart:convert' show ascii, utf8;
+import 'dart:convert' show utf8, ascii;
 import 'dart:typed_data';
-import 'dart:ui' show Locale;
 
-import 'package:flutter/widgets.dart';
-
+/// Represents the NDEF Message that is specified by the NFC Forum.
 class NdefMessage {
   NdefMessage(this.records);
 
@@ -12,21 +10,9 @@ class NdefMessage {
   int get byteLength => records.isEmpty
     ? 0
     : records.map((e) => e.byteLength).reduce((x, y) => x+y);
-
-  factory NdefMessage.fromJson(Map<String, dynamic> data) {
-    return NdefMessage(
-      (data['records'] as List)
-        .map((e) => NdefRecord.fromJson(Map<String, dynamic>.from(e))).toList(),
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'records': records.map((e) => e.toJson()).toList(),
-    };
-  }
 }
 
+/// Represents the NDEF Record that is specified by the NFC Forum.
 class NdefRecord {
   static const URI_PREFIX_LIST = [
     '',
@@ -84,7 +70,7 @@ class NdefRecord {
 
   /// Length in bytes that stored on this record.
   int get byteLength {
-    var length = 3 + type.length + identifier.length + payload.length;
+    int length = 3 + type.length + identifier.length + payload.length;
 
     // Not Short Record
     if (payload.length >= 256)
@@ -98,7 +84,7 @@ class NdefRecord {
   }
 
   /// Create an NDEF record from its component fields.
-  /// 
+  ///
   /// Recommended to use other factory constructors such as `createExternalRecord` where possible,
   /// since they perform validation that the record is correctly formatted as NDEF.
   /// However if you know what you are doing then this constructor offers the most flexibility.
@@ -108,9 +94,9 @@ class NdefRecord {
     Uint8List identifier,
     Uint8List payload,
   }) {
-    final _type = type ?? Uint8List.fromList([]);
-    final _identifier = identifier ?? Uint8List.fromList([]);
-    final _payload = payload ?? Uint8List.fromList([]);
+    Uint8List _type = type ?? Uint8List.fromList([]);
+    Uint8List _identifier = identifier ?? Uint8List.fromList([]);
+    Uint8List _payload = payload ?? Uint8List.fromList([]);
 
     _validateFormat(typeNameFormat, _type, _identifier, _payload);
 
@@ -118,41 +104,41 @@ class NdefRecord {
   }
 
   /// Create an NDEF record containing external (applicattion-specific) data.
-  factory NdefRecord.createExternalRecord(String domain, String type, Uint8List data) {
+  factory NdefRecord.createExternal(String domain, String type, Uint8List data) {
     if (domain == null)
       throw('domain is null');
     if (type == null)
       throw('type is null');
 
-    final _domain = domain.trim().toLowerCase();
-    final _type = type.trim().toLowerCase();
+    String _domain = domain.trim().toLowerCase();
+    String _type = type.trim().toLowerCase();
 
     if (_domain.isEmpty)
       throw('domain is empty');
     if (_type.isEmpty)
       throw('type is empty');
 
-    final domainBytes = utf8.encode(_domain);
-    final typeBytes = utf8.encode(_type);
-    final bytes = domainBytes + ':'.codeUnits + typeBytes;
+    List<int> domainBytes = utf8.encode(_domain);
+    List<int> typeBytes = utf8.encode(_type);
+    List<int> bytes = domainBytes + ':'.codeUnits + typeBytes;
 
     return NdefRecord(
       typeNameFormat: 0x04,
-      type: bytes,
+      type: Uint8List.fromList(bytes),
       identifier: null,
       payload: data,
     );
   }
 
-  /// Create an NDEF record containing a mime data
-  factory NdefRecord.createMimeRecord(String type, Uint8List data) {
+  /// Create an NDEF record containing a mime data.
+  factory NdefRecord.createMime(String type, Uint8List data) {
     if (type == null)
       throw('type is null');
-    final normalized = type.toLowerCase().trim().split(';').first;
+    String normalized = type.toLowerCase().trim().split(';').first;
     if (normalized.isEmpty)
       throw('type is empty');
 
-    final slashIndex = normalized.indexOf('/');
+    int slashIndex = normalized.indexOf('/');
     if (slashIndex == 0)
       throw('type must have major type');
     if (slashIndex == normalized.length - 1)
@@ -167,20 +153,17 @@ class NdefRecord {
   }
 
   /// Create an NDEF record containing a UTF-8 text.
-  /// 
-  /// Can either specify the languageCode for the provided text,
-  /// or otherwise the corresponding to the cached locale will be used.
-  factory NdefRecord.createTextRecord(String text, {String languageCode}) {
+  ///
+  /// Can specify the `languageCode` for the provided text. The default is 'en'.
+  factory NdefRecord.createText(String text, {String languageCode}) {
     if (text == null)
       throw('text is null');
 
-    final languageCodeBytes = ascii.encode(
-      languageCode ?? Locale.cachedLocale.languageCode,
-    );
+    List<int> languageCodeBytes = ascii.encode(languageCode ?? 'en');
     if (languageCodeBytes.length >= 64)
       throw('languageCode is too long');
 
-    final textBytes = languageCodeBytes + utf8.encode(text);
+    List<int> textBytes = languageCodeBytes + utf8.encode(text);
 
     return NdefRecord(
       typeNameFormat: 0x01,
@@ -191,18 +174,18 @@ class NdefRecord {
   }
 
   /// Create an NDEF record containing a uri.
-  factory NdefRecord.createUriRecord(Uri uri) {
+  factory NdefRecord.createUri(Uri uri) {
     if (uri == null)
       throw('uri is null');
 
-    final uriString = uri.normalizePath().toString();
+    String uriString = uri.normalizePath().toString();
     if (uriString.length < 1)
       throw('uri is empty');
 
-    var prefixIndex = URI_PREFIX_LIST.indexWhere((e) => uriString.startsWith(e), 1);
+    int prefixIndex = URI_PREFIX_LIST.indexWhere((e) => uriString.startsWith(e), 1);
     if (prefixIndex < 0) prefixIndex = 0;
 
-    final uriBytes = utf8.encode(
+    List<int> uriBytes = utf8.encode(
       uriString.substring(URI_PREFIX_LIST[prefixIndex].length),
     );
 
@@ -213,24 +196,6 @@ class NdefRecord {
       payload: Uint8List.fromList([prefixIndex] + uriBytes),
     );
   }
-
-  factory NdefRecord.fromJson(Map<String, dynamic> data) {
-    return NdefRecord(
-      typeNameFormat: data['typeNameFormat'],
-      type: data['type'],
-      identifier: data['identifier'],
-      payload: data['payload'],
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'typeNameFormat': typeNameFormat,
-      'type': type,
-      'identifier': identifier,
-      'payload': payload,
-    };
-  }
 }
 
 void _validateFormat(int format, Uint8List type, Uint8List identifier, Uint8List payload) {
@@ -238,7 +203,7 @@ void _validateFormat(int format, Uint8List type, Uint8List identifier, Uint8List
     case 0x00:
       if (type.isNotEmpty || identifier.isNotEmpty || payload.isNotEmpty)
         throw('unexpected data in EMPTY record');
-        break;
+      break;
     case 0x01:
     case 0x02:
     case 0x03:

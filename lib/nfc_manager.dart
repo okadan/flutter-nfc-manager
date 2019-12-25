@@ -1,2 +1,4 @@
-export 'src/ndef.dart';
-export 'src/nfc_manager.dart';
+library nfc_manager;
+
+export 'src/nfc_manager/nfc_manager.dart';
+export 'src/nfc_manager/nfc_ndef.dart';

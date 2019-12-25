@@ -1,3 +1,10 @@
+## 1.0.0
+
+* added platform-specifc-tag operations.
+* removed `NfcSessionType` enum.
+* migrated to pubspec platforms manifest.
+* more consistent naming.
+
 ## 0.5.1
 
 * update flutter project files.

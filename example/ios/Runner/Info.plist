@@ -23,7 +23,7 @@
 	<key>LSRequiresIPhoneOS</key>
     <true/>
     <key>NFCReaderUsageDescription</key>
-    <string>Read NFC tags</string>
+    <string>To demonstrates how to use the nfc_manager plugin.</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIMainStoryboardFile</key>
