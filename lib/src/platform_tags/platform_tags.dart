@@ -221,7 +221,7 @@ class MiFare {
   /// Send APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCMiFareTag.sendMiFareISO7816Command` API.
-  Future<Map<String, dynamic>> sendMiFareISO7816Command({
+  Future<Uint8List> sendMiFareISO7816Command({
     @required int instructionClass,
     @required int instructionCode,
     @required int p1Parameter,
@@ -356,7 +356,7 @@ class ISO7816 {
   /// Send APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCISO7816Tag.sendCommand` API.
-  Future<Map<String, dynamic>> sendCommand({
+  Future<Uint8List> sendCommand({
     @required int instructionClass,
     @required int instructionCode,
     @required int p1Parameter,
