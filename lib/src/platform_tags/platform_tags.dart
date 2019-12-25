@@ -184,7 +184,7 @@ class IsoDep {
   }
 }
 
-/// (iOS 13.0 or later only) Provides access to MiFare operations on the tag.
+/// (iOS only) Provides access to MiFare operations on the tag.
 ///
 /// Acquire `MiFare` instance using `MiFare.fromTag(tag)`.
 class MiFare {
@@ -250,7 +250,7 @@ class MiFare {
   }
 }
 
-/// (iOS 13.0 or later only) Provides access to FeliCa operations on the tag.
+/// (iOS only) Provides access to FeliCa operations on the tag.
 ///
 /// Acquire `FeliCa` instance using `FeliCa.fromTag(tag)`.
 class FeliCa {
@@ -282,7 +282,7 @@ class FeliCa {
   }
 }
 
-/// (iOS 13.0 or later only) Provides access to ISO15693 operations on the tag.
+/// (iOS only) Provides access to ISO15693 operations on the tag.
 ///
 /// Acquire `ISO15693` instance using `ISO15693.fromTag(tag)`.
 class ISO15693 {
@@ -323,7 +323,7 @@ class ISO15693 {
   }
 }
 
-/// (iOS 13.0 or later only) Provides access to ISO7816 operations on the tag.
+/// (iOS only) Provides access to ISO7816 operations on the tag.
 ///
 /// Acquire `ISO7816` instance using `ISO7816.fromTag(tag)`.
 class ISO7816 {

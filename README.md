@@ -24,7 +24,7 @@ A Flutter plugin to use NFC. Supported on both Android and iOS.
 // Start session and register callback.
 NfcManager.instance.startTagSession(
   alertMessageIOS: '...',
-  pollingOptions: {TagPollingOption.iso14443, TagPollingOption.iso18092, TagPollingOption.iso15693},
+  pollingOptions: {TagPollingOption.iso14443, TagPollingOption.iso15693, TagPollingOption.iso18092},
   onDiscovered: (NfcTag tag) {
     // Manipulating tag
   },
