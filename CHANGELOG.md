@@ -1,10 +1,9 @@
-## 1.0.0-dev.*
+## 1.0.0
 
-* added platform-tag-specific operations.
+* added platform-specifc-tag operations.
 * removed `NfcSessionType` enum.
-* renamed `NfcTagPollingOption` to `TagPollingOption`.
-* renamed `onTagDiscovered` and `onNdefDiscovered` to `onDiscovered`.
-* migrate to pubspec platforms manifest.
+* migrated to pubspec platforms manifest.
+* more consistent naming.
 
 ## 0.5.1
 
