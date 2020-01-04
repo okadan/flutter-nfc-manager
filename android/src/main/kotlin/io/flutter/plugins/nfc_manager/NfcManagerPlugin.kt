@@ -171,7 +171,7 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         try {
             val transceiveMethod = techClass.getMethod("transceive", ByteArray::class.java)
             forceConnect(tech)
-            result.success(transceiveMethod.invoke(data))
+            result.success(transceiveMethod.invoke(tech, data))
         } catch (e: IOException) {
             result.error("io_exception", e.localizedMessage, null)
         } catch (e: IllegalAccessException) {

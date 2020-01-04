@@ -1,3 +1,7 @@
+## 1.0.1
+
+* fix error on invoking transceive method.
+
 ## 1.0.0
 
 * added platform-specifc-tag operations.
