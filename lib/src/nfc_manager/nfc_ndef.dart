@@ -53,6 +53,23 @@ class NdefRecord {
     'urn:nfc:',
   ];
 
+  static const TNF_EMPTY = 0x00;
+  static const TNF_WELL_KNOWN = 0x01;
+  static const TNF_MIME = 0x02;
+  static const TNF_ABSOLUTE_URI = 0x03;
+  static const TNF_EXTERNAL = 0x04;
+  static const TNF_UNKNOWN = 0x05;
+  static const TNF_UNCHANGED = 0x06;
+  static const TNF_RESERVE = 0x07;
+
+  static const RTD_TEXT = [0x54];
+  static const RTD_URI = [0x55];
+  static const RTD_SMART_POSTER = [0x53, 0x70];
+  static const RTD_ALTERNATIVE_CARRIER = [0x61, 0x63];
+  static const RTD_HANDOVER_CARRIER = [0x48, 0x63];
+  static const RTD_HANDOVER_REQUEST = [0x48, 0x72];
+  static const RTD_HANDOVER_SELECT = [0x48, 0x73];
+
   NdefRecord._(
     this.typeNameFormat,
     this.type,
@@ -77,7 +94,7 @@ class NdefRecord {
       length += 3;
 
     // ID Length
-    if (typeNameFormat == 0x00 || identifier.length > 0)
+    if (typeNameFormat == TNF_EMPTY || identifier.length > 0)
       length += 1;
 
     return length;
@@ -123,7 +140,7 @@ class NdefRecord {
     List<int> bytes = domainBytes + ':'.codeUnits + typeBytes;
 
     return NdefRecord(
-      typeNameFormat: 0x04,
+      typeNameFormat: TNF_EXTERNAL,
       type: Uint8List.fromList(bytes),
       identifier: null,
       payload: data,
@@ -145,7 +162,7 @@ class NdefRecord {
       throw('type must have minor type');
 
     return NdefRecord(
-      typeNameFormat: 0x02,
+      typeNameFormat: TNF_MIME,
       type: ascii.encode(type),
       identifier: null,
       payload: data,
@@ -166,8 +183,8 @@ class NdefRecord {
     List<int> textBytes = languageCodeBytes + utf8.encode(text);
 
     return NdefRecord(
-      typeNameFormat: 0x01,
-      type: Uint8List.fromList([0x54]),
+      typeNameFormat: TNF_WELL_KNOWN,
+      type: Uint8List.fromList(RTD_TEXT),
       identifier: null,
       payload: Uint8List.fromList([languageCodeBytes.length] + textBytes),
     );
@@ -190,8 +207,8 @@ class NdefRecord {
     );
 
     return NdefRecord(
-      typeNameFormat: 0x01,
-      type: Uint8List.fromList([0x55]),
+      typeNameFormat: TNF_WELL_KNOWN,
+      type: Uint8List.fromList(RTD_URI),
       identifier: null,
       payload: Uint8List.fromList([prefixIndex] + uriBytes),
     );
@@ -200,21 +217,21 @@ class NdefRecord {
 
 void _validateFormat(int format, Uint8List type, Uint8List identifier, Uint8List payload) {
   switch (format) {
-    case 0x00:
+    case NdefRecord.TNF_EMPTY:
       if (type.isNotEmpty || identifier.isNotEmpty || payload.isNotEmpty)
         throw('unexpected data in EMPTY record');
       break;
-    case 0x01:
-    case 0x02:
-    case 0x03:
-    case 0x04:
+    case NdefRecord.TNF_WELL_KNOWN:
+    case NdefRecord.TNF_MIME:
+    case NdefRecord.TNF_ABSOLUTE_URI:
+    case NdefRecord.TNF_EXTERNAL:
       break;
-    case 0x05:
-    case 0x07:
+    case NdefRecord.TNF_UNKNOWN:
+    case NdefRecord.TNF_RESERVE:
       if (type.isNotEmpty)
         throw('unexpected type field in UNKNOWN or RESERVE record');
       break;
-    case 0x06:
+    case NdefRecord.TNF_UNCHANGED:
       throw('unexpected UNCHANGED in first chunk or logical record');
     default:
       throw('unexpected format value: $format');
