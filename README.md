@@ -1,6 +1,6 @@
 # nfc_manager
 
-A Flutter plugin to use NFC. Supported on both Android and iOS.
+A Flutter plugin to manage the NFC features. Supported on both Android and iOS.
 
 ## Setup
 
@@ -21,20 +21,16 @@ A Flutter plugin to use NFC. Supported on both Android and iOS.
 ### Managing Session
 
 ``` dart
+// Check availability
+bool isAvailable = await NfcManager.instance.isAvailable();
+
 // Start session and register callback.
-NfcManager.instance.startTagSession(
-  alertMessageIOS: '...',
-  pollingOptions: {TagPollingOption.iso14443, TagPollingOption.iso15693, TagPollingOption.iso18092},
-  onDiscovered: (NfcTag tag) {
-    // Manipulating tag
-  },
-);
+NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) {
+  // Manipulating tag
+});
 
 // Stop session and unregister callback.
-NfcManager.instance.stopSession(
-  alertMessageIOS: '...',
-  errorMessageIOS: '...',
-);
+NfcManager.instance.stopSession();
 ```
 
 ### Manipulating NDEF
@@ -48,20 +44,21 @@ if (ndef == null) {
   return;
 }
 
-// Read an NdefMessage object cached at discovery time
-print(ndef.cachedMessage);
+// Get an NdefMessage instance cached at discovery time
+NdefMessage message = ndef.cachedMessage;
 
-if (!ndef.isWritable) {
-  print('Tag is not ndef writable');
-  return;
-}
-
+// Create an NdefMessage instance you want to write.
 NdefMessage messageToWrite = NdefMessage([
   NdefRecord.createText('Hello'),
   NdefRecord.createUri(Uri.parse('https://flutter.dev')),
   NdefRecord.createMime('text/plain', Uint8List.fromList('Hello'.codeUnits)),
   NdefRecord.createExternal('mydomain', 'mytype', Uint8List.fromList('mydata'.codeUnits)),
 ]);
+
+if (!ndef.isWritable) {
+  print('Tag is not ndef writable');
+  return;
+}
 
 // Write an NdefMessage
 try {

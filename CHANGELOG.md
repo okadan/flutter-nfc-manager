@@ -1,3 +1,10 @@
+## 1.1.0
+
+* add constants.
+* fix misspelled name.
+* fix xcode build warning.
+* increase the Flutter SDK requirement to ^1.10.0.
+
 ## 1.0.1
 
 * fix error on invoking transceive method.
