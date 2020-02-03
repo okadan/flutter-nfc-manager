@@ -11,6 +11,8 @@ func serialize(_ tag: NFCTag, _ completionHandler: @escaping (NFCNDEFTag, [Strin
         serialize(tech) { data, error in completionHandler(tech, data, error) }
     case .iso15693(let tech):
         serialize(tech) { data, error in completionHandler(tech, data, error) }
+    @unknown default:
+        print("Unknown tag cannot be serialized")
     }
 }
 
