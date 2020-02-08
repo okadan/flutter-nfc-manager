@@ -100,3 +100,9 @@ if (miFare == null) {
 
 Uint8List response = await miFare.sendMiFareCommand(...);
 ```
+
+## Example
+
+A simple example app can be found in `example` folder.
+
+Real-World example apps can be found in [Google Play](https://play.google.com/store/apps/details?id=com.naokiokada.nfcmanager) and [App Store](https://apps.apple.com/us/app/nfc-manager/id1497139504).
