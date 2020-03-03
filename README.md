@@ -25,7 +25,7 @@ A Flutter plugin to manage the NFC features. Supported on both Android and iOS.
 bool isAvailable = await NfcManager.instance.isAvailable();
 
 // Start session and register callback.
-NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) {
+NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) async {
   // Manipulating tag
 });
 

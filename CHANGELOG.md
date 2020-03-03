@@ -1,3 +1,7 @@
+## 1.2.0
+
+* changed definition of discovered callback function to async.
+
 ## 1.1.0+1
 
 * update readme.
