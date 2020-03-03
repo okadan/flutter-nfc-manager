@@ -65,7 +65,7 @@ class MyAppState extends State<MyApp> {
   }
 
   void _tagRead() {
-    NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) {
+    NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) async {
       result.value = tag.data;
       NfcManager.instance.stopSession();
     });

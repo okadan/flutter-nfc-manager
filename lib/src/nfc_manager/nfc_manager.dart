@@ -6,10 +6,10 @@ import '../translator.dart';
 import './nfc_ndef.dart';
 
 /// Callback type for handling ndef detection.
-typedef NdefDiscoveredCallback = void Function(Ndef ndef);
+typedef NdefDiscoveredCallback = Future<void> Function(Ndef ndef);
 
 /// Callback type for handling tag detection.
-typedef TagDiscoveredCallback = void Function(NfcTag tag);
+typedef TagDiscoveredCallback = Future<void> Function(NfcTag tag);
 
 /// Used with `NfcManager#startTagSession`.
 ///
@@ -106,14 +106,14 @@ class NfcManager {
     NfcTag tag = $nfcTagFromJson(arguments);
     Ndef ndef = $ndefFromTag(tag);
     if (ndef != null && _onNdefDiscovered != null)
-      _onNdefDiscovered(ndef);
+      await _onNdefDiscovered(ndef);
     _disposeTag(tag);
   }
 
   Future<void> _handleOnTagDiscovered(Map<String, dynamic> arguments) async {
     NfcTag tag = $nfcTagFromJson(arguments);
     if (_onTagDiscovered != null)
-      _onTagDiscovered(tag);
+      await _onTagDiscovered(tag);
     _disposeTag(tag);
   }
 
