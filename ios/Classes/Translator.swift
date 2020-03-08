@@ -106,6 +106,22 @@ func serialize(_ payload: NFCNDEFPayload) -> [String:Any?] {
     ]
 }
 
+@available(iOS 11.0, *)
+func serialize(_ error: Error) -> [String:Any?] {
+    if let error = error as? NFCReaderError {
+        return [
+            "type": sessionErrorTypeStringFromCode(error.code),
+            "message": error.localizedDescription,
+            "details": error.userInfo,
+        ]
+    }
+    return [
+        "type": nil,
+        "message": error.localizedDescription,
+        "details": nil,
+    ]
+}
+
 @available(iOS 13.0, *)
 func ndefMessageFrom(_ data: [String:Any?]) -> NFCNDEFMessage {
     return NFCNDEFMessage.init(records: (data["records"] as! Array).map { ndefPayloadFrom($0) })
@@ -201,4 +217,17 @@ func apduFrom(_ arguments: [String:Any?]) -> NFCISO7816APDU? {
     }
 
     return nil
+}
+
+@available(iOS 11.0, *)
+func sessionErrorTypeStringFromCode(_ code: NFCReaderError.Code) -> String? {
+    // TODO: add more cases
+    switch code {
+    case .readerSessionInvalidationErrorSessionTimeout:
+        return "sessionTimeout"
+    case .readerSessionInvalidationErrorUserCanceled:
+        return "userCanceled"
+    default:
+        return nil
+    }
 }

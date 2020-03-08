@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import './nfc_manager/nfc_error.dart';
 import './nfc_manager/nfc_manager.dart';
 import './nfc_manager/nfc_ndef.dart';
 import './platform_tags/platform_tags.dart';
@@ -213,4 +214,23 @@ Map<String, dynamic> $ndefRecordToJson(NdefRecord record) {
     'identifier': record.identifier,
     'payload': record.payload,
   };
+}
+
+NfcSessionError $nfcSessionErrorFromJson(Map<String, dynamic> data) {
+  return NfcSessionError(
+    type: $nfcSessionErrorTypeFromString(data['type']),
+    message: data['message'],
+    details: data['details'],
+  );
+}
+
+NfcSessionErrorType $nfcSessionErrorTypeFromString(String value) {
+  switch (value) {
+    case 'sessionTimeout':
+      return NfcSessionErrorType.sessionTimeout;
+    case 'userCanceled':
+      return NfcSessionErrorType.userCanceled;
+    default:
+      return NfcSessionErrorType.unknown;
+  }
 }

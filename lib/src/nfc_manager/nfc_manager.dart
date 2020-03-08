@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 
 import '../channel.dart';
 import '../translator.dart';
+import './nfc_error.dart';
 import './nfc_ndef.dart';
 
 /// Callback type for handling ndef detection.
@@ -10,6 +11,9 @@ typedef NdefDiscoveredCallback = Future<void> Function(Ndef ndef);
 
 /// Callback type for handling tag detection.
 typedef TagDiscoveredCallback = Future<void> Function(NfcTag tag);
+
+/// Callback type for handling session error.
+typedef SessionErrorCallback = void Function(NfcSessionError error);
 
 /// Used with `NfcManager#startTagSession`.
 ///
@@ -35,6 +39,8 @@ class NfcManager {
 
   TagDiscoveredCallback _onTagDiscovered;
 
+  SessionErrorCallback _onError;
+
   /// Checks whether the NFC is available on the device.
   Future<bool> isAvailable() async {
     return channel.invokeMethod('isAvailable', {});
@@ -50,8 +56,10 @@ class NfcManager {
   Future<bool> startNdefSession({
     @required NdefDiscoveredCallback onDiscovered,
     String alertMessageIOS,
+    SessionErrorCallback onError,
   }) async {
     _onNdefDiscovered = onDiscovered;
+    _onError = onError;
     return channel.invokeMethod('startNdefSession', {
       'alertMessageIOS': alertMessageIOS,
     });
@@ -68,8 +76,10 @@ class NfcManager {
     @required TagDiscoveredCallback onDiscovered,
     Set<TagPollingOption> pollingOptions,
     String alertMessageIOS,
+    SessionErrorCallback onError,
   }) async {
     _onTagDiscovered = onDiscovered;
+    _onError = onError;
     return channel.invokeMethod('startTagSession', {
       'pollingOptions': (pollingOptions?.toList() ?? TagPollingOption.values).map((e) => e.index).toList(),
       'alertMessageIOS': alertMessageIOS,
@@ -85,6 +95,7 @@ class NfcManager {
   }) async {
     _onNdefDiscovered = null;
     _onTagDiscovered = null;
+    _onError = null;
     return channel.invokeMethod('stopSession', {
       'errorMessageIOS': errorMessageIOS,
       'alertMessageIOS': alertMessageIOS,
@@ -98,6 +109,9 @@ class NfcManager {
         break;
       case 'onTagDiscovered':
         _handleOnTagDiscovered(Map<String, dynamic>.from(call.arguments));
+        break;
+      case 'onError':
+        _handleOnError(Map<String, dynamic>.from(call.arguments));
         break;
     }
   }
@@ -115,6 +129,14 @@ class NfcManager {
     if (_onTagDiscovered != null)
       await _onTagDiscovered(tag);
     _disposeTag(tag);
+  }
+
+  Future<void> _handleOnError(Map<String, dynamic> arguments) async {
+    if (_onError != null)
+      _onError($nfcSessionErrorFromJson(arguments));
+    _onNdefDiscovered = null;
+    _onTagDiscovered = null;
+    _onError = null;
   }
 
   Future<bool> _disposeTag(NfcTag tag) async {

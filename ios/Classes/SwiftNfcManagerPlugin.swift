@@ -317,6 +317,7 @@ extension SwiftNfcManagerPlugin: NFCNDEFReaderSessionDelegate {
     }
 
     public func readerSession(_ session: NFCNDEFReaderSession, didInvalidateWithError error: Error) {
+        channel.invokeMethod("onError", arguments: serialize(error))
     }
 
     public func readerSession(_ session: NFCNDEFReaderSession, didDetectNDEFs messages: [NFCNDEFMessage]) {
@@ -357,6 +358,7 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
     }
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
+        channel.invokeMethod("onError", arguments: serialize(error))
     }
 
     public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
