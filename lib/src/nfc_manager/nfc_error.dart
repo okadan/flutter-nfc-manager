@@ -2,6 +2,7 @@ import 'package:meta/meta.dart';
 
 enum NfcSessionErrorType {
   sessionTimeout,
+  systemIsBusy,
   userCanceled,
   unknown,
 }
