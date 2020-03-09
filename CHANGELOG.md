@@ -1,6 +1,10 @@
+## 1.3.0
+
+* add callback to handle error from session.
+
 ## 1.2.0
 
-* changed definition of discovered callback function to async.
+* make discovered callback async.
 
 ## 1.1.0+1
 
@@ -19,9 +23,9 @@
 
 ## 1.0.0
 
-* added platform-specifc-tag operations.
-* removed `NfcSessionType` enum.
-* migrated to pubspec platforms manifest.
+* add platform-specifc-tag operations.
+* remove `NfcSessionType` enum.
+* migrate to pubspec platforms manifest.
 * more consistent naming.
 
 ## 0.5.1
