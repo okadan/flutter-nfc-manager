@@ -1,6 +1,5 @@
 import 'dart:typed_data';
 
-import './nfc_manager/nfc_error.dart';
 import './nfc_manager/nfc_manager.dart';
 import './nfc_manager/nfc_ndef.dart';
 import './platform_tags/platform_tags.dart';

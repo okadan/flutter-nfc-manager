@@ -3,16 +3,15 @@ import 'package:flutter/services.dart';
 
 import '../channel.dart';
 import '../translator.dart';
-import './nfc_error.dart';
 import './nfc_ndef.dart';
 
-/// Callback type for handling ndef detection.
+/// Callback for handling ndef detection.
 typedef NdefDiscoveredCallback = Future<void> Function(Ndef ndef);
 
-/// Callback type for handling tag detection.
+/// Callback for handling tag detection.
 typedef TagDiscoveredCallback = Future<void> Function(NfcTag tag);
 
-/// Callback type for handling session error.
+/// Callback for handling error from the session.
 typedef SessionErrorCallback = void Function(NfcSessionError error);
 
 /// Used with `NfcManager#startTagSession`.
@@ -48,11 +47,12 @@ class NfcManager {
 
   /// Start session and register ndef discovered callback.
   ///
-  /// On iOS, this uses the `NFCNDEFReaderSession` API.
-  ///
-  /// On Android, this uses the `NfcAdapter#enableReaderMode` API.
-  ///
+  /// This uses `NFCNDEFReaderSession` on iOS, and `NfcAdapter#enableReaderMode` on Android.
   /// Requires iOS 11.0 or Android API level 19, or later.
+  ///
+  /// [onDiscovered] is called each time an ndef is discovered.
+  ///
+  /// [onError] is called when the session stops for some reason after the session started.
   Future<bool> startNdefSession({
     @required NdefDiscoveredCallback onDiscovered,
     String alertMessageIOS,
@@ -67,11 +67,12 @@ class NfcManager {
 
   /// Start session and register tag discovered callback.
   ///
-  /// On iOS, this uses the `NFCTagReaderSession` API.
-  ///
-  /// On Android, this uses the `NfcAdapter#enableReaderMode` API.
-  ///
+  /// This uses `NFCTagReanderSession` on iOS and `NfcAdapter#enableReaderMode` on Android.
   /// Requires iOS 13.0 or Android API level 19, or later.
+  ///
+  /// [onDiscovered] is called each time an ndef is discovered. Use [pollingOptions] to specify the tag types to discover. (default all types)
+  ///
+  /// [onError] is called when the session stops for some reason after the session started.
   Future<bool> startTagSession({
     @required TagDiscoveredCallback onDiscovered,
     Set<TagPollingOption> pollingOptions,
@@ -86,9 +87,13 @@ class NfcManager {
     });
   }
 
-  /// Stop session and unregister tag/ndef discovered callback.
+  /// Stop session and unregister callback.
   ///
+  /// This uses `NFCReaderSession` on iOS and `NfcAdapter#disableReaderMode` on Android.
   /// Requires iOS 11.0 or Android API level 19, or later.
+  ///
+  /// On iOS, use [alertMessageIOS] to indicate the success, and [errorMessageIOS] to indicate the failure.
+  /// When both are used, [errorMessageIOS] has priority.
   Future<bool> stopSession({
     String errorMessageIOS,
     String alertMessageIOS,
@@ -212,4 +217,25 @@ class Ndef {
       'handle': tag.handle,
     });
   }
+}
+
+/// Represents the error from the session.
+class NfcSessionError {
+  NfcSessionError({
+    @required this.type,
+    @required this.message,
+    @required this.details,
+  });
+
+  final NfcSessionErrorType type;
+  final String message;
+  final dynamic details;
+}
+
+/// Represents the reason for the error from the session.
+enum NfcSessionErrorType {
+  sessionTimeout,
+  systemIsBusy,
+  userCanceled,
+  unknown,
 }
