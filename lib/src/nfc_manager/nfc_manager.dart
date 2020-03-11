@@ -38,7 +38,7 @@ class NfcManager {
 
   TagDiscoveredCallback _onTagDiscovered;
 
-  SessionErrorCallback _onError;
+  SessionErrorCallback _onSessionError;
 
   /// Checks whether the NFC is available on the device.
   Future<bool> isAvailable() async {
@@ -52,14 +52,14 @@ class NfcManager {
   ///
   /// [onDiscovered] is called each time an ndef is discovered.
   ///
-  /// [onError] is called when the session stops for some reason after the session started.
+  /// [onSessionError] is called when the session stops for some reason after the session started.
   Future<bool> startNdefSession({
     @required NdefDiscoveredCallback onDiscovered,
     String alertMessageIOS,
-    SessionErrorCallback onError,
+    SessionErrorCallback onSessionError,
   }) async {
     _onNdefDiscovered = onDiscovered;
-    _onError = onError;
+    _onSessionError = onSessionError;
     return channel.invokeMethod('startNdefSession', {
       'alertMessageIOS': alertMessageIOS,
     });
@@ -72,15 +72,15 @@ class NfcManager {
   ///
   /// [onDiscovered] is called each time an ndef is discovered. Use [pollingOptions] to specify the tag types to discover. (default all types)
   ///
-  /// [onError] is called when the session stops for some reason after the session started.
+  /// [onSessionError] is called when the session stops for some reason after the session started.
   Future<bool> startTagSession({
     @required TagDiscoveredCallback onDiscovered,
     Set<TagPollingOption> pollingOptions,
     String alertMessageIOS,
-    SessionErrorCallback onError,
+    SessionErrorCallback onSessionError,
   }) async {
     _onTagDiscovered = onDiscovered;
-    _onError = onError;
+    _onSessionError = onSessionError;
     return channel.invokeMethod('startTagSession', {
       'pollingOptions': (pollingOptions?.toList() ?? TagPollingOption.values).map((e) => e.index).toList(),
       'alertMessageIOS': alertMessageIOS,
@@ -100,7 +100,7 @@ class NfcManager {
   }) async {
     _onNdefDiscovered = null;
     _onTagDiscovered = null;
-    _onError = null;
+    _onSessionError = null;
     return channel.invokeMethod('stopSession', {
       'errorMessageIOS': errorMessageIOS,
       'alertMessageIOS': alertMessageIOS,
@@ -115,8 +115,8 @@ class NfcManager {
       case 'onTagDiscovered':
         _handleOnTagDiscovered(Map<String, dynamic>.from(call.arguments));
         break;
-      case 'onError':
-        _handleOnError(Map<String, dynamic>.from(call.arguments));
+      case 'onSessionError':
+        _handleonSessionError(Map<String, dynamic>.from(call.arguments));
         break;
     }
   }
@@ -136,12 +136,12 @@ class NfcManager {
     _disposeTag(tag);
   }
 
-  Future<void> _handleOnError(Map<String, dynamic> arguments) async {
-    if (_onError != null)
-      _onError($nfcSessionErrorFromJson(arguments));
+  Future<void> _handleonSessionError(Map<String, dynamic> arguments) async {
+    if (_onSessionError != null)
+      _onSessionError($nfcSessionErrorFromJson(arguments));
     _onNdefDiscovered = null;
     _onTagDiscovered = null;
-    _onError = null;
+    _onSessionError = null;
   }
 
   Future<bool> _disposeTag(NfcTag tag) async {
