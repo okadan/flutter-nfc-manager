@@ -52,7 +52,7 @@ class NfcManager {
   ///
   /// [onDiscovered] is called each time an ndef is discovered.
   ///
-  /// [onSessionError] is called when the session stops for some reason after the session started.
+  /// [onSessionError] is called when the session stops for any reason after the session started. (Currently iOS only)
   Future<bool> startNdefSession({
     @required NdefDiscoveredCallback onDiscovered,
     String alertMessageIOS,
@@ -70,9 +70,10 @@ class NfcManager {
   /// This uses `NFCTagReanderSession` on iOS and `NfcAdapter#enableReaderMode` on Android.
   /// Requires iOS 13.0 or Android API level 19, or later.
   ///
-  /// [onDiscovered] is called each time an ndef is discovered. Use [pollingOptions] to specify the tag types to discover. (default all types)
+  /// [onDiscovered] is called each time a tag is discovered.
+  /// Use [pollingOptions] to specify the tag types to discover. (default all types)
   ///
-  /// [onSessionError] is called when the session stops for some reason after the session started.
+  /// [onSessionError] is called when the session stops for any reason after the session started. (Currently iOS only)
   Future<bool> startTagSession({
     @required TagDiscoveredCallback onDiscovered,
     Set<TagPollingOption> pollingOptions,
@@ -160,13 +161,12 @@ class NfcTag {
 
   /// String value used by this plugin internally.
   ///
-  /// Don`t use in your application code.
+  /// Don`t use in application code.
   final String handle;
 
-  /// Raw values that can be obtained on the native platform.
+  /// Raw values that can be obtained from the native platform.
   ///
-  /// Typically accessed from specific-tag that you instantiated from tag. (eg MiFare.fromTag)
-  ///
+  /// Typically accessed through the properties of a specific-tag-class instantiated from tag. (eg MiFare.fromTag)
   /// This property is experimental and may be changed without announcement in the future.
   /// Not recommended for use directly.
   final Map<String, dynamic> data;
@@ -219,7 +219,7 @@ class Ndef {
   }
 }
 
-/// Represents the error from the session.
+/// Represents the error from the session. (Currently iOS only)
 class NfcSessionError {
   NfcSessionError({
     @required this.type,
@@ -227,15 +227,27 @@ class NfcSessionError {
     @required this.details,
   });
 
+  /// A type for the error.
   final NfcSessionErrorType type;
+
+  /// A message for the error.
   final String message;
+
+  /// A details information for the error.
   final dynamic details;
 }
 
-/// Represents the reason for the error from the session.
+/// Represents the type for the error from the session. (Currently iOS only)
 enum NfcSessionErrorType {
+  /// The session timed out.
   sessionTimeout,
+
+  /// The session failed because the system is busy.
   systemIsBusy,
+
+  /// The user canceled the session.
   userCanceled,
+
+  /// The session failed because the unexpected error has occurred.
   unknown,
 }
