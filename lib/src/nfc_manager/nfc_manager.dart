@@ -16,15 +16,15 @@ typedef SessionErrorCallback = void Function(NfcSessionError error);
 
 /// Used with `NfcManager#startTagSession`.
 ///
-/// This wraps `NFCTagReaderSession.PollingOption` on iOS and `NfcAdapter.FLAG_READER_*` on Android.
+/// This wraps `NFCTagReaderSession.PollingOption` on iOS, `NfcAdapter.FLAG_READER_*` on Android.
 enum TagPollingOption {
-  /// Represents `iso14443` on iOS, and `FLAG_READER_A` and `FLAG_READER_B` on Android.
+  /// Represents `iso14443` on iOS, `FLAG_READER_A` and `FLAG_READER_B` on Android.
   iso14443,
 
-  /// Represents `iso15693` on iOS, and `FLAG_READER_V` on Android.
+  /// Represents `iso15693` on iOS, `FLAG_READER_V` on Android.
   iso15693,
 
-  /// Represents `iso18092` on iOS, and `FLAG_READER_F` on Android.
+  /// Represents `iso18092` on iOS, `FLAG_READER_F` on Android.
   iso18092,
 }
 
@@ -47,7 +47,7 @@ class NfcManager {
 
   /// Start session and register ndef discovered callback.
   ///
-  /// This uses `NFCNDEFReaderSession` on iOS, and `NfcAdapter#enableReaderMode` on Android.
+  /// This uses `NFCNDEFReaderSession` on iOS, `NfcAdapter#enableReaderMode` on Android.
   /// Requires iOS 11.0 or Android API level 19, or later.
   ///
   /// [onDiscovered] is called each time an ndef is discovered.
@@ -67,7 +67,7 @@ class NfcManager {
 
   /// Start session and register tag discovered callback.
   ///
-  /// This uses `NFCTagReanderSession` on iOS and `NfcAdapter#enableReaderMode` on Android.
+  /// This uses `NFCTagReanderSession` on iOS, `NfcAdapter#enableReaderMode` on Android.
   /// Requires iOS 13.0 or Android API level 19, or later.
   ///
   /// [onDiscovered] is called each time a tag is discovered.
@@ -90,7 +90,7 @@ class NfcManager {
 
   /// Stop session and unregister callback.
   ///
-  /// This uses `NFCReaderSession` on iOS and `NfcAdapter#disableReaderMode` on Android.
+  /// This uses `NFCReaderSession` on iOS, `NfcAdapter#disableReaderMode` on Android.
   /// Requires iOS 11.0 or Android API level 19, or later.
   ///
   /// On iOS, use [alertMessageIOS] to indicate the success, and [errorMessageIOS] to indicate the failure.
@@ -188,7 +188,7 @@ class Ndef {
   /// NDEF message that was read from the tag at discovery time.
   final NdefMessage cachedMessage;
 
-  /// Indicates whether the the tag can be written with NDEF Message.
+  /// Indicates whether the tag can be written with NDEF Message.
   final bool isWritable;
 
   /// The maximum NDEF message size in bytes, that you can store.
