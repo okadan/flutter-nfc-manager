@@ -106,6 +106,22 @@ func serialize(_ payload: NFCNDEFPayload) -> [String:Any?] {
     ]
 }
 
+@available(iOS 11.0, *)
+func serialize(_ error: Error) -> [String:Any?] {
+    if let error = error as? NFCReaderError {
+        return [
+            "type": sessionErrorTypeStringFrom(error.code),
+            "message": error.localizedDescription,
+            "details": error.userInfo,
+        ]
+    }
+    return [
+        "type": nil,
+        "message": error.localizedDescription,
+        "details": nil,
+    ]
+}
+
 @available(iOS 13.0, *)
 func ndefMessageFrom(_ data: [String:Any?]) -> NFCNDEFMessage {
     return NFCNDEFMessage.init(records: (data["records"] as! Array).map { ndefPayloadFrom($0) })
@@ -121,7 +137,7 @@ func ndefPayloadFrom(_ data: [String:Any?]) -> NFCNDEFPayload {
     )
 }
 
-// Sync with `NfcTagPollingOption` enum on Dart side
+// Sync with `NfcTagPollingOption` on Dart side
 @available(iOS 13.0, *)
 func pollingOptionFrom(_ options: [Int]) -> NFCTagReaderSession.PollingOption {
     var option: NFCTagReaderSession.PollingOption = []
@@ -141,6 +157,7 @@ func pollingOptionFrom(_ options: [Int]) -> NFCTagReaderSession.PollingOption {
     return option
 }
 
+// Sync with `ISO15693RequestFlag` on Dart side
 @available(iOS 13.0, *)
 func requestFlagFrom(_ flags: [Int]) -> RequestFlag {
     var flag: RequestFlag = []
@@ -170,6 +187,22 @@ func requestFlagFrom(_ flags: [Int]) -> RequestFlag {
     }
 
     return flag
+}
+
+// Sync with `NfcSessionErrorType` on Dart side
+@available(iOS 11.0, *)
+func sessionErrorTypeStringFrom(_ code: NFCReaderError.Code) -> String? {
+    // TODO: add more cases
+    switch code {
+    case .readerSessionInvalidationErrorSessionTimeout:
+        return "sessionTimeout"
+    case .readerSessionInvalidationErrorSystemIsBusy:
+        return "systemIsBusy"
+    case .readerSessionInvalidationErrorUserCanceled:
+        return "userCanceled"
+    default:
+        return nil
+    }
 }
 
 @available(iOS 13.0, *)

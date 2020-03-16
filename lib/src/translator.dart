@@ -214,3 +214,24 @@ Map<String, dynamic> $ndefRecordToJson(NdefRecord record) {
     'payload': record.payload,
   };
 }
+
+NfcSessionError $nfcSessionErrorFromJson(Map<String, dynamic> data) {
+  return NfcSessionError(
+    type: $nfcSessionErrorTypeFromString(data['type']),
+    message: data['message'],
+    details: data['details'],
+  );
+}
+
+NfcSessionErrorType $nfcSessionErrorTypeFromString(String value) {
+  switch (value) {
+    case 'sessionTimeout':
+      return NfcSessionErrorType.sessionTimeout;
+    case 'systemIsBusy':
+      return NfcSessionErrorType.systemIsBusy;
+    case 'userCanceled':
+      return NfcSessionErrorType.userCanceled;
+    default:
+      return NfcSessionErrorType.unknown;
+  }
+}
