@@ -67,7 +67,7 @@ class NfcManager {
 
   /// Start session and register tag discovered callback.
   ///
-  /// This uses `NFCTagReanderSession` on iOS, `NfcAdapter#enableReaderMode` on Android.
+  /// This uses `NFCTagReaderSession` on iOS, `NfcAdapter#enableReaderMode` on Android.
   /// Requires iOS 13.0 or Android API level 19, or later.
   ///
   /// [onDiscovered] is called each time a tag is discovered.

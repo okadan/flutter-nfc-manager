@@ -100,4 +100,3 @@ if (miFare == null) {
 
 Uint8List response = await miFare.sendMiFareCommand(...);
 ```
-
