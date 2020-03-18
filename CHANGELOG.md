@@ -1,3 +1,7 @@
+## 1.3.1
+
+* fix a bug where the error callback was not called.
+
 ## 1.3.0
 
 * add callback to handle error from session.
