@@ -230,12 +230,15 @@ class MiFare {
     @required int expectedResponseLength,
   }) async {
     return channel.invokeMethod('ISO7816#sendCommand', {
-      'instructionClass': instructionClass,
-      'instructionCode': instructionCode,
-      'p1Parameter': p1Parameter,
-      'p2Parameter': p2Parameter,
-      'data': data,
-      'expectedResponseLength': expectedResponseLength,
+      'handle': tag.handle,
+      'apdu': {
+        'instructionClass': instructionClass,
+        'instructionCode': instructionCode,
+        'p1Parameter': p1Parameter,
+        'p2Parameter': p2Parameter,
+        'data': data,
+        'expectedResponseLength': expectedResponseLength,
+      },
     });
   }
 
@@ -245,7 +248,9 @@ class MiFare {
   Future<Uint8List> sendMiFareISO7816CommandRaw(Uint8List data) async {
     return channel.invokeMethod('ISO7816#sendCommand', {
       'handle': tag.handle,
-      'data': data,
+      'apdu': {
+        'data': data,
+      },
     });
   }
 }
@@ -366,12 +371,14 @@ class ISO7816 {
   }) async {
     return channel.invokeMethod('ISO7816#sendCommand', {
       'handle': tag.handle,
-      'instructionClass': instructionClass,
-      'instructionCode': instructionCode,
-      'p1Parameter': p1Parameter,
-      'p2Parameter': p2Parameter,
-      'data': data,
-      'expectedResponseLength': expectedResponseLength,
+      'apdu': {
+        'instructionClass': instructionClass,
+        'instructionCode': instructionCode,
+        'p1Parameter': p1Parameter,
+        'p2Parameter': p2Parameter,
+        'data': data,
+        'expectedResponseLength': expectedResponseLength,
+      },
     });
   }
 
@@ -381,7 +388,9 @@ class ISO7816 {
   Future<Uint8List> sendCommandRaw(Uint8List data) async {
     return channel.invokeMethod('ISO7816#sendCommand', {
       'handle': tag.handle,
-      'data': data,
+      'apdu': {
+        'data': data,
+      },
     });
   }
 }

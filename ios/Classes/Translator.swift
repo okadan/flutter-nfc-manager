@@ -1,4 +1,5 @@
 import CoreNFC
+import Flutter
 
 @available(iOS 13.0, *)
 func serialize(_ tag: NFCTag, _ completionHandler: @escaping (NFCNDEFTag, [String:Any?], Error?) -> Void) {
@@ -141,19 +142,15 @@ func ndefPayloadFrom(_ data: [String:Any?]) -> NFCNDEFPayload {
 @available(iOS 13.0, *)
 func pollingOptionFrom(_ options: [Int]) -> NFCTagReaderSession.PollingOption {
     var option: NFCTagReaderSession.PollingOption = []
-
     if options.contains(0) {
         option.insert(NFCTagReaderSession.PollingOption.iso14443)
     }
-
     if options.contains(1) {
         option.insert(NFCTagReaderSession.PollingOption.iso15693)
     }
-
     if options.contains(2) {
         option.insert(NFCTagReaderSession.PollingOption.iso18092)
     }
-
     return option
 }
 
@@ -161,31 +158,24 @@ func pollingOptionFrom(_ options: [Int]) -> NFCTagReaderSession.PollingOption {
 @available(iOS 13.0, *)
 func requestFlagFrom(_ flags: [Int]) -> RequestFlag {
     var flag: RequestFlag = []
-
     if flags.contains(0) {
         flag.insert(.dualSubCarriers)
     }
-
     if flags.contains(1) {
         flag.insert(.highDataRate)
     }
-
     if flags.contains(2) {
         flag.insert(.protocolExtension)
     }
-
     if flags.contains(3) {
         flag.insert(.select)
     }
-
     if flags.contains(4) {
         flag.insert(.address)
     }
-
     if flags.contains(5) {
         flag.insert(.option)
     }
-
     return flag
 }
 

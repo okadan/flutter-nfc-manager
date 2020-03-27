@@ -12,8 +12,7 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
 
     public static func register(with registrar: FlutterPluginRegistrar) {
         let channel = FlutterMethodChannel(name: "plugins.flutter.io/nfc_manager", binaryMessenger: registrar.messenger())
-        let instance = SwiftNfcManagerPlugin(channel)
-        registrar.addMethodCallDelegate(instance, channel: channel)
+        registrar.addMethodCallDelegate(SwiftNfcManagerPlugin(channel), channel: channel)
     }
 
     private init(_ channel: FlutterMethodChannel) {
@@ -21,292 +20,321 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
     }
 
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
+        let arguments = call.arguments as! [String:Any?]
+
         switch (call.method) {
         case "isAvailable":
-            handleIsAvailable(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 11.0, *) else {
+                result(createUnavailableError(minVersion: "11.0"))
+                return
+            }
+            handleIsAvailable(
+                result: result
+            )
             break
         case "startNdefSession":
-            handleStartNdefSession(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 11.0, *) else {
+                result(createUnavailableError(minVersion: "11.0"))
+                return
+            }
+            handleStartNdefSession(
+                result: result,
+                alertMessage: arguments["alertMessageIOS"] as? String
+            )
             break
         case "startTagSession":
-            handleStartTagSession(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleStartTagSession(
+                result: result,
+                alertMessage: arguments["alertMessageIOS"] as? String,
+                pollingOptions: arguments["pollingOptions"] as! [Int]
+            )
             break
         case "stopSession":
-            handleStopSession(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 11.0, *) else {
+                result(createUnavailableError(minVersion: "11.0"))
+                return
+            }
+            handleStopSession(
+                result: result,
+                alertMessage: arguments["alertMessageIOS"] as? String,
+                errorMessage: arguments["errorMessageIOS"] as? String
+            )
             break
         case "disposeTag":
-            handleDisposeTag(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 11.0, *) else {
+                result(createUnavailableError(minVersion: "11.0"))
+                return
+            }
+            handleDisposeTag(
+                result: result,
+                handle: arguments["handle"] as! String
+            )
             break
         case "Ndef#write":
-            handleNdefWrite(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleNdefWrite(
+                result: result,
+                handle: arguments["handle"] as! String,
+                message: arguments["message"] as! [String:Any?]
+            )
             break
         case "Ndef#writeLock":
-            handleNdefWriteLock(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleNdefWriteLock(
+                result: result,
+                handle: arguments["handle"] as! String
+            )
             break
         case "MiFare#sendMiFareCommand":
-            handleMiFareSendMiFareCommand(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleMiFareSendMiFareCommand(
+                result: result,
+                handle: arguments["handle"] as! String,
+                commandPacket: arguments["commandPacket"] as! FlutterStandardTypedData
+            )
             break
         case "FeliCa#sendFeliCaCommand":
-            handleFeliCaSendFeliCaCommand(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleFeliCaSendFeliCaCommand(
+                result: result,
+                handle: arguments["handle"] as! String,
+                commandPacket: arguments["commandPacket"] as! FlutterStandardTypedData
+            )
             break
         case "ISO15693#customCommand":
-            handleISO15693CustomCommand(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693CustomCommand(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                commandCode: arguments["commandCode"] as! Int,
+                parameters: arguments["parameters"] as! FlutterStandardTypedData
+            )
             break
         case "ISO7816#sendCommand":
-            handleISO7816SendCommand(call.arguments as! [String:Any?], result: result)
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO7816SendCommand(
+                result: result,
+                handle: arguments["handle"] as! String,
+                apdu: arguments["apdu"] as! [String:Any?]
+            )
             break
         default:
             result(FlutterMethodNotImplemented)
         }
     }
 
-    private func handleIsAvailable(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 11.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 11.0 or newer.", details: nil))
-            return
-        }
-
+    @available(iOS 11.0, *)
+    private func handleIsAvailable(
+        result: @escaping FlutterResult
+    ) {
         result(NFCNDEFReaderSession.readingAvailable)
     }
 
-    private func handleStartNdefSession(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 11.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 11.0 or newer.", details: nil))
-            return
-        }
-
-        let alertMessageIOS = arguments["alertMessageIOS"] as? String
-
+    @available(iOS 11.0, *)
+    private func handleStartNdefSession(
+        result: @escaping FlutterResult,
+        alertMessage: String?
+    ) {
         session = NFCNDEFReaderSession(delegate: self, queue: nil, invalidateAfterFirstRead: false)
-
-        if let alertMessage = alertMessageIOS {
-            session?.alertMessage = alertMessage
-        }
-
+        session?.alertMessage = alertMessage ?? ""
         session?.begin()
         result(true)
     }
 
-    private func handleStartTagSession(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 13.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 13.0 or newer.", details: nil))
-            return
-        }
-
-        let pollingOption = pollingOptionFrom(arguments["pollingOptions"] as! [Int])
-        let alertMessageIOS = arguments["alertMessageIOS"] as? String
-
-        session = NFCTagReaderSession(pollingOption: pollingOption, delegate: self, queue: nil)
-        if let alertMessage = alertMessageIOS {
-            session?.alertMessage = alertMessage
-        }
+    @available(iOS 13.0, *)
+    private func handleStartTagSession(
+        result: @escaping FlutterResult,
+        alertMessage: String?,
+        pollingOptions: [Int]
+    ) {
+        session = NFCTagReaderSession(pollingOption: pollingOptionFrom(pollingOptions), delegate: self, queue: nil)
+        session?.alertMessage = alertMessage ?? ""
         session?.begin()
         result(true)
     }
 
-    private func handleStopSession(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 11.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 11.0 or newer.", details: nil))
-            return
-        }
-
+    @available(iOS 11.0, *)
+    private func handleStopSession(
+        result: @escaping FlutterResult,
+        alertMessage: String?,
+        errorMessage: String?
+    ) {
         guard let session = session else {
             result(true)
             return
         }
-
-        let alertMessageIOS = arguments["alertMessageIOS"] as? String
-        let errorMessageIOS = arguments["errorMessageIOS"] as? String
-
-        if #available(iOS 13.0, *), let errorMessage = errorMessageIOS {
+        if #available(iOS 13.0, *), let errorMessage = errorMessage {
             session.invalidate(errorMessage: errorMessage)
             self.session = nil
             result(true)
             return
         }
-
-        if let alertMessage = alertMessageIOS {
-            session.alertMessage = alertMessage
-        }
-
+        session.alertMessage = alertMessage ?? ""
         session.invalidate()
         self.session = nil
         result(true)
     }
 
-    private func handleDisposeTag(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 11.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 11.0 or newer.", details: nil))
-            return
-        }
-
+    @available(iOS 11.0, *)
+    private func handleDisposeTag(
+        result: @escaping FlutterResult,
+        handle: String
+    ) {
         guard #available(iOS 13.0, *) else {
             result(true)
             return
         }
-
-        let handle = arguments["handle"] as! String
-
         techs.removeValue(forKey: handle)
         result(true)
     }
 
-    private func handleNdefWrite(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 13.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 13.0 or newer.", details: nil))
+    @available(iOS 13.0, *)
+    private func handleNdefWrite(
+        result: @escaping FlutterResult,
+        handle: String,
+        message: [String:Any?]
+    ) {
+        guard let tech = techs[handle] else {
+            result(createTagNotFoundError())
             return
         }
-
-        let handle = arguments["handle"] as! String
-        let ndefMessage = ndefMessageFrom(arguments["message"] as! [String:Any?])
-
-        guard let connectedTech = techs[handle] else {
-            result(FlutterError(code: "not_found", message: "Tag is not found.", details: nil))
-            return
-        }
-
-        connectedTech.writeNDEF(ndefMessage) { error in
+        tech.writeNDEF(ndefMessageFrom(message)) { error in
             if let error = error {
-                result(error.toFlutterError())
+                result(createFlutterError(error: error))
                 return
             }
-
             result(true)
         }
     }
 
-    private func handleNdefWriteLock(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 13.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 13.0 or newer.", details: nil))
+    @available(iOS 13.0, *)
+    private func handleNdefWriteLock(
+        result: @escaping FlutterResult,
+        handle: String
+    ) {
+        guard let tech = techs[handle] else {
+            result(createTagNotFoundError())
             return
         }
-
-        let handle = arguments["handle"] as! String
-
-        guard let connectedTech = techs[handle] else {
-            result(FlutterError(code: "not_found", message: "Tag is not found.", details: nil))
-            return
-        }
-
-        connectedTech.writeLock { error in
+        tech.writeLock { error in
             if let error = error {
-                result(error.toFlutterError())
+                result(createFlutterError(error: error))
                 return
             }
-
             result(true)
         }
     }
 
-    private func handleMiFareSendMiFareCommand(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 13.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 13.0 or newer.", details: nil))
+    @available(iOS 13.0, *)
+    private func handleMiFareSendMiFareCommand(
+        result: @escaping FlutterResult,
+        handle: String,
+        commandPacket: FlutterStandardTypedData
+    ) {
+        guard let tech = techs[handle] as? NFCMiFareTag else {
+            result(createTagNotFoundError())
             return
         }
-
-        let handle = arguments["handle"] as! String
-
-        guard let connectedTech = techs[handle] as? NFCMiFareTag else {
-            result(FlutterError(code: "not_found", message: "Tag is not found.", details: nil))
-            return
-        }
-
-        let commandPacket = (arguments["commandPacket"] as! FlutterStandardTypedData).data
-
-        connectedTech.sendMiFareCommand(commandPacket: commandPacket) { data, error in
+        tech.sendMiFareCommand(commandPacket: commandPacket.data) { data, error in
             if let error = error {
-                result(error.toFlutterError())
+                result(createFlutterError(error: error))
                 return
             }
-
             result(data)
         }
     }
 
-    private func handleFeliCaSendFeliCaCommand(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 13.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 13.0 or newer.", details: nil))
+    @available(iOS 13.0, *)
+    private func handleFeliCaSendFeliCaCommand(
+        result: @escaping FlutterResult,
+        handle: String,
+        commandPacket: FlutterStandardTypedData
+    ) {
+        guard let tech = techs[handle] as? NFCFeliCaTag else {
+            result(createTagNotFoundError())
             return
         }
-
-        let handle = arguments["handle"] as! String
-
-        guard let connectedTech = techs[handle] as? NFCFeliCaTag else {
-            result(FlutterError(code: "not_found", message: "Tag is not found.", details: nil))
-            return
-        }
-
-        let commandPacket = (arguments["commandPacket"] as! FlutterStandardTypedData).data
-
-        connectedTech.sendFeliCaCommand(commandPacket: commandPacket) { data, error in
+        tech.sendFeliCaCommand(commandPacket: commandPacket.data) { data, error in
             if let error = error {
-                result(error.toFlutterError())
+                result(createFlutterError(error: error))
                 return
             }
-
             result(data)
         }
     }
 
-    private func handleISO15693CustomCommand(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 13.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 13.0 or newer.", details: nil))
+    @available(iOS 13.0, *)
+    private func handleISO15693CustomCommand(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        commandCode: Int,
+        parameters: FlutterStandardTypedData
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
             return
         }
-
-        let handle = arguments["handle"] as! String
-        let requestFlags = requestFlagFrom(arguments["requestFlags"] as! [Int])
-        let commandCode = arguments["commandCode"] as! Int
-        let parameters = (arguments["parameters"] as! FlutterStandardTypedData).data
-
-        guard let connectedTech = techs[handle] as? NFCISO15693Tag else {
-            result(FlutterError(code: "not_found", message: "Tag is not found.", details: nil))
-            return
-        }
-
-        connectedTech.customCommand(requestFlags: requestFlags, customCommandCode: commandCode, customRequestParameters: parameters) { data, error in
+        tech.customCommand(requestFlags: requestFlagFrom(requestFlags), customCommandCode: commandCode, customRequestParameters: parameters.data) { data, error in
             if let error = error {
-                result(error.toFlutterError())
+                result(createFlutterError(error: error))
                 return
             }
-
             result(data)
         }
     }
 
-    private func handleISO7816SendCommand(_ arguments: [String:Any?], result: @escaping FlutterResult) {
-        guard #available(iOS 13.0, *) else {
-            result(FlutterError(code: "unavailable", message: "Only available in iOS 13.0 or newer.", details: nil))
-            return
-        }
-
-        let handle = arguments["handle"] as! String
-
-        guard let apdu = apduFrom(arguments) else {
+    @available(iOS 13.0, *)
+    private func handleISO7816SendCommand(
+        result: @escaping FlutterResult,
+        handle: String,
+        apdu: [String:Any?]
+    ) {
+        guard let apduCommand = apduFrom(apdu) else {
             result(FlutterError(code: "invalid_arguments", message: "Apdu arguments is invalid.", details: nil))
             return
         }
-
-        if let connectedTech = techs[handle] as? NFCISO7816Tag {
-            connectedTech.sendCommand(apdu: apdu) { data, _, _, error in
+        if let tech = techs[handle] as? NFCISO7816Tag {
+            tech.sendCommand(apdu: apduCommand) { data, sw1, sw2, error in
                 if let error = error {
-                    result(error.toFlutterError())
+                    result(createFlutterError(error: error))
                     return
                 }
-
                 result(data)
             }
-        } else if let connectedTech = techs[handle] as? NFCMiFareTag {
-            connectedTech.sendMiFareISO7816Command(apdu) { data, _, _, error in
+        } else if let tech = techs[handle] as? NFCMiFareTag {
+            tech.sendMiFareISO7816Command(apduCommand) { data, sw1, sw2, error in
                 if let error = error {
-                    result(error.toFlutterError())
+                    result(createFlutterError(error: error))
                     return
                 }
-
                 result(data)
             }
         } else {
-            result(FlutterError(code: "not_found", message: "Tag is not found.", details: nil))
+            result(createTagNotFoundError())
         }
     }
 }
@@ -386,14 +414,16 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
     }
 }
 
-extension Error {
-    @available(iOS 11.0, *)
-    func toFlutterError() -> FlutterError {
-        if let error = self as? NFCReaderError {
-            return FlutterError(code: "\(error.code)", message: error.localizedDescription, details: error.userInfo)
-        }
-
-        let error = self as NSError
-        return FlutterError(code: "error_\(error.code)", message: error.localizedDescription, details: error.userInfo)
-    }
+@available(iOS 11.0, *)
+private func createFlutterError(error: Error) -> FlutterError {
+    return FlutterError(code: "error", message: error.localizedDescription, details: nil)
 }
+
+private func createUnavailableError(minVersion: String) -> FlutterError {
+    return FlutterError(code: "unavailable", message: "Only available in iOS \(minVersion) on newer.", details: nil)
+}
+
+private func createTagNotFoundError() -> FlutterError {
+    return FlutterError(code: "not_found", message: "Tag is not found.", details: nil)
+}
+
