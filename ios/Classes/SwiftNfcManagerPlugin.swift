@@ -117,6 +117,204 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
                 commandPacket: arguments["commandPacket"] as! FlutterStandardTypedData
             )
             break
+        case "ISO15693#getSystemInfo":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693GetSystemInfo(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int]
+            )
+        case "ISO15693#readSingleBlock":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693ReadSingleBlock(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                blockNumber: arguments["blockNumber"] as! UInt8
+            )
+        case "ISO15693#writeSingleBlock":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693WriteSingleBlock(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                blockNumber: arguments["blockNumber"] as! UInt8,
+                dataBlock: arguments["dataBlock"] as! FlutterStandardTypedData
+            )
+        case "ISO15693#lockBlock":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693LockBlock(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                blockNumber: arguments["blockNumber"] as! UInt8
+            )
+        case "ISO15693#readMultipleBlocks":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693ReadMultipleBlocks(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                blockNumber: arguments["blockNumber"] as! UInt8,
+                numberOfBlocks: arguments["numberOfBlocks"] as! Int
+            )
+        case "ISO15693#writeMultipleBlocks":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693WriteMultipleBlocks(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                blockNumber: arguments["blockNumber"] as! UInt8,
+                numberOfBlocks: arguments["numberOfBlocks"] as! Int,
+                dataBlocks: arguments["dataBlocks"] as! [FlutterStandardTypedData]
+            )
+        case "ISO15693#getMultipleBlockSecurityStatus":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693GetMultipleBlockSecurityStatus(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                blockNumber: arguments["blockNumber"] as! UInt8,
+                numberOfBlocks: arguments["numberOfBlocks"] as! Int
+            )
+        case "ISO15693#writeAfi":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693WriteAfi(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                afi: arguments["afi"] as! UInt8
+            )
+        case "ISO15693#lockAfi":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693LockAfi(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int]
+            )
+        case "ISO15693#writeDsfId":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693WriteDsfId(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                dsfId: arguments["dsfId"] as! UInt8
+            )
+        case "ISO15693#lockDsfId":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693LockDsfId(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int]
+            )
+        case "ISO15693#resetToReady":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693ResetToReady(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int]
+            )
+        case "ISO15693#select":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693Select(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int]
+            )
+        case "ISO15693#stayQuiet":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693StayQuiet(
+                result: result,
+                handle: arguments["handle"] as! String
+            )
+        case "ISO15693#extendedReadSingleBlock":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693ExtendedReadSingleBlock(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                blockNumber: arguments["blockNumber"] as! Int
+            )
+        case "ISO15693#extendedWriteSingleBlock":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693ExtendedWriteSingleBlock(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                blockNumber: arguments["blockNumber"] as! Int,
+                dataBlock: arguments["dataBlock"] as! FlutterStandardTypedData
+            )
+        case "ISO15693#extendedLockBlock":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693ExtendedLockBlock(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                blockNumber: arguments["blockNumber"] as! Int
+            )
+        case "ISO15693#extendedReadMultipleBlocks":
+            guard #available(iOS 13.0, *) else {
+                result(createUnavailableError(minVersion: "13.0"))
+                return
+            }
+            handleISO15693ExtendedReadMultipleBlocks(
+                result: result,
+                handle: arguments["handle"] as! String,
+                requestFlags: arguments["requestFlags"] as! [Int],
+                blockNumber: arguments["blockNumber"] as! Int,
+                numberOfBlocks: arguments["numberOfBlocks"] as! Int
+            )
         case "ISO15693#customCommand":
             guard #available(iOS 13.0, *) else {
                 result(createUnavailableError(minVersion: "13.0"))
@@ -287,6 +485,366 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
     }
 
     @available(iOS 13.0, *)
+    private func handleISO15693GetSystemInfo(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int]
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.getSystemInfo(requestFlags: requestFlagFrom(requestFlags)) { p1, p2, p3, p4, p5, error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result([p1, p2, p3, p4, p5])
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693ReadSingleBlock(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        blockNumber: UInt8
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.readSingleBlock(requestFlags: requestFlagFrom(requestFlags), blockNumber: blockNumber) { data, error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(data)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693WriteSingleBlock(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        blockNumber: UInt8,
+        dataBlock: FlutterStandardTypedData
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.writeSingleBlock(requestFlags: requestFlagFrom(requestFlags), blockNumber: blockNumber, dataBlock: dataBlock.data) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693LockBlock(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        blockNumber: UInt8
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.lockBlock(requestFlags: requestFlagFrom(requestFlags), blockNumber: blockNumber) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693ReadMultipleBlocks(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        blockNumber: UInt8,
+        numberOfBlocks: Int
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.readMultipleBlocks(requestFlags: requestFlagFrom(requestFlags), blockRange: NSMakeRange(Int(blockNumber), numberOfBlocks)) { data, error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(data)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693WriteMultipleBlocks(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        blockNumber: UInt8,
+        numberOfBlocks: Int,
+        dataBlocks: [FlutterStandardTypedData]
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.writeMultipleBlocks(requestFlags: requestFlagFrom(requestFlags), blockRange: NSMakeRange(Int(blockNumber), numberOfBlocks), dataBlocks: dataBlocks.map { $0.data }) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693GetMultipleBlockSecurityStatus(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        blockNumber: UInt8,
+        numberOfBlocks: Int
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.getMultipleBlockSecurityStatus(requestFlags: requestFlagFrom(requestFlags), blockRange: NSMakeRange(Int(blockNumber), numberOfBlocks)) { data, error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(data)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693WriteAfi(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        afi: UInt8
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.writeAFI(requestFlags: requestFlagFrom(requestFlags), afi: afi) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693LockAfi(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int]
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.lockAFI(requestFlags: requestFlagFrom(requestFlags)) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693WriteDsfId(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        dsfId: UInt8
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.writeDSFID(requestFlags: requestFlagFrom(requestFlags), dsfid: dsfId) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693LockDsfId(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int]
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.lockDFSID(requestFlags: requestFlagFrom(requestFlags)) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693ResetToReady(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int]
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.resetToReady(requestFlags: requestFlagFrom(requestFlags)) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693Select(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int]
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.select(requestFlags: requestFlagFrom(requestFlags)) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693StayQuiet(
+        result: @escaping FlutterResult,
+        handle: String
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.stayQuiet() { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693ExtendedReadSingleBlock(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        blockNumber: Int
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.extendedReadSingleBlock(requestFlags: requestFlagFrom(requestFlags), blockNumber: blockNumber) { data, error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(data)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693ExtendedWriteSingleBlock(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        blockNumber: Int,
+        dataBlock: FlutterStandardTypedData
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.extendedWriteSingleBlock(requestFlags: requestFlagFrom(requestFlags), blockNumber: blockNumber, dataBlock: dataBlock.data) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693ExtendedLockBlock(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        blockNumber: Int
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.extendedLockBlock(requestFlags: requestFlagFrom(requestFlags), blockNumber: blockNumber) { error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(true)
+        }
+    }
+
+    @available(iOS 13.0, *)
+    private func handleISO15693ExtendedReadMultipleBlocks(
+        result: @escaping FlutterResult,
+        handle: String,
+        requestFlags: [Int],
+        blockNumber: Int,
+        numberOfBlocks: Int
+    ) {
+        guard let tech = techs[handle] as? NFCISO15693Tag else {
+            result(createTagNotFoundError())
+            return
+        }
+        tech.extendedReadMultipleBlocks(requestFlags: requestFlagFrom(requestFlags), blockRange: NSMakeRange(blockNumber, numberOfBlocks)) { data, error in
+            if let error = error {
+                result(createFlutterError(error: error))
+                return
+            }
+            result(data)
+        }
+    }
+
+    @available(iOS 13.0, *)
     private func handleISO15693CustomCommand(
         result: @escaping FlutterResult,
         handle: String,
@@ -426,4 +984,3 @@ private func createUnavailableError(minVersion: String) -> FlutterError {
 private func createTagNotFoundError() -> FlutterError {
     return FlutterError(code: "not_found", message: "Tag is not found.", details: nil)
 }
-

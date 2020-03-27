@@ -311,7 +311,261 @@ class ISO15693 {
   /// Returns null if the tag is not compatible with ISO15693.
   factory ISO15693.fromTag(NfcTag tag) => $iso15693FromTag(tag);
 
-  /// Send custom command (0xA0 to 0xDF command code) to the tag.
+  /// Sends the Get System Information command (0x2B command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.getSystemInfo` API.
+  Future<dynamic> getSystemInfo({
+    @required Set<ISO15693RequestFlag> requestFlags,
+  }) async {
+    return channel.invokeMethod('ISO15693#getSystemInfo', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+    });
+  }
+
+  /// Sends a Read Single Block command (0x20 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.readSingleBlock` API.
+  Future<Uint8List> readSingleBlock({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int blockNumber,
+  }) async {
+    return channel.invokeMethod('ISO15693#readSingleBlock', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'blockNumber': blockNumber % 256,
+    });
+  }
+
+  /// Sends the Write Single Block command (0x21 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.writeSingleBlock` API.
+  Future<bool> writeSingleBlock({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int blockNumber,
+    @required Uint8List dataBlock,
+  }) async {
+    return channel.invokeMethod('ISO15693#writeSingleBlock', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'blockNumber': blockNumber % 256,
+      'dataBlock': dataBlock,
+    });
+  }
+
+  /// Sends the Lock Block command (0x22 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.lockBlock` API.
+  Future<bool> lockBlock({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int blockNumber,
+  }) async {
+    return channel.invokeMethod('ISO15693#lockBlock', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'blockNumber': blockNumber % 256,
+    });
+  }
+
+  /// Sends the Read Multiple Blocks command (0x23 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.readMultipleBlocks` API.
+  Future<List<Uint8List>> readMultipleBlocks({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int blockNumber,
+    @required int numberOfBlocks,
+  }) async {
+    return channel.invokeMethod('ISO15693#readMultipleBlocks', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'blockNumber': blockNumber % 256,
+      'numberOfBlocks': numberOfBlocks,
+    });
+  }
+
+  /// Sends the Write Multiple Blocks command (0x24 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.writeMultipleBlocks` API.
+  Future<bool> writeMultipleBlocks({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int blockNumber,
+    @required int numberOfBlocks,
+    @required List<Uint8List> dataBlocks,
+  }) async {
+    return channel.invokeMethod('ISO15693#writeMultipleBlocks', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'blockNumber': blockNumber % 256,
+      'numberOfBlocks': numberOfBlocks,
+      'dataBlocks': dataBlocks,
+    });
+  }
+
+  /// Sends the Get Multiple Block Security Status command (0x2C command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.getMultipleBlockSecurityStatus` API.
+  Future<List<int>> getMultipleBlockSecurityStatus({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int blockNumber,
+    @required int numberOfBlocks,
+  }) async {
+    return channel.invokeMethod('ISO15693#getMultipleBlockSecurityStatus', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'blockNumber': blockNumber % 256,
+      'numberOfBlocks': numberOfBlocks,
+    });
+  }
+
+  /// Sends the Write AFI command (0x27 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.writeAFI` API.
+  Future<bool> writeAfi({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int afi,
+  }) async {
+    return channel.invokeMethod('ISO15693#writeAfi', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'afi': afi % 256,
+    });
+  }
+
+  /// Sends the Lock AFI command (0x28 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.lockAfi` API.
+  Future<bool> lockAfi({
+    @required Set<ISO15693RequestFlag> requestFlags,
+  }) async {
+    return channel.invokeMethod('ISO15693#lockAfi', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+    });
+  }
+
+  /// Sends the Write DSFID command (0x29 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.writeDSFID` API.
+  Future<bool> writeDsfId({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int dsfId,
+  }) async {
+    return channel.invokeMethod('ISO15693#writeDsfId', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'dsfId': dsfId % 256,
+    });
+  }
+
+  /// Sends the Lock DSFID command (0x2A command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.lockDSFID` API.
+  Future<bool> lockDsfId({
+    @required Set<ISO15693RequestFlag> requestFlags,
+  }) async {
+    return channel.invokeMethod('ISO15693#lockDsfId', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+    });
+  }
+
+  /// Sends the Reset To Ready command (0x26 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.resetToReady` API.
+  Future<bool> resetToReady({
+    @required Set<ISO15693RequestFlag> requestFlags,
+  }) async {
+    return channel.invokeMethod('ISO15693#resetToReady', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+    });
+  }
+
+  /// Sends the Select command (0x25 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.select` API.
+  Future<bool> select({
+    @required Set<ISO15693RequestFlag> requestFlags,
+  }) async {
+    return channel.invokeMethod('ISO15693#select', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+    });
+  }
+
+  /// Sends the Stay Quiet command (0x02 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.stayQuiet` API.
+  Future<bool> stayQuiet({
+    @required Set<ISO15693RequestFlag> requestFlags,
+  }) async {
+    return channel.invokeMethod('ISO15693#stayQuiet', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+    });
+  }
+
+  /// Sends the Extended Read Single Block command (0x30 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.extendedReadSingleBlock` API.
+  Future<Uint8List> extendedReadSingleBlock({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int blockNumber,
+  }) async {
+    return channel.invokeMethod('ISO15693#extendedReadSingleBlock', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'blockNumber': blockNumber,
+    });
+  }
+
+  /// Sends the Extended Write Single Block command (0x31 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.extendedWriteSingleBlock` API.
+  Future<bool> extendedWriteSingleBlock({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int blockNumber,
+    @required Uint8List dataBlock,
+  }) async {
+    return channel.invokeMethod('ISO15693#extendedWriteSingleBlock', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'blockNumber': blockNumber,
+      'dataBlock': dataBlock,
+    });
+  }
+
+  /// Sends the Extended Lock Block command (0x32 command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.extendedLockBlock` API.
+  Future<bool> extendedLockBlock({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int blockNumber,
+  }) async {
+    return channel.invokeMethod('ISO15693#extendedLockBlock', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'blockNumber': blockNumber,
+    });
+  }
+
+  /// Sends the Extended Read Multiple Blocks command (0x3s command code) to the tag.
+  ///
+  /// This wraps the iOS platform `NFCISO15693Tag.extendedReadMultipleBlocks` API.
+  Future<Uint8List> extendedReadMultipleBlocks({
+    @required Set<ISO15693RequestFlag> requestFlags,
+    @required int blockNumber,
+    @required int numberOfBlocks,
+  }) async {
+    return channel.invokeMethod('ISO15693#extendedReadMultipleBlocks', {
+      'handle': tag.handle,
+      'requestFlags': requestFlags.map((e) => e.index).toList(),
+      'blockNumber': blockNumber,
+      'numberOfBlocks': numberOfBlocks,
+    });
+  }
+
+  /// Sends custom command (0xA0 to 0xDF command code) to the tag.
   ///
   /// This wraps the iOS platform `NFCISO15693Tag.customCommand` API.
   Future<Uint8List> customCommand({
