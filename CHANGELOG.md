@@ -1,3 +1,7 @@
+## 1.4.0
+
+* add ISO15693 commands implementation.
+
 ## 1.3.1
 
 * fix a bug where the error callback was not called.
