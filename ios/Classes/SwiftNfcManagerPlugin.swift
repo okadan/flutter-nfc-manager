@@ -170,7 +170,7 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
                 result: result,
                 handle: arguments["handle"] as! String,
                 requestFlags: arguments["requestFlags"] as! [Int],
-                blockNumber: arguments["blockNumber"] as! UInt8,
+                blockNumber: arguments["blockNumber"] as! Int,
                 numberOfBlocks: arguments["numberOfBlocks"] as! Int
             )
         case "ISO15693#writeMultipleBlocks":
@@ -182,7 +182,7 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
                 result: result,
                 handle: arguments["handle"] as! String,
                 requestFlags: arguments["requestFlags"] as! [Int],
-                blockNumber: arguments["blockNumber"] as! UInt8,
+                blockNumber: arguments["blockNumber"] as! Int,
                 numberOfBlocks: arguments["numberOfBlocks"] as! Int,
                 dataBlocks: arguments["dataBlocks"] as! [FlutterStandardTypedData]
             )
@@ -195,7 +195,7 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
                 result: result,
                 handle: arguments["handle"] as! String,
                 requestFlags: arguments["requestFlags"] as! [Int],
-                blockNumber: arguments["blockNumber"] as! UInt8,
+                blockNumber: arguments["blockNumber"] as! Int,
                 numberOfBlocks: arguments["numberOfBlocks"] as! Int
             )
         case "ISO15693#writeAfi":
@@ -569,14 +569,14 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
         result: @escaping FlutterResult,
         handle: String,
         requestFlags: [Int],
-        blockNumber: UInt8,
+        blockNumber: Int,
         numberOfBlocks: Int
     ) {
         guard let tech = techs[handle] as? NFCISO15693Tag else {
             result(createTagNotFoundError())
             return
         }
-        tech.readMultipleBlocks(requestFlags: requestFlagFrom(requestFlags), blockRange: NSMakeRange(Int(blockNumber), numberOfBlocks)) { data, error in
+        tech.readMultipleBlocks(requestFlags: requestFlagFrom(requestFlags), blockRange: NSMakeRange(blockNumber, numberOfBlocks)) { data, error in
             if let error = error {
                 result(createFlutterError(error: error))
                 return
@@ -590,7 +590,7 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
         result: @escaping FlutterResult,
         handle: String,
         requestFlags: [Int],
-        blockNumber: UInt8,
+        blockNumber: Int,
         numberOfBlocks: Int,
         dataBlocks: [FlutterStandardTypedData]
     ) {
@@ -598,7 +598,7 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
             result(createTagNotFoundError())
             return
         }
-        tech.writeMultipleBlocks(requestFlags: requestFlagFrom(requestFlags), blockRange: NSMakeRange(Int(blockNumber), numberOfBlocks), dataBlocks: dataBlocks.map { $0.data }) { error in
+        tech.writeMultipleBlocks(requestFlags: requestFlagFrom(requestFlags), blockRange: NSMakeRange(blockNumber, numberOfBlocks), dataBlocks: dataBlocks.map { $0.data }) { error in
             if let error = error {
                 result(createFlutterError(error: error))
                 return
@@ -612,14 +612,14 @@ public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
         result: @escaping FlutterResult,
         handle: String,
         requestFlags: [Int],
-        blockNumber: UInt8,
+        blockNumber: Int,
         numberOfBlocks: Int
     ) {
         guard let tech = techs[handle] as? NFCISO15693Tag else {
             result(createTagNotFoundError())
             return
         }
-        tech.getMultipleBlockSecurityStatus(requestFlags: requestFlagFrom(requestFlags), blockRange: NSMakeRange(Int(blockNumber), numberOfBlocks)) { data, error in
+        tech.getMultipleBlockSecurityStatus(requestFlags: requestFlagFrom(requestFlags), blockRange: NSMakeRange(blockNumber, numberOfBlocks)) { data, error in
             if let error = error {
                 result(createFlutterError(error: error))
                 return

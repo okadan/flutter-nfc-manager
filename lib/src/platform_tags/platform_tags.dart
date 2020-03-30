@@ -378,7 +378,7 @@ class ISO15693 {
     final List result = await channel.invokeMethod('ISO15693#readMultipleBlocks', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
-      'blockNumber': blockNumber % 256,
+      'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
     });
     return List<Uint8List>.from(result);
@@ -396,7 +396,7 @@ class ISO15693 {
     return channel.invokeMethod('ISO15693#writeMultipleBlocks', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
-      'blockNumber': blockNumber % 256,
+      'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
       'dataBlocks': dataBlocks,
     });
@@ -413,7 +413,7 @@ class ISO15693 {
     final List result = await channel.invokeMethod('ISO15693#getMultipleBlockSecurityStatus', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
-      'blockNumber': blockNumber % 256,
+      'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
     });
     return List<int>.from(result);
@@ -551,7 +551,7 @@ class ISO15693 {
     });
   }
 
-  /// Sends the Extended Read Multiple Blocks command (0x3s command code) to the tag.
+  /// Sends the Extended Read Multiple Blocks command (0x33 command code) to the tag.
   ///
   /// This wraps the iOS platform `NFCISO15693Tag.extendedReadMultipleBlocks` API.
   Future<List<Uint8List>> extendedReadMultipleBlocks({
