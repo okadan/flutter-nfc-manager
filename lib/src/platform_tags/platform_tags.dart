@@ -375,12 +375,13 @@ class ISO15693 {
     @required int blockNumber,
     @required int numberOfBlocks,
   }) async {
-    return channel.invokeMethod('ISO15693#readMultipleBlocks', {
+    final List result = await channel.invokeMethod('ISO15693#readMultipleBlocks', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
       'blockNumber': blockNumber % 256,
       'numberOfBlocks': numberOfBlocks,
     });
+    return List<Uint8List>.from(result);
   }
 
   /// Sends the Write Multiple Blocks command (0x24 command code) to the tag.
@@ -409,12 +410,13 @@ class ISO15693 {
     @required int blockNumber,
     @required int numberOfBlocks,
   }) async {
-    return channel.invokeMethod('ISO15693#getMultipleBlockSecurityStatus', {
+    final List result = await channel.invokeMethod('ISO15693#getMultipleBlockSecurityStatus', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
       'blockNumber': blockNumber % 256,
       'numberOfBlocks': numberOfBlocks,
     });
+    return List<int>.from(result);
   }
 
   /// Sends the Write AFI command (0x27 command code) to the tag.
@@ -552,17 +554,18 @@ class ISO15693 {
   /// Sends the Extended Read Multiple Blocks command (0x3s command code) to the tag.
   ///
   /// This wraps the iOS platform `NFCISO15693Tag.extendedReadMultipleBlocks` API.
-  Future<Uint8List> extendedReadMultipleBlocks({
+  Future<List<Uint8List>> extendedReadMultipleBlocks({
     @required Set<ISO15693RequestFlag> requestFlags,
     @required int blockNumber,
     @required int numberOfBlocks,
   }) async {
-    return channel.invokeMethod('ISO15693#extendedReadMultipleBlocks', {
+    final List result = await channel.invokeMethod('ISO15693#extendedReadMultipleBlocks', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
       'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
     });
+    return List<Uint8List>.from(result);
   }
 
   /// Sends custom command (0xA0 to 0xDF command code) to the tag.
