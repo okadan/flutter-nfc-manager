@@ -77,15 +77,19 @@ class NdefRecord {
     this.payload,
   );
 
+  /// The typeNameFormat, as defined by the NDEF specification.
   final int typeNameFormat;
 
+  /// The type, as defined by the NDEF specification.
   final Uint8List type;
 
+  /// The identifier, as defined by the NDEF specification.
   final Uint8List identifier;
 
+  /// The payload, as defined by the NDEF specification.
   final Uint8List payload;
 
-  /// Length in bytes that stored on this record.
+  /// A length in bytes that stored on this record.
   int get byteLength {
     int length = 3 + type.length + identifier.length + payload.length;
 
@@ -100,7 +104,7 @@ class NdefRecord {
     return length;
   }
 
-  /// Create an NDEF record from its component fields.
+  /// Creates an NDEF record from its component fields.
   ///
   /// Recommended to use other factory constructors such as `createExternalRecord` where possible,
   /// since they perform validation that the record is correctly formatted as NDEF.
@@ -120,7 +124,7 @@ class NdefRecord {
     return NdefRecord._(typeNameFormat, _type, _identifier, _payload);
   }
 
-  /// Create an NDEF record containing external (applicattion-specific) data.
+  /// Creates an NDEF record containing external (applicattion-specific) data.
   factory NdefRecord.createExternal(String domain, String type, Uint8List data) {
     if (domain == null)
       throw('domain is null');
@@ -147,7 +151,7 @@ class NdefRecord {
     );
   }
 
-  /// Create an NDEF record containing a mime data.
+  /// Creates an NDEF record containing a mime data.
   factory NdefRecord.createMime(String type, Uint8List data) {
     if (type == null)
       throw('type is null');
@@ -169,7 +173,7 @@ class NdefRecord {
     );
   }
 
-  /// Create an NDEF record containing a UTF-8 text.
+  /// Creates an NDEF record containing a UTF-8 text.
   ///
   /// Can specify the `languageCode` for the provided text. The default is 'en'.
   factory NdefRecord.createText(String text, {String languageCode}) {
@@ -190,7 +194,7 @@ class NdefRecord {
     );
   }
 
-  /// Create an NDEF record containing a uri.
+  /// Creates an NDEF record containing a uri.
   factory NdefRecord.createUri(Uri uri) {
     if (uri == null)
       throw('uri is null');

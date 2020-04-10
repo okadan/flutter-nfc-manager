@@ -185,13 +185,13 @@ class Ndef {
 
   final NfcTag tag;
 
-  /// NDEF message that was read from the tag at discovery time.
+  /// An NDEF message that was read from the tag at discovery time.
   final NdefMessage cachedMessage;
 
   /// Indicates whether the tag can be written with NDEF Message.
   final bool isWritable;
 
-  /// The maximum NDEF message size in bytes, that you can store.
+  /// A maximum NDEF message size in bytes, that you can store.
   final int maxSize;
 
   /// Get an instance of `Ndef` for the given tag.

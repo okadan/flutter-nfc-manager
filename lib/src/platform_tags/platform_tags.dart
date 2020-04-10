@@ -17,12 +17,16 @@ class NfcA {
     @required this.sak,
   });
 
+  /// A tag object discovered by the session.
   final NfcTag tag;
 
+  /// A value from the `Tag#id` property on Android.
   final Uint8List identifier;
 
+  /// A value from the `NfcA#atqa` property on Android.
   final Uint8List atqa;
 
+  /// A value from the `NfcA#sak` property on Android.
   final int sak;
 
   /// Get an instance of `NfcA` for the given tag.
@@ -30,7 +34,7 @@ class NfcA {
   /// Returns null if the tag is not compatible with NFC-A.
   factory NfcA.fromTag(NfcTag tag) => $nfcAFromTag(tag);
 
-  /// Send raw NFC-A commands to the tag.
+  /// Sends raw NFC-A commands to the tag.
   ///
   /// This wraps the Android platform `NfcA.transceive` API.
   Future<Uint8List> transceive(Uint8List data) async {
@@ -52,12 +56,16 @@ class NfcB {
     @required this.protocolInfo,
   });
 
+  /// A tag object discovered by the session.
   final NfcTag tag;
 
+  /// A value from the `Tag#id` property on Android.
   final Uint8List identifier;
 
+  /// A value from the `NfcB#applicationData` property on Android.
   final Uint8List applicationData;
 
+  /// A value from the `NfcB#protocolInfo` property on Android.
   final Uint8List protocolInfo;
 
   /// Get an instance of `NfcB` for the given tag.
@@ -65,7 +73,7 @@ class NfcB {
   /// Returns null if the tag is not compatible with NFC-B.
   factory NfcB.fromTag(NfcTag tag) => $nfcBFromTag(tag);
 
-  /// Send raw NFC-B commands to the tag.
+  /// Sends raw NFC-B commands to the tag.
   ///
   /// This wraps the Android platform `NfcB.transceive` API.
   Future<Uint8List> transceive(Uint8List data) async {
@@ -87,12 +95,16 @@ class NfcF {
     @required this.systemCode,
   });
 
+  /// A tag object discovered by the session.
   final NfcTag tag;
 
+  /// A value from the `Tag#id` property on Android.
   final Uint8List identifier;
 
+  /// A value from the `NfcV#manufacturer` property on Android.
   final Uint8List manufacturer;
 
+  /// A value from the `NfcF#systemCode` property on Android.
   final Uint8List systemCode;
 
   /// Get an instance of `NfcF` for the given tag.
@@ -100,7 +112,7 @@ class NfcF {
   /// Returns null if the tag is not compatible with NFC-F.
   factory NfcF.fromTag(NfcTag tag) => $nfcFFromTag(tag);
 
-  /// Send raw NFC-F commands to the tag.
+  /// Sends raw NFC-F commands to the tag.
   ///
   /// This wraps the Android platform `NfcF.transceive` API.
   Future<Uint8List> transceive(Uint8List data) async {
@@ -122,12 +134,16 @@ class NfcV {
     @required this.responseFlags,
   });
 
+  /// A tag object discovered by the session.
   final NfcTag tag;
 
+  /// A value from the `Tag#id` property on Android.
   final Uint8List identifier;
 
+  /// A value from the `NfcV#dsfId` property on Android.
   final int dsfId;
 
+  /// A value from the `NfcV#responseFlags` property on Android.
   final int responseFlags;
 
   /// Get an instance of `NfcV` for the given tag.
@@ -135,7 +151,7 @@ class NfcV {
   /// Returns null if the tag is not compatible with NFC-V.
   factory NfcV.fromTag(NfcTag tag) => $nfcVFromTag(tag);
 
-  /// Send raw NFC-V commands to the tag.
+  /// Sends raw NFC-V commands to the tag.
   ///
   /// This wraps the Android platform `NfcV.transceive` API.
   Future<Uint8List> transceive(Uint8List data) async {
@@ -158,14 +174,19 @@ class IsoDep {
     @required this.isExtendedLengthApduSupported,
   });
 
+  /// A tag object discovered by the session.
   final NfcTag tag;
 
+  /// A value from the `Tag#id` property on Android.
   final Uint8List identifier;
 
+  /// A value from the `IsoDep#hiLayerResponse` property on Android.
   final Uint8List hiLayerResponse;
 
+  /// A value from the `IsoDep#historicalBytes` property on Android.
   final Uint8List historicalBytes;
 
+  /// A value from the `IsoDep#isExtendedLengthApduSupported` property on Android.
   final bool isExtendedLengthApduSupported;
 
   /// Get an instance of `IsoDep` for the given tag.
@@ -173,7 +194,7 @@ class IsoDep {
   /// Returns null if the tag is not compatible with ISO14443-4.
   factory IsoDep.fromTag(NfcTag tag) => $isoDepFromTag(tag);
 
-  /// Send raw ISO-DEP data to the tag.
+  /// Sends raw ISO-DEP data to the tag.
   ///
   /// This wraps the Android platform `IsoDep.transceive` API.
   Future<Uint8List> transceive(Uint8List data) async {
@@ -195,12 +216,16 @@ class MiFare {
     @required this.historicalBytes,
   });
 
+  /// A tag object discovered by the session.
   final NfcTag tag;
 
+  /// A value from the `NFCMiFareTag#mifareFamily` property on iOS.
   final int mifareFamily;
 
+  /// A value from the `NFCMiFareTag#identifier` property on iOS.
   final Uint8List identifier;
 
+  /// A value from the `NFCMiFareTag#historicalBytes` property on iOS.
   final Uint8List historicalBytes;
 
   /// Get an instance of `MiFare` for the given tag.
@@ -208,7 +233,7 @@ class MiFare {
   /// Returns null if the tag is not compatible with MiFare.
   factory MiFare.fromTag(NfcTag tag) => $miFareFromTag(tag);
 
-  /// Send native MiFare command to the tag.
+  /// Sends native MiFare command to the tag.
   ///
   /// This wraps the iOS platform `NFCMiFareTag.sendMiFareCommand` API.
   Future<Uint8List> sendMiFareCommand(Uint8List commandPacket) async {
@@ -218,7 +243,7 @@ class MiFare {
     });
   }
 
-  /// Send APDU to the tag.
+  /// Sends APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCMiFareTag.sendMiFareISO7816Command` API.
   Future<Uint8List> sendMiFareISO7816Command({
@@ -242,7 +267,7 @@ class MiFare {
     });
   }
 
-  /// Send raw APDU to the tag.
+  /// Sends raw APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCMiFareTag.sendMiFareISO7816Command` API with apdu instantiated with raw bytes.
   Future<Uint8List> sendMiFareISO7816CommandRaw(Uint8List data) async {
@@ -265,10 +290,13 @@ class FeliCa {
     @required this.currentIDm,
   });
 
+  /// A tag object discovered by the session.
   final NfcTag tag;
 
+  /// A value from the `NFCFeliCaTag#currentSystemCode` property on iOS.
   final Uint8List currentSystemCode;
 
+  /// A value from the `NFCFeliCaTag#currentIDm` property on iOS.
   final Uint8List currentIDm;
 
   /// Get an instance of `FeliCa` for the given tag.
@@ -276,7 +304,7 @@ class FeliCa {
   /// Returns null if the tag is not compatible with FeliCa.
   factory FeliCa.fromTag(NfcTag tag) => $felicaFromTag(tag);
 
-  /// Send FeliCa command to the tag.
+  /// Sends FeliCa command to the tag.
   ///
   /// This wraps the iOS platform `NFCFeliCaTag.sendFeliCaCommand` API.
   Future<Uint8List> sendFeliCaCommand(Uint8List commandPacket) async {
@@ -298,12 +326,16 @@ class ISO15693 {
     @required this.identifier,
   });
 
+  /// A tag object discovered by the session.
   final NfcTag tag;
 
+  /// A value from the `NFCISO15693Tag#icManufacturerCode` property on iOS.
   final int icManufacturerCode;
 
+  /// A value from the `NFCISO15693Tag#icSerialNumber` property on iOS.
   final Uint8List icSerialNumber;
 
+  /// A value from the `NFCISO15693Tag#identifier` property on iOS.
   final Uint8List identifier;
 
   /// Get an instance of `ISO15693` for the given tag.
@@ -323,7 +355,7 @@ class ISO15693 {
     });
   }
 
-  /// Sends a Read Single Block command (0x20 command code) to the tag.
+  /// Sends the Read Single Block command (0x20 command code) to the tag.
   ///
   /// This wraps the iOS platform `NFCISO15693Tag.readSingleBlock` API.
   Future<Uint8List> readSingleBlock({
@@ -598,16 +630,22 @@ class ISO7816 {
     @required this.proprietaryApplicationDataCoding,
   });
 
+  /// A tag object discovered by the session.
   final NfcTag tag;
 
+  /// A value from the `NFCISO7816Tag#initialSelectedAID` property on iOS.
   final String initialSelectedAID;
 
+  /// A value from the `NFCISO7816Tag#identifier` property on iOS.
   final Uint8List identifier;
 
+  /// A value from the `NFCISO7816Tag#historicalBytes` property on iOS.
   final Uint8List historicalBytes;
 
+  /// A value from the `NFCISO7816Tag#applicationData` property on iOS.
   final Uint8List applicationData;
 
+  /// A value from the `NFCISO7816Tag#proprietaryApplicationDataCoding` property on iOS.
   final bool proprietaryApplicationDataCoding;
 
   /// Get an instance of `ISO7816` for the given tag.
@@ -615,7 +653,7 @@ class ISO7816 {
   /// Returns null if the tag is not compatible with ISO7816.
   factory ISO7816.fromTag(NfcTag tag) => $iso7816FromTag(tag);
 
-  /// Send APDU to the tag.
+  /// Sends APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCISO7816Tag.sendCommand` API.
   Future<Uint8List> sendCommand({
@@ -639,7 +677,7 @@ class ISO7816 {
     });
   }
 
-  /// Send raw APDU to the tag.
+  /// Sends raw APDU to the tag.
   ///
   /// This wraps the iOS platform `NFCISO7816Tag.sendCommand` API with apdu instantiated with raw bytes.
   Future<Uint8List> sendCommandRaw(Uint8List data) async {
@@ -654,10 +692,21 @@ class ISO7816 {
 
 /// Represents iOS platform `NFCISO15693Tag.RequestFlag`.
 enum ISO15693RequestFlag {
+  /// Rrepresents `RequestFlag#dualSubCarriers`.
   dualSubCarriers,
+
+  /// Rrepresents `RequestFlag#highDataRate`.
   highDataRate,
+
+  /// Rrepresents `RequestFlag#protocolExtension`.
   protocolExtension,
+
+  /// Rrepresents `RequestFlag#select`.
   select,
+
+  /// Rrepresents `RequestFlag#address`.
   address,
+
+  /// Rrepresents `RequestFlag#option`.
   option,
 }
