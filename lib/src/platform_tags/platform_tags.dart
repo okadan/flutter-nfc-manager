@@ -365,7 +365,7 @@ class ISO15693 {
     return channel.invokeMethod('ISO15693#readSingleBlock', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
-      'blockNumber': blockNumber % 256,
+      'blockNumber': blockNumber.toUnsigned(8),
     });
   }
 
@@ -380,7 +380,7 @@ class ISO15693 {
     return channel.invokeMethod('ISO15693#writeSingleBlock', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
-      'blockNumber': blockNumber % 256,
+      'blockNumber': blockNumber.toUnsigned(8),
       'dataBlock': dataBlock,
     });
   }
@@ -395,7 +395,7 @@ class ISO15693 {
     return channel.invokeMethod('ISO15693#lockBlock', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
-      'blockNumber': blockNumber % 256,
+      'blockNumber': blockNumber.toUnsigned(8),
     });
   }
 
@@ -461,7 +461,7 @@ class ISO15693 {
     return channel.invokeMethod('ISO15693#writeAfi', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
-      'afi': afi % 256,
+      'afi': afi.toUnsigned(8),
     });
   }
 
@@ -487,7 +487,7 @@ class ISO15693 {
     return channel.invokeMethod('ISO15693#writeDsfId', {
       'handle': tag.handle,
       'requestFlags': requestFlags.map((e) => e.index).toList(),
-      'dsfId': dsfId % 256,
+      'dsfId': dsfId.toUnsigned(8),
     });
   }
 
