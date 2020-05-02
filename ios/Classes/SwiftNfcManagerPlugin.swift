@@ -390,10 +390,10 @@ extension Error {
     @available(iOS 11.0, *)
     func toFlutterError() -> FlutterError {
         if let error = self as? NFCReaderError {
-            return FlutterError(code: "\(error.code)", message: error.localizedDescription, details: error.userInfo)
+            return FlutterError(code: "\(error.code)", message: error.localizedDescription, details: nil)
         }
 
         let error = self as NSError
-        return FlutterError(code: "error_\(error.code)", message: error.localizedDescription, details: error.userInfo)
+        return FlutterError(code: "error_\(error.code)", message: error.localizedDescription, details: nil)
     }
 }
