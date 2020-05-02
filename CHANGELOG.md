@@ -2,6 +2,10 @@
 
 * add ISO15693 commands implementation.
 
+## 1.3.2
+
+* fix crash on Ndef write and writeLock error.
+
 ## 1.3.1
 
 * fix a bug where the error callback was not called.

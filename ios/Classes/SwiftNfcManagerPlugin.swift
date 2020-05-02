@@ -972,6 +972,7 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
     }
 }
 
+
 @available(iOS 11.0, *)
 private func createFlutterError(error: Error) -> FlutterError {
     return FlutterError(code: "error", message: error.localizedDescription, details: nil)
