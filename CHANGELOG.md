@@ -1,3 +1,15 @@
+## 1.3.2+3
+
+* update README.
+
+## 1.3.2+2
+
+* update README.
+
+## 1.3.2+1
+
+* update README.
+
 ## 1.3.2
 
 * fix crash on Ndef write and writeLock error.
