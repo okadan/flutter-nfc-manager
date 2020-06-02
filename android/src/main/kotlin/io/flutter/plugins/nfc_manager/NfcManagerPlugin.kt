@@ -10,6 +10,8 @@ import android.nfc.tech.NfcF
 import android.nfc.tech.NfcV
 import android.nfc.tech.TagTechnology
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import androidx.annotation.NonNull
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
@@ -19,6 +21,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.io.IOException
 import java.lang.reflect.InvocationTargetException
 import java.util.*
+import kotlin.concurrent.thread
 
 class NfcManagerPlugin(private val registrar: Registrar, private val channel: MethodChannel): MethodCallHandler {
     private val adapter = NfcAdapter.getDefaultAdapter(registrar.context())
@@ -34,20 +37,23 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
     }
 
     override fun onMethodCall(@NonNull call: MethodCall, @NonNull result: Result) {
+        // Send results via the main thread
+        val _result = MethodResultWrapper(result)
+
         when (call.method) {
-            "isAvailable" -> handleIsAvailable(call, result)
-            "startNdefSession" -> handleStartNdefSession(call, result)
-            "startTagSession" -> handleStartTagSession(call, result)
-            "stopSession" -> handleStopSession(call, result)
-            "disposeTag" -> handleDisposeTag(call, result)
-            "Ndef#write" -> handleNdefWrite(call, result)
-            "Ndef#writeLock" -> handleNdefWriteLock(call, result)
-            "NfcA#transceive" -> handleTransceive(NfcA::class.java, call, result)
-            "NfcB#transceive" -> handleTransceive(NfcB::class.java, call, result)
-            "NfcF#transceive" -> handleTransceive(NfcF::class.java, call, result)
-            "NfcV#transceive" -> handleTransceive(NfcV::class.java, call, result)
-            "IsoDep#transceive" -> handleTransceive(IsoDep::class.java, call, result)
-            else -> result.notImplemented()
+            "isAvailable" -> handleIsAvailable(call, _result)
+            "startNdefSession" -> handleStartNdefSession(call, _result)
+            "startTagSession" -> handleStartTagSession(call, _result)
+            "stopSession" -> handleStopSession(call, _result)
+            "disposeTag" -> handleDisposeTag(call, _result)
+            "Ndef#write" -> handleNdefWrite(call, _result)
+            "Ndef#writeLock" -> handleNdefWriteLock(call, _result)
+            "NfcA#transceive" -> handleTransceive(NfcA::class.java, call, _result)
+            "NfcB#transceive" -> handleTransceive(NfcB::class.java, call, _result)
+            "NfcF#transceive" -> handleTransceive(NfcF::class.java, call, _result)
+            "NfcV#transceive" -> handleTransceive(NfcV::class.java, call, _result)
+            "IsoDep#transceive" -> handleTransceive(IsoDep::class.java, call, _result)
+            else -> _result.notImplemented()
         }
     }
 
@@ -99,14 +105,16 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
             return
         }
 
-        connectedTech?.let { tech ->
-            if (tech.tag == tag && tech.isConnected) {
-                try { tech.close() } catch (e: IOException) { /* Do nothing */ }
+        thread {
+            connectedTech?.let { tech ->
+                if (tech.tag == tag && tech.isConnected) {
+                    try { tech.close() } catch (e: IOException) { /* Do nothing */ }
+                }
+                connectedTech = null
             }
-            connectedTech = null
-        }
 
-        result.success(true)
+            result.success(true)
+        }
     }
 
     private fun handleNdefWrite(@NonNull call: MethodCall, @NonNull result: Result) {
@@ -123,12 +131,14 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
             return
         }
 
-        try {
-            forceConnect(tech)
-            tech.writeNdefMessage(ndefMessageFrom(message))
-            result.success(true)
-        } catch (e: IOException) {
-            result.error("io_exception", e.localizedMessage, null)
+        thread {
+            try {
+                forceConnect(tech)
+                tech.writeNdefMessage(ndefMessageFrom(message))
+                result.success(true)
+            } catch (e: IOException) {
+                result.error("io_exception", e.localizedMessage, null)
+            }
         }
     }
 
@@ -145,12 +155,14 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
             return
         }
 
-        try {
-            forceConnect(tech)
-            tech.makeReadOnly()
-            result.success(true)
-        } catch (e: IOException) {
-            result.error("io_exception", e.localizedMessage, null)
+        thread {
+            try {
+                forceConnect(tech)
+                tech.makeReadOnly()
+                result.success(true)
+            } catch (e: IOException) {
+                result.error("io_exception", e.localizedMessage, null)
+            }
         }
     }
 
@@ -168,16 +180,18 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
             return
         }
 
-        try {
-            val transceiveMethod = techClass.getMethod("transceive", ByteArray::class.java)
-            forceConnect(tech)
-            result.success(transceiveMethod.invoke(tech, data))
-        } catch (e: IOException) {
-            result.error("io_exception", e.localizedMessage, null)
-        } catch (e: IllegalAccessException) {
-            result.error("illegal_access_exception", e.localizedMessage, null)
-        } catch (e: InvocationTargetException) {
-            result.error("invocation_target_exception", e.localizedMessage, null)
+        thread {
+            try {
+                val transceiveMethod = techClass.getMethod("transceive", ByteArray::class.java)
+                forceConnect(tech)
+                result.success(transceiveMethod.invoke(tech, data))
+            } catch (e: IOException) {
+                result.error("io_exception", e.localizedMessage, null)
+            } catch (e: IllegalAccessException) {
+                result.error("illegal_access_exception", e.localizedMessage, null)
+            } catch (e: InvocationTargetException) {
+                result.error("invocation_target_exception", e.localizedMessage, null)
+            }
         }
     }
 
@@ -191,6 +205,22 @@ class NfcManagerPlugin(private val registrar: Registrar, private val channel: Me
         } ?: run {
             tech.connect()
             connectedTech = tech
+        }
+    }
+
+    private class MethodResultWrapper internal constructor(private val methodResult: Result) : Result {
+        private val handler: Handler = Handler(Looper.getMainLooper())
+
+        override fun success(result: Any?) {
+            handler.post { methodResult.success(result) }
+        }
+
+        override fun error(errorCode: String, errorMessage: String?, errorDetails: Any?) {
+            handler.post { methodResult.error(errorCode, errorMessage, errorDetails) }
+        }
+
+        override fun notImplemented() {
+            handler.post { methodResult.notImplemented() }
         }
     }
 }
