@@ -1,4 +1,4 @@
-# nfc_manager
+# NFC for Flutter
 
 A Flutter plugin to manage the NFC features. Supported on both Android and iOS.
 
@@ -25,9 +25,11 @@ A Flutter plugin to manage the NFC features. Supported on both Android and iOS.
 bool isAvailable = await NfcManager.instance.isAvailable();
 
 // Start session and register callback.
-NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) async {
-  // Manipulating tag
-});
+NfcManager.instance.startTagSession(
+  onDiscovered: (NfcTag tag) async {
+    // Manipulating tag
+  },
+);
 
 // Stop session and unregister callback.
 NfcManager.instance.stopSession();
@@ -44,7 +46,7 @@ if (ndef == null) {
   return;
 }
 
-// Get an NdefMessage instance cached at discovery time
+// You can get an NdefMessage instance cached at discovery time
 NdefMessage cachedMessage = ndef.cachedMessage;
 
 // Create an NdefMessage instance you want to write.
@@ -65,7 +67,6 @@ try {
   await ndef.write(message);
 } catch (e) {
   // handle error
-  return;
 }
 ```
 
@@ -88,7 +89,7 @@ The following platform-specific-tag classes are available:
 * NfcV
 * IsoDep
 
-**Example**
+**Usage**
 
 ``` dart
 MiFare miFare = MiFare.fromTag(tag);
@@ -100,3 +101,7 @@ if (miFare == null) {
 
 Uint8List response = await miFare.sendMiFareCommand(...);
 ```
+
+## Example App
+
+See [this repo](https://github.com/okadan/nfc-manager) which is a Real-World-App demonstrates how to use this plugin.
