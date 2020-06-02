@@ -1,4 +1,4 @@
-# nfc_manager
+# NFC for Flutter
 
 A Flutter plugin to manage the NFC features. Supported on both Android and iOS.
 
