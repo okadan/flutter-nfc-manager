@@ -14,11 +14,14 @@ Podfile.lock
 Pods/
 .symlinks/
 **/Flutter/App.framework/
+**/Flutter/ephemeral/
 **/Flutter/Flutter.framework/
 **/Flutter/Generated.xcconfig
 **/Flutter/flutter_assets/
+
 ServiceDefinitions.json
 xcuserdata/
+**/DerivedData/
 
 local.properties
 keystore.properties
@@ -26,11 +29,17 @@ keystore.properties
 gradlew
 gradlew.bat
 gradle-wrapper.jar
+.flutter-plugins-dependencies
 *.iml
 
+generated_plugin_registrant.dart
 GeneratedPluginRegistrant.h
 GeneratedPluginRegistrant.m
 GeneratedPluginRegistrant.java
+GeneratedPluginRegistrant.swift
 build/
 .flutter-plugins
-.flutter-plugins-dependencies
+
+.project
+.classpath
+.settings

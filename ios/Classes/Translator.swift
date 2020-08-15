@@ -1,237 +1,157 @@
 import CoreNFC
 
 @available(iOS 13.0, *)
-func serialize(_ tag: NFCTag, _ completionHandler: @escaping (NFCNDEFTag, [String:Any?], Error?) -> Void) {
-    switch (tag) {
-    case .feliCa(let tech):
-        serialize(tech) { data, error in completionHandler(tech, data, error) }
-    case .miFare(let tech):
-        serialize(tech) { data, error in completionHandler(tech, data, error) }
-    case .iso7816(let tech):
-        serialize(tech) { data, error in completionHandler(tech, data, error) }
-    case .iso15693(let tech):
-        serialize(tech) { data, error in completionHandler(tech, data, error) }
-    @unknown default:
-        print("Unknown tag cannot be serialized")
-    }
+func getPollingOption(_ arg: [String]) -> NFCTagReaderSession.PollingOption {
+  var option = NFCTagReaderSession.PollingOption()
+  if arg.contains("iso14443") { option.insert(NFCTagReaderSession.PollingOption.iso14443) }
+  if arg.contains("iso15693") { option.insert(NFCTagReaderSession.PollingOption.iso15693) }
+  if arg.contains("iso18092") { option.insert(NFCTagReaderSession.PollingOption.iso18092) }
+  return option
 }
 
 @available(iOS 13.0, *)
-func serialize(_ tech: NFCNDEFTag, _ completionHandler: @escaping ([String:Any?], Error?) -> Void) {
-    var data: [String:Any?] = serialize(tech)
-
-    tech.queryNDEFStatus { status, capacity, error in
-        if let error = error {
-            completionHandler(data, error)
-            return
-        }
-
-        if status == .notSupported {
-            completionHandler(data, nil)
-            return
-        }
-
-        tech.readNDEF { message, error in
-            if let error = error {
-                completionHandler(data, error)
-                return
-            }
-
-            var ndefData: [String:Any?] = [
-                "isWritable": (status == .readWrite),
-                "maxSize": capacity
-            ]
-
-            if let message = message {
-                ndefData["cachedMessage"] = serialize(message)
-            }
-
-            data["ndef"] = ndefData
-
-            completionHandler(data, nil)
-        }
-    }
-}
-
-@available(iOS 13.0, *)
-func serialize(_ tech: NFCNDEFTag) -> [String:Any?] {
-    if let tech = tech as? NFCFeliCaTag {
-        return [
-            "type": "feliCa",
-            "currentIDm": tech.currentIDm,
-            "currentSystemCode": tech.currentSystemCode
-        ]
-    } else if let tech = tech as? NFCISO15693Tag {
-        return [
-            "type": "iso15693",
-            "icManufacturerCode": tech.icManufacturerCode,
-            "icSerialNumber": tech.icSerialNumber,
-            "identifier": tech.identifier
-        ]
-    } else if let tech = tech as? NFCISO7816Tag {
-        return [
-            "type": "iso7816",
-            "applicationData": tech.applicationData,
-            "historicalBytes": tech.historicalBytes,
-            "identifier": tech.identifier,
-            "initialSelectedAID": tech.initialSelectedAID,
-            "proprietaryApplicationDataCoding": tech.proprietaryApplicationDataCoding
-        ]
-    } else if let tech = tech as? NFCMiFareTag {
-        return [
-            "type": "miFare",
-            "historicalBytes": tech.historicalBytes,
-            "identifier": tech.identifier,
-            "mifareFamily": tech.mifareFamily.rawValue
-        ]
-    } else {
-        return [:]
-    }
+func getRequestFlags(_ arg: [String]) -> RequestFlag {
+  var flag = RequestFlag()
+  if arg.contains("address") { flag.insert(RequestFlag.address) }
+  if arg.contains("dualSubCarriers") { flag.insert(RequestFlag.dualSubCarriers) }
+  if arg.contains("highDataRate") { flag.insert(RequestFlag.highDataRate) }
+  if arg.contains("option") { flag.insert(RequestFlag.option) }
+  if arg.contains("protocolExtension") { flag.insert(RequestFlag.protocolExtension) }
+  if arg.contains("select") { flag.insert(RequestFlag.select) }
+  return flag
 }
 
 @available(iOS 11.0, *)
-func serialize(_ message: NFCNDEFMessage) -> [String:Any?] {
-    return [
-        "records": message.records.map { serialize($0) }
-    ]
-}
-
-@available(iOS 11.0, *)
-func serialize(_ payload: NFCNDEFPayload) -> [String:Any?] {
-    return [
-        "typeNameFormat": payload.typeNameFormat.rawValue,
-        "type": payload.type,
-        "identifier": payload.identifier,
-        "payload": payload.payload,
-    ]
-}
-
-@available(iOS 11.0, *)
-func serialize(_ error: Error) -> [String:Any?] {
-    if let error = error as? NFCReaderError {
-        return [
-            "type": sessionErrorTypeStringFrom(error.code),
-            "message": error.localizedDescription,
-            "details": error.userInfo,
-        ]
-    }
-    return [
-        "type": nil,
-        "message": error.localizedDescription,
-        "details": nil,
-    ]
+func getErrorTypeString(_ arg: NFCReaderError.Code) -> String? {
+  // TODO: add more cases
+  switch arg {
+  case .readerSessionInvalidationErrorSessionTimeout: return "sessionTimeout"
+  case .readerSessionInvalidationErrorSystemIsBusy: return "systemIsBusy"
+  case .readerSessionInvalidationErrorUserCanceled: return "userCanceled"
+  default: return nil
+  }
 }
 
 @available(iOS 13.0, *)
-func ndefMessageFrom(_ data: [String:Any?]) -> NFCNDEFMessage {
-    return NFCNDEFMessage.init(records: (data["records"] as! Array).map { ndefPayloadFrom($0) })
-}
-
-@available(iOS 13.0, *)
-func ndefPayloadFrom(_ data: [String:Any?]) -> NFCNDEFPayload {
-    return NFCNDEFPayload.init(
-        format: NFCTypeNameFormat.init(rawValue: data["typeNameFormat"] as! UInt8)!,
-        type: (data["type"] as! FlutterStandardTypedData).data,
-        identifier: (data["identifier"] as! FlutterStandardTypedData).data,
-        payload: (data["payload"] as! FlutterStandardTypedData).data
+func getNDEFMessage(_ arg: [String : Any?]) -> NFCNDEFMessage {
+  return NFCNDEFMessage(records: (arg["records"] as! Array<[String : Any?]>).map {
+    NFCNDEFPayload(
+      format: NFCTypeNameFormat(rawValue: $0["typeNameFormat"] as! UInt8)!,
+      type: ($0["type"] as! FlutterStandardTypedData).data,
+      identifier: ($0["identifier"] as! FlutterStandardTypedData).data,
+      payload: ($0["payload"] as! FlutterStandardTypedData).data
     )
+  })
 }
 
-// Sync with `NfcTagPollingOption` on Dart side
-@available(iOS 13.0, *)
-func pollingOptionFrom(_ options: [Int]) -> NFCTagReaderSession.PollingOption {
-    var option: NFCTagReaderSession.PollingOption = []
-
-    if options.contains(0) {
-        option.insert(NFCTagReaderSession.PollingOption.iso14443)
-    }
-
-    if options.contains(1) {
-        option.insert(NFCTagReaderSession.PollingOption.iso15693)
-    }
-
-    if options.contains(2) {
-        option.insert(NFCTagReaderSession.PollingOption.iso18092)
-    }
-
-    return option
-}
-
-// Sync with `ISO15693RequestFlag` on Dart side
-@available(iOS 13.0, *)
-func requestFlagFrom(_ flags: [Int]) -> RequestFlag {
-    var flag: RequestFlag = []
-
-    if flags.contains(0) {
-        flag.insert(.dualSubCarriers)
-    }
-
-    if flags.contains(1) {
-        flag.insert(.highDataRate)
-    }
-
-    if flags.contains(2) {
-        flag.insert(.protocolExtension)
-    }
-
-    if flags.contains(3) {
-        flag.insert(.select)
-    }
-
-    if flags.contains(4) {
-        flag.insert(.address)
-    }
-
-    if flags.contains(5) {
-        flag.insert(.option)
-    }
-
-    return flag
-}
-
-// Sync with `NfcSessionErrorType` on Dart side
 @available(iOS 11.0, *)
-func sessionErrorTypeStringFrom(_ code: NFCReaderError.Code) -> String? {
-    // TODO: add more cases
-    switch code {
-    case .readerSessionInvalidationErrorSessionTimeout:
-        return "sessionTimeout"
-    case .readerSessionInvalidationErrorSystemIsBusy:
-        return "systemIsBusy"
-    case .readerSessionInvalidationErrorUserCanceled:
-        return "userCanceled"
-    default:
-        return nil
-    }
+func getNDEFMessageMap(_ arg: NFCNDEFMessage) -> [String : Any?] {
+  return ["records": arg.records.map {
+    [
+      "typeNameFormat": $0.typeNameFormat.rawValue,
+      "type": $0.type,
+      "identifier": $0.identifier,
+      "payload": $0.payload,
+    ]
+  }]
 }
 
 @available(iOS 13.0, *)
-func apduFrom(_ arguments: [String:Any?]) -> NFCISO7816APDU? {
-    if arguments.count == 1, let data = (arguments["data"] as? FlutterStandardTypedData)?.data {
-        return NFCISO7816APDU(data: data)
+func getNFCTagMapAsync(_ arg: NFCTag, _ completionHandler: @escaping (NFCNDEFTag, [String:Any?], Error?) -> Void) {
+  switch (arg) {
+  case .feliCa(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, ["felica": data], error) }
+  case .miFare(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, ["mifare": data], error) }
+  case .iso7816(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, ["iso7816": data], error) }
+  case .iso15693(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, ["iso15693": data], error) }
+  @unknown default: print("Unknown tag cannot be serialized")
+  }
+}
+
+@available(iOS 13.0, *)
+func getNDEFTagMapAsync(_ arg: NFCNDEFTag, _ completionHandler: @escaping ([String : Any?], Error?) -> Void) {
+  var data = getNDEFTagMap(arg)
+
+  arg.queryNDEFStatus { status, capacity, error in
+    if let error = error {
+      completionHandler(data, error)
+      return
     }
 
-    if
-        let instructionClassInt = arguments["instructionClass"] as? Int,
-        let instructionClass = UInt8(exactly: instructionClassInt),
-        let instructionCodeInt = arguments["instructionCode"] as? Int,
-        let instructionCode = UInt8(exactly: instructionCodeInt),
-        let p1ParameterInt = arguments["p1Parameter"] as? Int,
-        let p1Parameter = UInt8(exactly: p1ParameterInt),
-        let p2ParameterInt = arguments["p2Parameter"] as? Int,
-        let p2Parameter = UInt8(exactly: p2ParameterInt),
-        let data = (arguments["data"] as? FlutterStandardTypedData)?.data,
-        let expectedResponseLength = arguments["expectedResponseLength"] as? Int
-    {
-        return NFCISO7816APDU(
-            instructionClass: instructionClass,
-            instructionCode: instructionCode,
-            p1Parameter: p1Parameter,
-            p2Parameter: p2Parameter,
-            data: data,
-            expectedResponseLength: expectedResponseLength
-        )
+    if status == .notSupported {
+      completionHandler(data, nil)
+      return
     }
 
-    return nil
+    arg.readNDEF { message, error in
+      if let error = error {
+        completionHandler(data, error)
+        return
+      }
+
+      var ndefData: [String : Any?] = [
+        "isWritable": (status == .readWrite),
+        "maxSize": capacity
+      ]
+
+      if let message = message {
+        ndefData["cachedMessage"] = getNDEFMessageMap(message)
+      }
+
+      data["ndef"] = ndefData
+
+      completionHandler(data, nil)
+    }
+  }
+}
+
+@available(iOS 13.0, *)
+func getNDEFTagMap(_ arg: NFCNDEFTag) -> [String : Any?] {
+  if let arg = arg as? NFCFeliCaTag {
+    return [
+      "currentIDm": arg.currentIDm,
+      "currentSystemCode": arg.currentSystemCode
+    ]
+  } else if let arg = arg as? NFCISO15693Tag {
+    return [
+      "icManufacturerCode": arg.icManufacturerCode,
+      "icSerialNumber": arg.icSerialNumber,
+      "identifier": arg.identifier
+    ]
+  } else if let arg = arg as? NFCISO7816Tag {
+    return [
+      "applicationData": arg.applicationData,
+      "historicalBytes": arg.historicalBytes,
+      "identifier": arg.identifier,
+      "initialSelectedAID": arg.initialSelectedAID,
+      "proprietaryApplicationDataCoding": arg.proprietaryApplicationDataCoding
+    ]
+  } else if let arg = arg as? NFCMiFareTag {
+    return [
+      "historicalBytes": arg.historicalBytes,
+      "identifier": arg.identifier,
+      "mifareFamily": arg.mifareFamily.rawValue
+    ]
+  } else {
+    return [:]
+  }
+}
+
+@available(iOS 11.0, *)
+func getErrorMap(_ arg: Error) -> [String : Any?] {
+  if let arg = arg as? NFCReaderError {
+    return [
+      "type": getErrorTypeString(arg.code),
+      "message": arg.localizedDescription,
+      "details": arg.userInfo,
+    ]
+  }
+  return [
+    "type": nil,
+    "message": arg.localizedDescription,
+    "details": nil,
+  ]
+}
+
+func getFlutterError(_ arg: Error) -> FlutterError {
+  return FlutterError(code: "\((arg as NSError).code)", message:arg.localizedDescription, details: nil)
 }
