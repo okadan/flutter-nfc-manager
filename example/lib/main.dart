@@ -3,7 +3,10 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:nfc_manager/nfc_manager.dart';
 
-void main() => runApp(MyApp());
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  runApp(MyApp());
+}
 
 class MyApp extends StatefulWidget {
   @override
@@ -65,18 +68,18 @@ class MyAppState extends State<MyApp> {
   }
 
   void _tagRead() {
-    NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) async {
+    NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
       result.value = tag.data;
       NfcManager.instance.stopSession();
     });
   }
 
   void _ndefWrite() {
-    NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) async {
-      Ndef ndef = Ndef.fromTag(tag);
+    NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
+      Ndef ndef = Ndef.from(tag);
       if (ndef == null) {
         result.value = 'Tag is not ndef';
-        NfcManager.instance.stopSession(errorMessageIOS: result.value);
+        NfcManager.instance.stopSession(errorMessage: result.value);
         return;
       }
 
@@ -93,18 +96,18 @@ class MyAppState extends State<MyApp> {
         NfcManager.instance.stopSession();
       } catch (e) {
         result.value = e;
-        NfcManager.instance.stopSession(errorMessageIOS: result.value.toString());
+        NfcManager.instance.stopSession(errorMessage: result.value.toString());
         return;
       }
     });
   }
 
   void _ndefWriteLock() {
-    NfcManager.instance.startTagSession(onDiscovered: (NfcTag tag) async {
-      Ndef ndef = Ndef.fromTag(tag);
+    NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
+      Ndef ndef = Ndef.from(tag);
       if (ndef == null) {
         result.value = 'Tag is not ndef';
-        NfcManager.instance.stopSession(errorMessageIOS: result.value.toString());
+        NfcManager.instance.stopSession(errorMessage: result.value.toString());
         return;
       }
 
@@ -114,7 +117,7 @@ class MyAppState extends State<MyApp> {
         NfcManager.instance.stopSession();
       } catch (e) {
         result.value = e;
-        NfcManager.instance.stopSession(errorMessageIOS: result.value.toString());
+        NfcManager.instance.stopSession(errorMessage: result.value.toString());
         return;
       }
     });

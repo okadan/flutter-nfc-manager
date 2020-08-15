@@ -1,237 +1,309 @@
-import 'dart:typed_data';
+import 'package:nfc_manager/platform_tags.dart';
 
 import './nfc_manager/nfc_manager.dart';
 import './nfc_manager/nfc_ndef.dart';
-import './platform_tags/platform_tags.dart';
+import './platform_tags/felica.dart';
+import './platform_tags/iso7816.dart';
+import './platform_tags/iso15693.dart';
 
-NfcTag $nfcTagFromJson(Map<String, dynamic> data) {
-  String handle = data.remove('handle');
-  return NfcTag(handle: handle, data: data);
+const Map<NfcPollingOption, String> $NfcPollingOptionTable = {
+  NfcPollingOption.iso14443: 'iso14443',
+  NfcPollingOption.iso15693: 'iso15693',
+  NfcPollingOption.iso18092: 'iso18092',
+};
+
+const Map<NfcErrorType, String> $NfcErrorTypeTable = {
+  NfcErrorType.sessionTimeout: 'sessionTimeout',
+  NfcErrorType.systemIsBusy: 'systemIsBusy',
+  NfcErrorType.userCanceled: 'userCanceled',
+  NfcErrorType.unknown: 'unknown',
+};
+
+const Map<NdefTypeNameFormat, int> $NdefTypeNameFormatTable = {
+  NdefTypeNameFormat.empty: 0x00,
+  NdefTypeNameFormat.nfcWellknown: 0x01,
+  NdefTypeNameFormat.media: 0x02,
+  NdefTypeNameFormat.absoluteUri: 0x03,
+  NdefTypeNameFormat.nfcExternal: 0x04,
+  NdefTypeNameFormat.unknown: 0x05,
+  NdefTypeNameFormat.unchanged: 0x06,
+};
+
+const Map<FeliCaPollingRequestCode, int> $FeliCaPollingRequestCodeTable = {
+  FeliCaPollingRequestCode.noRequest: 0x00,
+  FeliCaPollingRequestCode.systemCode: 0x01,
+  FeliCaPollingRequestCode.communicationPerformance: 0x02,
+};
+
+const Map<FeliCaPollingTimeSlot, int> $FeliCaPollingTimeSlotTable = {
+  FeliCaPollingTimeSlot.max1: 0x00,
+  FeliCaPollingTimeSlot.max2: 0x01,
+  FeliCaPollingTimeSlot.max4: 0x03,
+  FeliCaPollingTimeSlot.max8: 0x07,
+  FeliCaPollingTimeSlot.max16: 0x0F,
+};
+
+const Map<Iso15693RequestFlag, String> $Iso15693RequestFlagTable = {
+  Iso15693RequestFlag.address: 'address',
+  Iso15693RequestFlag.dualSubCarriers: 'dualSubCarriers',
+  Iso15693RequestFlag.highDataRate: 'highDataRate',
+  Iso15693RequestFlag.option: 'option',
+  Iso15693RequestFlag.protocolExtension: 'protocolExtension',
+  Iso15693RequestFlag.select: 'select',
+};
+
+const Map<MiFareFamily, int> $MiFareFamilyTable = {
+  MiFareFamily.unknown: 1,
+  MiFareFamily.ultralight: 2,
+  MiFareFamily.plus: 3,
+  MiFareFamily.desfire: 4,
+};
+
+NfcTag $GetNfcTag(Map<String, dynamic> arg) {
+  return NfcTag(
+    handle: arg.remove('handle'),
+    data: arg,
+  );
 }
 
-Ndef $ndefFromTag(NfcTag tag) {
-  if (tag.data['ndef'] == null)
-    return null;
+NfcError $GetNfcError(Map<String, dynamic> arg) {
+  return NfcError(
+    type: $NfcErrorTypeTable.entries.firstWhere((e) => e.value == arg['type'], orElse: () => null)?.key ?? NfcErrorType.unknown,
+    message: arg['message'],
+    details: arg['details'],
+  );
+}
 
-  Map<String, dynamic> data = Map<String, dynamic>.from(tag.data['ndef']);
+NdefMessage $GetNdefMessage(Map<String, dynamic> arg) {
+  return NdefMessage((arg['records'] as Iterable).map((e) => NdefRecord(
+    typeNameFormat: $NdefTypeNameFormatTable.entries.firstWhere((ee) => ee.value == e['typeNameFormat']).key,
+    type: e['type'],
+    identifier: e['identifier'],
+    payload: e['payload'],
+  )).toList());
+}
 
-  NdefMessage cachedMessage = data['cachedMessage'] != null
-    ? $ndefMessageFromJson(Map<String, dynamic>.from(data['cachedMessage']))
-    : null;
-  bool isWritable = data['isWritable'];
-  int maxSize = data['maxSize'];
+Map<String, dynamic> $GetNdefMessageMap(NdefMessage arg) {
+  return {'records': arg.records.map((e) => {
+    'typeNameFormat': $NdefTypeNameFormatTable[e.typeNameFormat],
+    'type': e.type,
+    'identifier': e.identifier,
+    'payload': e.payload,
+  }).toList()};
+}
 
+FeliCaPollingResponse $GetFeliCaPollingResponse(Map<String, dynamic> arg) {
+  return FeliCaPollingResponse(
+    manufacturerParameter: arg['manufacturerParameter'],
+    requestData: arg['requestData'],
+  );
+}
+
+FeliCaRequestServiceV2Response $GetFeliCaRequestServiceV2Response(Map<String, dynamic> arg) {
+  return FeliCaRequestServiceV2Response(
+    statusFlag1: arg['statusFlag1'],
+    statusFlag2: arg['statusFlag2'],
+    encryptionIdentifier: arg['encryptionIdentifier'],
+    nodeKeyVersionListAes: arg['nodeKeyVersionListAes'],
+    nodeKeyVersionListDes: arg['nodeKeyVersionListDes'],
+  );
+}
+
+FeliCaReadWithoutEncryptionResponse $GetFeliCaReadWithoutEncryptionResponse(Map<String, dynamic> arg) {
+  return FeliCaReadWithoutEncryptionResponse(
+    statusFlag1: arg['statusFlag1'],
+    statusFlag2: arg['statusFlag2'],
+    blockData: arg['blockData'],
+  );
+}
+
+FeliCaStatusFlag $GetFeliCaStatusFlag(Map<String, dynamic> arg) {
+  return FeliCaStatusFlag(
+    statusFlag1: arg['statusFlag1'],
+    statusFlag2: arg['statusFlag2'],
+  );
+}
+
+FeliCaRequestSpecificationVersionResponse $GetFeliCaRequestSpecificationVersionResponse(Map<String, dynamic> arg) {
+  return FeliCaRequestSpecificationVersionResponse(
+    statusFlag1: arg['statusFlag1'],
+    statusFlag2: arg['statusFlag2'],
+    basicVersion: arg['basicVersion'],
+    optionVersion: arg['optionVersion'],
+  );
+}
+
+Iso15693SystemInfo $GetIso15693SystemInfo(Map<String, dynamic> arg) {
+  return Iso15693SystemInfo(
+    dataStorageFormatIdentifier: arg['dataStorageFormatIdentifier'],
+    applicationFamilyIdentifier: arg['applicationFamilyIdentifier'],
+    blockSize: arg['blockSize'],
+    totalBlocks: arg['totalBlocks'],
+    icReference: arg['icReference'],
+  );
+}
+
+Iso7816ResponseApdu $GetIso7816ResponseApdu(Map<String, dynamic> arg) {
+  return Iso7816ResponseApdu(
+    payload: arg['payload'],
+    statusWord1: arg['statusWord1'],
+    statusWord2: arg['statusWord2'],
+  );
+}
+
+Ndef $GetNdef(NfcTag arg) {
+  if (arg.data['ndef'] == null) return null;
+  final data = Map.from(arg.data['ndef']);
   return Ndef(
-    tag: tag,
-    cachedMessage: cachedMessage,
-    isWritable: isWritable,
-    maxSize: maxSize,
+    tag: arg,
+    isWritable: data.remove('isWritable'),
+    maxSize: data.remove('maxSize'),
+    cachedMessage: data['cachedMessage'] == null ? null : $GetNdefMessage(Map.from(data.remove('cachedMessage'))),
+    additionalData: data,
   );
 }
 
-NfcA $nfcAFromTag(NfcTag tag) {
-  if (tag.data['nfca'] == null)
-    return null;
-
-  Map<String, dynamic> data = Map<String, dynamic>.from(tag.data['nfca']);
-
-  Uint8List identifier = tag.data['id'];
-  Uint8List atqa = data['atqa'];
-  int sak = data['sak'];
-
-  return NfcA(
-    tag: tag,
-    identifier: identifier,
-    atqa: atqa,
-    sak: sak,
-  );
-}
-
-NfcB $nfcBFromTag(NfcTag tag) {
-  if (tag.data['nfcb'] == null)
-    return null;
-
-  Map<String, dynamic> data = Map<String, dynamic>.from(tag.data['nfcb']);
-
-  Uint8List identifier = tag.data['identifier'];
-  Uint8List applicationData = data['applicationData'];
-  Uint8List protocolInfo = data['protocolInfo'];
-
-  return NfcB(
-    tag: tag,
-    identifier: identifier,
-    applicationData: applicationData,
-    protocolInfo: protocolInfo,
-  );
-}
-
-NfcF $nfcFFromTag(NfcTag tag) {
-  if (tag.data['nfcf'] == null)
-    return null;
-
-  Map<String, dynamic> data = Map<String, dynamic>.from(tag.data['nfcf']);
-
-  Uint8List identifier = tag.data['identifier'];
-  Uint8List manufacturer = data['manufacturer'];
-  Uint8List systemCode = data['systemCode'];
-
-  return NfcF(
-    tag: tag,
-    identifier: identifier,
-    manufacturer: manufacturer,
-    systemCode: systemCode,
-  );
-}
-
-NfcV $nfcVFromTag(NfcTag tag) {
-  if (tag.data['nfcv'] == null)
-    return null;
-
-  Map<String, dynamic> data = Map<String, dynamic>.from(tag.data['nfcv']);
-
-  Uint8List identifier = tag.data['identifier'];
-  int dsfId = data['dsfId'];
-  int responseFlags = data['responseFlags'];
-
-  return NfcV(
-    tag: tag,
-    identifier: identifier,
-    dsfId: dsfId,
-    responseFlags: responseFlags,
-  );
-}
-
-IsoDep $isoDepFromTag(NfcTag tag) {
-  if (tag.data['isodep'] == null)
-    return null;
-
-  Map<String, dynamic> data = Map<String, dynamic>.from(tag.data['isodep']);
-
-  Uint8List identifier = tag.data['identifier'];
-  Uint8List hiLayerResponse = data['hiLayerResponse'];
-  Uint8List historicalBytes = data['historicalBytes'];
-  bool isExtendedLengthApduSupported = data['isExtendedLengthApduSupported'];
-
-  return IsoDep(
-    tag: tag,
-    identifier: identifier,
-    hiLayerResponse: hiLayerResponse,
-    historicalBytes: historicalBytes,
-    isExtendedLengthApduSupported: isExtendedLengthApduSupported,
-  );
-}
-
-MiFare $miFareFromTag(NfcTag tag) {
-  if (tag.data['type'] != 'miFare')
-    return null;
-
-  int mifareFamily = tag.data['mifareFamily'];
-  Uint8List identifier = tag.data['identifier'];
-  Uint8List historicalBytes = tag.data['historicalBytes'];
-
-  return MiFare(
-    tag: tag,
-    mifareFamily: mifareFamily,
-    identifier: identifier,
-    historicalBytes: historicalBytes,
-  );
-}
-
-FeliCa $felicaFromTag(NfcTag tag) {
-  if (tag.data['type'] != 'feliCa')
-    return null;
-
-  Uint8List currentSystemCode = tag.data['currentSystemCode'];
-  Uint8List currentIDm = tag.data['currentIDm'];
-
+FeliCa $GetFeliCa(NfcTag arg) {
+  if (arg.data['felica'] == null) return null;
+  final data = Map.from(arg.data['felica']);
   return FeliCa(
-    tag: tag,
-    currentSystemCode: currentSystemCode,
-    currentIDm: currentIDm,
+    tag: arg,
+    currentSystemCode: data['currentSystemCode'],
+    currentIDm: data['currentIDm'],
   );
 }
 
-ISO15693 $iso15693FromTag(NfcTag tag) {
-  if (tag.data['type'] != 'iso15693')
-    return null;
-
-  int icManufacturerCode = tag.data['icManufacturerCode'];
-  Uint8List icSerialNumber = tag.data['icSerialNumber'];
-  Uint8List identifier = tag.data['identifier'];
-
-  return ISO15693(
-    tag: tag,
-    icManufacturerCode: icManufacturerCode,
-    icSerialNumber: icSerialNumber,
-    identifier: identifier,
-  );
-}
-
-ISO7816 $iso7816FromTag(NfcTag tag) {
-  if (tag.data['type'] != 'iso7816')
-    return null;
-
-  String initialSelectedAID = tag.data['initialSelectedAID'];
-  Uint8List identifier = tag.data['identifier'];
-  Uint8List historicalBytes = tag.data['historicalBytes'];
-  Uint8List applicationData = tag.data['applicationData'];
-  bool proprietaryApplicationDataCoding = tag.data['proprietaryApplicationDataCoding'];
-
-  return ISO7816(
-    tag: tag,
-    initialSelectedAID: initialSelectedAID,
-    identifier: identifier,
-    historicalBytes: historicalBytes,
-    applicationData: applicationData,
-    proprietaryApplicationDataCoding: proprietaryApplicationDataCoding,
-  );
-}
-
-NdefMessage $ndefMessageFromJson(Map<String, dynamic> data) {
-  return NdefMessage((data['records'] as List)
-    .map((e) => $ndefRecordFromJson(Map<String, dynamic>.from(e))).toList()
-  );
-}
-
-Map<String, dynamic> $ndefMessageToJson(NdefMessage message) {
-  return {'records': message.records.map($ndefRecordToJson).toList()};
-}
-
-NdefRecord $ndefRecordFromJson(Map<String, dynamic> data) {
-  return NdefRecord(
-    typeNameFormat: data['typeNameFormat'],
-    type: data['type'],
+Iso7816 $GetIso7816(NfcTag arg) {
+  if (arg.data['iso7816'] == null) return null;
+  final data = Map.from(arg.data['iso7816']);
+  return Iso7816(
+    tag: arg,
     identifier: data['identifier'],
-    payload: data['payload'],
+    historicalBytes: data['historicalBytes'],
+    applicationData: data['applicationData'],
+    initialSelectedAID: data['initialSelectedAID'],
+    proprietaryApplicationDataCoding: data['proprietaryApplicationDataCoding'],
   );
 }
 
-Map<String, dynamic> $ndefRecordToJson(NdefRecord record) {
-  return {
-    'typeNameFormat': record.typeNameFormat,
-    'type': record.type,
-    'identifier': record.identifier,
-    'payload': record.payload,
-  };
-}
-
-NfcSessionError $nfcSessionErrorFromJson(Map<String, dynamic> data) {
-  return NfcSessionError(
-    type: $nfcSessionErrorTypeFromString(data['type']),
-    message: data['message'],
-    details: data['details'],
+Iso15693 $GetIso15693(NfcTag arg) {
+  if (arg.data['iso15693'] == null) return null;
+  final data = Map.from(arg.data['iso15693']);
+  return Iso15693(
+    tag: arg,
+    identifier: data['identifier'],
+    icManufacturerCode: data['icManufacturerCode'],
+    icSerialNumber: data['icSerialNumber'],
   );
 }
 
-NfcSessionErrorType $nfcSessionErrorTypeFromString(String value) {
-  switch (value) {
-    case 'sessionTimeout':
-      return NfcSessionErrorType.sessionTimeout;
-    case 'systemIsBusy':
-      return NfcSessionErrorType.systemIsBusy;
-    case 'userCanceled':
-      return NfcSessionErrorType.userCanceled;
-    default:
-      return NfcSessionErrorType.unknown;
-  }
+MiFare $GetMiFare(NfcTag arg) {
+  if (arg.data['mifare'] == null) return null;
+  final data = Map.from(arg.data['mifare']);
+  return MiFare(
+    tag: arg,
+    identifier: data['identifier'],
+    mifareFamily: $MiFareFamilyTable.entries.firstWhere((e) => e.value == data['mifareFamily']).key,
+    historicalBytes: data['historicalBytes']
+  );
+}
+
+NfcA $GetNfcA(NfcTag arg) {
+  if (arg.data['nfca'] == null) return null;
+  final data = Map.from(arg.data['nfca']);
+  return NfcA(
+    tag: arg,
+    identifier: data['identifier'],
+    atqa: data['atqa'],
+    sak: data['sak'],
+    maxTransceiveLength: data['maxTransceiveLength'],
+    timeout: data['timeout'],
+  );
+}
+
+NfcB $GetNfcB(NfcTag arg) {
+  if (arg.data['nfcb'] == null) return null;
+  final data = Map.from(arg.data['nfcb']);
+  return NfcB(
+    tag: arg,
+    identifier: data['identifier'],
+    applicationData: data['applicationData'],
+    protocolInfo: data['protocolInfo'],
+    maxTransceiveLength: data['maxTransceiveLength'],
+  );
+}
+
+NfcF $GetNfcF(NfcTag arg) {
+  if (arg.data['nfcf'] == null) return null;
+  final data = Map.from(arg.data['nfcf']);
+  return NfcF(
+    tag: arg,
+    identifier: data['identifier'],
+    manufacturer: data['manufacturer'],
+    systemCode: data['systemCode'],
+    maxTransceiveLength: data['maxTransceiveLength'],
+    timeout: data['timeout'],
+  );
+}
+
+NfcV $GetNfcV(NfcTag arg) {
+  if (arg.data['nfcv'] == null) return null;
+  final data = Map.from(arg.data['nfcv']);
+  return NfcV(
+    tag: arg,
+    identifier: data['identifier'],
+    dsfId: data['dsfId'],
+    responseFlags: data['responseFlags'],
+    maxTransceiveLength: data['maxTransceiveLength'],
+  );
+}
+
+IsoDep $GetIsoDep(NfcTag arg) {
+  if (arg.data['isodep'] == null) return null;
+  final data = Map.from(arg.data['isodep']);
+  return IsoDep(
+    tag: arg,
+    identifier: data['identifier'],
+    hiLayerResponse: data['hiLayerResponse'],
+    historicalBytes: data['historicalBytes'],
+    isExtendedLengthApduSupported: data['isExtendedLengthApduSupported'],
+    maxTransceiveLength: data['maxTransceiveLength'],
+    timeout: data['timeout'],
+  );
+}
+
+MifareClassic $GetMifareClassic(NfcTag arg) {
+  if (arg.data['mifareclassic'] == null) return null;
+  final data = Map.from(arg.data['mifareclassic']);
+  return MifareClassic(
+    tag: arg,
+    identifier: data['identifier'],
+    type: data['type'],
+    blockCount: data['blockCount'],
+    sectorCount: data['sectorCount'],
+    size: data['size'],
+    maxTransceiveLength: data['maxTransceiveLength'],
+    timeout: data['timeout'],
+  );
+}
+
+MifareUltralight $GetMifareUltralight(NfcTag arg) {
+  if (arg.data['mifareultralight'] == null) return null;
+  final data = Map.from(arg.data['mifareultralight']);
+  return MifareUltralight(
+    tag: arg,
+    identifier: data['identifier'],
+    type: data['type'],
+    maxTransceiveLength: data['maxTransceiveLength'],
+    timeout: data['timeout'],
+  );
+}
+
+NdefFormatable $GetNdefFormatable(NfcTag arg) {
+  if (arg.data['ndefformatable'] == null) return null;
+  final data = Map.from(arg.data['ndefformatable']);
+  return NdefFormatable(
+    tag: arg,
+    identifier: data['identifier'],
+  );
 }
