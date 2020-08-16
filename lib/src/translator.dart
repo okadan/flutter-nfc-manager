@@ -1,10 +1,17 @@
-import 'package:nfc_manager/platform_tags.dart';
-
 import './nfc_manager/nfc_manager.dart';
 import './nfc_manager/nfc_ndef.dart';
 import './platform_tags/felica.dart';
 import './platform_tags/iso7816.dart';
 import './platform_tags/iso15693.dart';
+import './platform_tags/iso_dep.dart';
+import './platform_tags/mifare.dart';
+import './platform_tags/mifare_classic.dart';
+import './platform_tags/mifare_ultralight.dart';
+import './platform_tags/ndef_formatable.dart';
+import './platform_tags/nfc_a.dart';
+import './platform_tags/nfc_b.dart';
+import './platform_tags/nfc_f.dart';
+import './platform_tags/nfc_v.dart';
 
 const Map<NfcPollingOption, String> $NfcPollingOptionTable = {
   NfcPollingOption.iso14443: 'iso14443',
