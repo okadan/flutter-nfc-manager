@@ -6,40 +6,49 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-// Iso7816
+/// (iOS only) The class provides access to Iso7816 operations on the tag.
+/// 
+/// Acquire `Iso7816` instance using `Iso7816.from`.
 class Iso7816 {
-  // Iso7816
+  /// Constructs an instance with the given values for testing.
+  /// 
+  /// The instances constructs by this way are not valid in the production environment.
+  /// Only instances obtained from the `Iso7816.from` are valid.
   const Iso7816({
-    @required this.tag,
+    @required NfcTag tag,
     @required this.identifier,
     @required this.initialSelectedAID,
     @required this.historicalBytes,
     @required this.applicationData,
     @required this.proprietaryApplicationDataCoding,
-  });
+  }) : _tag = tag;
 
-  // tag
-  final NfcTag tag;
+  // _tag
+  final NfcTag _tag;
 
-  // identifier
+  /// The value from NFCISO7816Tag#identifier on iOS.
   final Uint8List identifier;
 
-  // initialSelectedAID
+  /// The value from NFCISO7816Tag#initialSelectedAID on iOS.
   final String initialSelectedAID;
 
-  // historicalBytes
+  /// The value from NFCISO7816Tag#historicalBytes on iOS.
   final Uint8List historicalBytes;
 
-  // applicationData
+  /// The value from NFCISO7816Tag#applicationData on iOS.
   final Uint8List applicationData;
 
-  // proprietaryApplicationDataCoding
+  /// The value from NFCISO7816Tag#proprietaryApplicationDataCoding on iOS.
   final bool proprietaryApplicationDataCoding;
 
-  // Iso7816.from
+  /// Get an instance of `Iso7816` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with Iso7816.
   factory Iso7816.from(NfcTag tag) => $GetIso7816(tag);
 
-  // sendCommand
+  /// Sends the APDU to the tag.
+  /// 
+  /// This uses NFCISO7816Tag#sendCommand API on iOS.
   Future<Iso7816ResponseApdu> sendCommand({
     @required int instructionClass,
     @required int instructionCode,
@@ -49,7 +58,7 @@ class Iso7816 {
     @required int expectedResponseLength,
   }) async {
     return channel.invokeMethod('Iso7816#sendCommand', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'instructionClass': instructionClass,
       'instructionCode': instructionCode,
       'p1Parameter': p1Parameter,
@@ -59,30 +68,32 @@ class Iso7816 {
     }).then((value) => $GetIso7816ResponseApdu(Map.from(value)));
   }
 
-  // sendCommandRaw
+  /// Sends the APDU to the tag.
+  /// 
+  /// This uses NFCISO7816Tag#sendCommand API on iOS.
   Future<Iso7816ResponseApdu> sendCommandRaw(Uint8List data) async {
     return channel.invokeMethod('Iso7816#sendCommandRaw', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'data': data,
     }).then((value) => $GetIso7816ResponseApdu(Map.from(value)));
   }
 }
 
-// Iso7816ResponseApdu
+/// The class represents the response APDU.
 class Iso7816ResponseApdu {
-  // Iso7816ResponseApdu
+  /// Constructs an instance with the given values.
   const Iso7816ResponseApdu({
     @required this.payload,
     @required this.statusWord1,
     @required this.statusWord2,
   });
 
-  // payload
+  /// Payload.
   final Uint8List payload;
 
-  // statusWord1
+  /// Status Word1.
   final int statusWord1;
 
-  // statusRowd2
+  /// Status Word2.
   final int statusWord2;
 }

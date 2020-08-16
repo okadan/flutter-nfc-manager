@@ -6,142 +6,169 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-// FeliCa
+/// (iOS only) The class provides access to FeliCa operations on the tag.
+/// 
+/// Acquire `FeliCa` instance using `FeliCa.from`.
 class FeliCa {
-  // FeliCa
+  /// Constructs an instance with the given values for testing.
+  /// 
+  /// The instances constructs by this way are not valid in the production environment.
+  /// Only instances obtained from the `FeliCa.from` are valid.
   const FeliCa({
-    @required this.tag,
+    @required NfcTag tag,
     @required this.currentSystemCode,
     @required this.currentIDm,
-  });
+  }) : _tag = tag;
 
-  // tag
-  final NfcTag tag;
+  // _tag
+  final NfcTag _tag;
 
-  // currentSystemCode
+  /// The value from NFCFelicaTag#currentSystemCode on iOS.
   final Uint8List currentSystemCode;
 
-  // currentIDm
+  /// The value from NFCFelicaTag#currentIDm on iOS.
   final Uint8List currentIDm;
 
-  // FeliCa.from
+  /// Get an instance of `FeliCa` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with FeliCa.
   factory FeliCa.from(NfcTag tag) => $GetFeliCa(tag);
 
-  // polling
+  /// Sends the Polling command to the tag.
+  /// 
+  /// This uses NFCFeliCaTag#polling API on iOS.
   Future<FeliCaPollingResponse> polling({
     @required Uint8List systemCode,
     @required FeliCaPollingRequestCode requestCode,
     @required FeliCaPollingTimeSlot timeSlot,
   }) async {
     return channel.invokeMethod('FeliCa#polling', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'systemCode': systemCode,
       'requestCode': $FeliCaPollingRequestCodeTable[requestCode],
       'timeSlot': $FeliCaPollingTimeSlotTable[timeSlot],
     }).then((value) => $GetFeliCaPollingResponse(Map.from(value)));
   }
 
-  // requestResponse
+  /// Sends the Request Response command to the tag.
+  /// 
+  /// This uses NFCFeliCaTag#requestResponse API on iOS.
   Future<int> requestResponse() async {
     return channel.invokeMethod('FeliCa#requestResponse', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
     });
   }
 
-  // requestSystemCode
+  /// Sends the Request System Code command to the tag.
+  /// 
+  /// This uses NFCFeliCaTag#requestSystemCode API on iOS.
   Future<List<Uint8List>> requestSystemCode() async {
     return channel.invokeMethod('FeliCa#requestSystemCode', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
     });
   }
 
-  // requestService
+  /// Sends the Request Service command to the tag.
+  /// 
+  /// This uses NFCFeliCaTag#requestService API on iOS.
   Future<List<Uint8List>> requestService({
     @required List<Uint8List> nodeCodeList,
   }) async {
     return channel.invokeMethod('FeliCa#requestService', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'nodeCodeList': nodeCodeList,
     });
   }
 
-  // requestServiceV2
+  /// Sends the Request Service V2 command to the tag.
+  /// 
+  /// This uses NFCFeliCaTag#requestServiceV2 API on iOS.
   Future<FeliCaRequestServiceV2Response> requestServiceV2({
     @required List<Uint8List> nodeCodeList,
   }) async {
     return channel.invokeMethod('FeliCa#requestServiceV2', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'nodeCodeList': nodeCodeList,
     }).then((value) => $GetFeliCaRequestServiceV2Response(Map.from(value)));
   }
 
-  // readWithoutEncryption
+  /// Sends the Read Without Encryption command to the tag.
+  /// 
+  /// This uses NFCFeliCaTag#readWithoutEncryption API on iOS.
   Future<FeliCaReadWithoutEncryptionResponse> readWithoutEncryption({
     @required List<Uint8List> serviceCodeList,
     @required List<Uint8List> blockList,
   }) async {
     return channel.invokeMethod('FeliCa#readWithoutEncryption', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'serviceCodeList': serviceCodeList,
       'blockList': blockList,
     }).then((value) => $GetFeliCaReadWithoutEncryptionResponse(Map.from(value)));
   }
 
-  // writeWithoutEncryption
+  /// Sends the Write Without Encryption command to the tag.
+  /// 
+  /// This uses NFCFeliCaTag#writeWithoutEncryption API on iOS.
   Future<FeliCaStatusFlag> writeWithoutEncryption({
     @required List<Uint8List> serviceCodeList,
     @required List<Uint8List> blockList,
     @required List<Uint8List> blockData,
   }) async {
     return channel.invokeMethod('FeliCa#writeWithoutEncryption', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'serviceCodeList': serviceCodeList,
       'blockList': blockList,
       'blockData': blockData,
     }).then((value) => $GetFeliCaStatusFlag(Map.from(value)));
   }
 
-  // requestSpecificationVersion
+  /// Sends the Request Specification Version command to the tag.
+  /// 
+  /// This uses NFCFeliCaTag#requestSpecificationVersion API on iOS.
   Future<FeliCaRequestSpecificationVersionResponse> requestSpecificationVersion() async {
     return channel.invokeMethod('FeliCa#requestSpecificationVersionResponse', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
     }).then((value) => $GetFeliCaRequestSpecificationVersionResponse(Map.from(value)));
   }
 
-  // resetMode
+  /// Sends the Reset Mode command to the tag.
+  /// 
+  /// This uses NFCFeliCaTag#resetMode API on iOS.
   Future<FeliCaStatusFlag> resetMode() async {
     return channel.invokeMethod('FeliCa#resetMode', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
     }).then((value) => $GetFeliCaStatusFlag(Map.from(value)));
   }
 
-  // sendFeliCaCommand
+  /// Sends the FeliCa command packet data to the tag.
+  /// 
+  /// This uses NFCFeliCaTag#sendFeliCaCommand API on iOS.
   Future<Uint8List> sendFeliCaCommand(Uint8List commandPacket) async {
     return channel.invokeMethod('FeliCa#transceive', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'commandPacket': commandPacket,
     });
   }
 }
 
-// FeliCaPollingResponse
+/// The class represents the response of the Polling command.
 class FeliCaPollingResponse {
-  // FeliCaPollingResponse
+  /// Constructs an instance with the given values.
   const FeliCaPollingResponse({
     @required this.manufacturerParameter,
     @required this.requestData,
   });
 
-  // manufacturerParameter
+  /// Manufacturer Parameter.
   final Uint8List manufacturerParameter;
 
-  // requestData
+  /// Request Data.
   final Uint8List requestData;
 }
 
-// FeliCaRequestSpecificationVersionResponse
+/// The class represents the response of the Request Specification Version command.
 class FeliCaRequestSpecificationVersionResponse {
-  // FeliCaRequestSpecificationVersionResponse
+  /// Constructs an instance with the given values.
   const FeliCaRequestSpecificationVersionResponse({
     @required this.statusFlag1,
     @required this.statusFlag2,
@@ -149,22 +176,22 @@ class FeliCaRequestSpecificationVersionResponse {
     @required this.optionVersion,
   });
 
-  // statusFlag1
+  /// Status Flag1.
   final int statusFlag1;
 
-  // statusFlag2
+  /// Status Flag2.
   final int statusFlag2;
 
-  // basicVersion
+  /// Basic Version.
   final Uint8List basicVersion;
 
-  // optionVersion
+  /// Option Version.
   final Uint8List optionVersion;
 }
 
-// FeliCaRequestServiceV2Response
+/// The class represents the response of the Request Service V2 command.
 class FeliCaRequestServiceV2Response {
-  // FeliCaRequestServiceV2Response
+  /// Constructs an instance with the given values.
   const FeliCaRequestServiceV2Response({
     @required this.statusFlag1,
     @required this.statusFlag2,
@@ -173,82 +200,82 @@ class FeliCaRequestServiceV2Response {
     @required this.nodeKeyVersionListDes,
   });
 
-  // statusFlag1
+  /// Status Flag1.
   final int statusFlag1;
 
-  // statusFlag2
+  /// Status Flag2.
   final int statusFlag2;
 
-  // encryptionIdentifier
+  /// Encryption Identifier.
   final int encryptionIdentifier;
 
-  // nodeKeyVersionListAes
+  /// Node Key Version List AES.
   final List<Uint8List> nodeKeyVersionListAes;
 
-  // nodeKeyVersionListDes
+  /// Node Key Version List DES.
   final List<Uint8List> nodeKeyVersionListDes;
 }
 
-// FeliCaReadWithoutEncryptionResponse
+/// The class represents the response of the Read Without Encryption command.
 class FeliCaReadWithoutEncryptionResponse {
-  // FeliCaReadWithoutEncryptionResponse
+  /// Constructs an instance with the given values.
   const FeliCaReadWithoutEncryptionResponse({
     @required this.statusFlag1,
     @required this.statusFlag2,
     @required this.blockData,
   });
 
-  // statusFlag1
+  /// Status Flag1.
   final int statusFlag1;
 
-  // statusFlag2
+  /// Status Flag2.
   final int statusFlag2;
 
-  // blockData
+  /// Block Data.
   final List<Uint8List> blockData;
 }
 
-// FeliCaStatusFlag
+/// The class represents the status flags of the command.
 class FeliCaStatusFlag {
-  // FeliCaStatusFlag
+  /// Constructs an instance with the given values.
   const FeliCaStatusFlag({
     @required this.statusFlag1,
     @required this.statusFlag2,
   });
 
-  // statusFlag1
+  /// Status Flag1.
   final int statusFlag1;
 
-  // statusFlag2
+  /// Status Flag2.
   final int statusFlag2;
 }
 
-// FeliCaPollingRequestCode
+/// Represents PollingRequestCode on iOS.
 enum FeliCaPollingRequestCode {
-  // noRequest
+  /// Indicates PollingRequestCode#noRequest on iOS.
   noRequest,
 
-  // systemCode
+  /// Indicates PollingRequestCode#systemCode on iOS.
   systemCode,
 
-  // communicationPerformance
+  /// Indicates PollingRequestCode#communicationPerformamce on iOS.
   communicationPerformance,
 }
 
-// FeliCaPollingTimeSlot
+/// Represents PollingTimeSlot on iOS.
 enum FeliCaPollingTimeSlot {
-  // max1
+  /// Indicates PollingTimeSlot#max1 on iOS.
   max1,
 
-  // max2
+  /// Indicates PollingTimeSlot#max2 on iOS.
   max2,
 
-  // max4
+  /// Indicates PollingTimeSlot#max4 on iOS.
   max4,
 
-  // max8
+  /// Indicates PollingTimeSlot#max8 on iOS.
   max8,
 
-  // max16
+  /// Indicates PollingTimeSlot#max16 on iOS.
   max16,
 }

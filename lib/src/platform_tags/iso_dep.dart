@@ -6,49 +6,58 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-// IsoDep
+/// (Android only) The class provides access to IsoDep operations on the tag.
+/// 
+/// Acquire `IsoDep` instance using `IsoDep.from`.
 class IsoDep {
-  // IsoDep
+  /// Constructs an instance with the given values for testing.
+  /// 
+  /// The instances constructs by this way are not valid in the production environment.
+  /// Only instances obtained from the `IsoDep.from` are valid.
   const IsoDep({
-    @required this.tag,
+    @required NfcTag tag,
     @required this.identifier,
     @required this.hiLayerResponse,
     @required this.historicalBytes,
     @required this.isExtendedLengthApduSupported,
     @required this.maxTransceiveLength,
     @required this.timeout,
-  });
+  }) : _tag = tag;
 
-  // tag
-  final NfcTag tag;
+  // _tag
+  final NfcTag _tag;
 
-  // identifier
+  /// The value from Tag#id on Android.
   final Uint8List identifier;
 
-  // hiLayerResponse
+  /// The value from IsoDep#hiLayerResponse on Android.
   final Uint8List hiLayerResponse;
 
-  // historicalBytes
+  /// The value from IsoDep#historicalBytes on Android.
   final Uint8List historicalBytes;
 
-  // isExtendedLengthApduSupported
+  /// The value from IsoDep#isExtendedLengthApduSupported on Android.
   final bool isExtendedLengthApduSupported;
 
-  // maxTransceiveLength
+  /// The value from IsoDep#maxTransceiveLength on Android.
   final int maxTransceiveLength;
 
-  // timeout
+  /// The value from IsoDep#timeout on Android.
   final int timeout;
 
-  // IsoDep.from
+  /// Get an instance of `IsoDep` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with IsoDep.
   factory IsoDep.from(NfcTag tag) => $GetIsoDep(tag);
 
-  // transceive
+  /// Sends the IsoDep command to the tag.
+  /// 
+  /// This uses IsoDep#transceive API on Android.
   Future<Uint8List> transceive({
     @required Uint8List data,
   }) async {
     return channel.invokeMethod('IsoDep#transceive', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'data': data,
     });
   }

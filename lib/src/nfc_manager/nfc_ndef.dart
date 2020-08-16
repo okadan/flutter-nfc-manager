@@ -7,74 +7,85 @@ import '../channel.dart';
 import '../translator.dart';
 import './nfc_manager.dart';
 
-// Ndef
+/// The class provides access to NDEF operations on the tag.
+/// 
+/// Acquire `Ndef` instance using `Ndef.from`.
 class Ndef {
-  // Ndef
+  /// Constructs an instance with the given values for testing.
+  /// 
+  /// The instances constructs by this way are not valid in the production environment.
+  /// Only instances obtained from the `Ndef.from` are valid.
   const Ndef({
-    @required this.tag,
+    @required NfcTag tag,
     @required this.isWritable,
     @required this.maxSize,
     @required this.cachedMessage,
     @required this.additionalData,
-  });
+  }) : _tag = tag;
 
-  // tag
-  final NfcTag tag;
+  // _tag
+  final NfcTag _tag;
 
-  // isWritable;
+  /// The value from Ndef#isWritable on Android, NFCNDEFTag#queryStatus on iOS.
   final bool isWritable;
 
-  // maxSize
+  /// The value from Ndef#maxSize on Android, NFCNDEFTag#queryStatus on iOS.
   final int maxSize;
 
-  // cachedMessage
+  /// The value from Ndef#cachedNdefMessage on Android, NFCNDEFTag#read on iOS.
+  /// 
+  /// This value is cached at tag discovery.
   final NdefMessage cachedMessage;
 
-  // additionalData
+  /// The value represents some additional data.
   final Map<String, dynamic> additionalData;
 
-  // Ndef.from
+  /// Get an instance of `Ndef` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with Ndef.
   factory Ndef.from(NfcTag tag) => $GetNdef(tag);
 
-  // read
+  /// Read the current NDEF message on this tag.
   Future<NdefMessage> read() async {
     return channel.invokeMethod('Ndef#read', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
     }).then((value) => $GetNdefMessage(Map.from(value)));
   }
 
-  // write
+  /// Write the NDEF message on this tag.
   Future<void> write(NdefMessage message) async {
     return channel.invokeMethod('Ndef#write', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'message': $GetNdefMessageMap(message),
     });
   }
 
-  // writeLock
+  /// Change the NDEF status to read-only.
+  /// 
+  /// This is a permanent action that you cannot undo. After locking the tag, you can no longer write data to it.
   Future<void> writeLock() async {
     return channel.invokeMethod('Ndef#writeLock', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
     });
   }
 }
 
-// NdefMessage
+/// The class represents the immutable NDEF message.
 class NdefMessage {
-  // NdefMessage
+  /// Constructs an instance with given records.
   const NdefMessage(this.records);
 
-  // records
+  /// Records.
   final List<NdefRecord> records;
 
-  // byteLength
+  /// The length in bytes of the NDEF message when stored on the tag.
   int get byteLength =>
     records.isEmpty ? 0 : records.map((e) => e.byteLength).reduce((a, b) => a + b);
 }
 
-// NdefRecord
+/// The class represents the immutable NDEF record.
 class NdefRecord {
-  // URI_PREFIX_LIST
+  /// URI_PREFIX_LIST
   static const URI_PREFIX_LIST = [
     '',
     'http://www.',
@@ -122,19 +133,19 @@ class NdefRecord {
     @required this.payload,
   });
 
-  // typeNameFormat
+  /// Type Name Format.
   final NdefTypeNameFormat typeNameFormat;
 
-  // type
+  /// Type.
   final Uint8List type;
 
-  // identifier
+  /// Identifier.
   final Uint8List identifier;
 
-  // payload
+  /// Payload.
   final Uint8List payload;
 
-  // byteLength
+  /// The length in bytes of the NDEF record when stored on the tag.
   int get byteLength {
     var length = 3 + type.length + identifier.length + payload.length;
 
@@ -149,7 +160,10 @@ class NdefRecord {
     return length;
   }
 
-  // NdefRecord
+  /// Constructs an instance with the given values.
+  /// 
+  /// Recommend to use other factory constructors such as `createText` or `createText` where possible,
+  /// since they will ensure that the records are formatted correctly according to the NDEF specification.
   factory NdefRecord({
     @required NdefTypeNameFormat typeNameFormat,
     @required Uint8List type,
@@ -170,7 +184,9 @@ class NdefRecord {
     );
   }
 
-  // NdefRecord.createText
+  /// Constructs an instance containing UTF-8 text.
+  /// 
+  /// Can specify the `languageCode` for the given text, `en` by default.
   factory NdefRecord.createText(String text, { String languageCode = 'en' }) {
     if (text == null)
       throw('text is null');
@@ -189,7 +205,7 @@ class NdefRecord {
     );
   }
 
-  // NdefRecord.createUri
+  /// Constructs an instance containing URI.
   factory NdefRecord.createUri(Uri uri) {
     if (uri == null)
       throw('uri is null');
@@ -211,7 +227,7 @@ class NdefRecord {
     );
   }
 
-  // NdefRecord.createMime
+  /// Constructs an instance containing media data as defined by RFC 2046.
   factory NdefRecord.createMime(String type, Uint8List data) {
     type = type?.toLowerCase()?.trim()?.split(';')?.first;
     if (type == null || type.isEmpty)
@@ -231,7 +247,7 @@ class NdefRecord {
     );
   }
 
-  // NdefRecord.createExternal
+  /// Constructs an instance containing external (application-specific) data.
   factory NdefRecord.createExternal(String domain, String type, Uint8List data) {
     domain = domain?.trim()?.toLowerCase();
     type = type?.trim()?.toLowerCase();
@@ -273,26 +289,26 @@ class NdefRecord {
   }
 }
 
-// NdefTypeNameFormat
+/// Represents the NDEF Type-Name-Format as defined by the NFC specification.
 enum NdefTypeNameFormat {
-  // empty
+  /// The record contains no data.
   empty,
 
-  // nfcWellknown
+  /// The record contains well-known NFC record type data.
   nfcWellknown,
 
-  // media
+  /// The record contains media data as defined by RFC 2046.
   media,
 
-  // absoluteUri
+  /// The record contains uniform resource identifier.
   absoluteUri,
 
-  // nfcExternal
+  /// The record contains NFC external type data.
   nfcExternal,
 
-  // unknown
+  /// The record type is unknown.
   unknown,
 
-  // unchanged
+  /// The record is part of a series of records containing chunked data.
   unchanged,
 }

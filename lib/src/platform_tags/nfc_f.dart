@@ -6,45 +6,54 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-// NfcF
+/// (Android only) The class provides access to NfcF operations on the tag.
+/// 
+/// Acquire `NfcF` instance using `NfcF.from`.
 class NfcF {
-  // NfcF
+  /// Constructs an instance with the given values for testing.
+  /// 
+  /// The instances constructs by this way are not valid in the production environment.
+  /// Only instances obtained from the `NfcF.from` are valid.
   const NfcF({
-    @required this.tag,
+    @required NfcTag tag,
     @required this.identifier,
     @required this.manufacturer,
     @required this.systemCode,
     @required this.maxTransceiveLength,
     @required this.timeout,
-  });
+  }) : _tag = tag;
 
-  // tag
-  final NfcTag tag;
+  // _tag
+  final NfcTag _tag;
 
-  // identifier
+  /// The value from Tag#id on Android.
   final Uint8List identifier;
 
-  // manufacturer
+  /// The value from NfcF#manufacturer on Android.
   final Uint8List manufacturer;
 
-  // systemCode
+  /// The value from NfcF#systemCode on Android.
   final Uint8List systemCode;
 
-  // maxTransceiveLength
+  /// The value from NfcF#maxTransceiveLength on Android.
   final int maxTransceiveLength;
 
-  // timeout
+  /// The value from NfcF#timeout on Android.
   final int timeout;
 
-  // NfcF.from
+  /// Get an instance of `NfcF` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with NfcF.
   factory NfcF.from(NfcTag tag) => $GetNfcF(tag);
 
-  // transceive
+  /// Sends the NfcF command to the tag.
+  /// 
+  /// This uses NfcF#transceive API on Android.
   Future<Uint8List> transceive({
     @required Uint8List data,
   }) async {
     return channel.invokeMethod('NfcF#transceive', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'data': data,
     });
   }

@@ -16,6 +16,7 @@
 * Add `NdefFormatable`, `MifareClassic` and `MifareUltralight` classes.
 * Add `Ndef#read` method.
 * Add command-implementations for `FeliCa` and `Iso15693`.
+* Upgrade flutter environment.
 
 # 1.3.2+4
 

@@ -6,11 +6,16 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-// MifareClassic
+/// (Android only) The class provides access to MifareClassic operations on the tag.
+/// 
+/// Acquire `MifareClassic` instance using `MifareClassic.from`.
 class MifareClassic {
-  // MifareClassic
+  /// Constructs an instance with the given values for testing.
+  /// 
+  /// The instances constructs by this way are not valid in the production environment.
+  /// Only instances obtained from the `MifareClassic.from` are valid.
   const MifareClassic({
-    @required this.tag,
+    @required NfcTag tag,
     @required this.identifier,
     @required this.type,
     @required this.blockCount,
@@ -18,131 +23,152 @@ class MifareClassic {
     @required this.size,
     @required this.maxTransceiveLength,
     @required this.timeout,
-  });
+  }) : _tag = tag;
 
-  // tag
-  final NfcTag tag;
+  // _tag
+  final NfcTag _tag;
 
-  // identifier
+  /// The value from Tag#id on Android.
   final Uint8List identifier;
 
-  // type: One of TYPE_UNKNOWN, TYPE_CLASSIC, TYPE_PLUS or TYPE_PRO
+  /// The value from MifareClassic#type on Android.
   final int type;
 
-  // blockCount
+  /// The value from MifareClassic#blockCount on Android.
   final int blockCount;
 
-  // sectorCount
+  /// The value from MifareClassic#sectorCount on Android.
   final int sectorCount;
 
-  // size: One of SIZE_MINI, SIZE_1K, SIZE_2K, SIZE_4K
+  /// The value from MifareClassic#size on Android.
   final int size;
 
-  // maxTransceiveLength
+  /// The value from MifareClassic#maxTransceiveLength on Android.
   final int maxTransceiveLength;
 
-  // timeout
+  /// The value from MifareClassic#timeout on Android.
   final int timeout;
 
-  // MifareClassic.from
+  /// Get an instance of `MifareClassic` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with MifareClassic.
   factory MifareClassic.from(NfcTag tag) => $GetMifareClassic(tag);
 
-  // authenticateSectorWithKeyA
+  /// Sends the Authenticate Sector With Key A command to the tag.
+  /// 
+  /// This uses MifareClassic#authenticateSectorWithKeyA API on Android.
   Future<bool> authenticateSectorWithKeyA({
     @required int sectorIndex,
     @required Uint8List key,
   }) async {
     return channel.invokeMethod('MifareClassic#authenticateSectorWithKeyA', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'sectorIndex': sectorIndex,
       'key': key,
     });
   }
 
-  // authenticateSectorWithKeyB
+  /// Sends the Authenticate Sector With Key B command to the tag.
+  /// 
+  /// This uses MifareClassic#authenticateSectorWithKeyB API on Android.
   Future<bool> authenticateSectorWithKeyB({
     @required int sectorIndex,
     @required Uint8List key,
   }) async {
     return channel.invokeMethod('MifareClassic#authenticateSectorWithKeyB', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'sectorIndex': sectorIndex,
       'key': key,
     });
   }
 
-  // increment
+  /// Sends the Increment command to the tag.
+  /// 
+  /// This uses MifareClassic#increment API on Android.
   Future<void> increment({
     @required int blockIndex,
     @required int value,
   }) async {
     return channel.invokeMethod('MifareClassic#increment', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'blockIndex': blockIndex,
       'value': value,
     });
   }
 
-  // decrement
+  /// Sends the Decrement command to the tag.
+  /// 
+  /// This uses MifareClassic#decrement API on Android.
   Future<void> decrement({
     @required int blockIndex,
     @required int value,
   }) async {
     return channel.invokeMethod('MifareClassic#decrement', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'blockIndex': blockIndex,
       'value': value,
     });
   }
 
-  // readBlock
+  /// Sends the Read Block command to the tag.
+  /// 
+  /// This uses MifareClassic#readBlock API on Android.
   Future<Uint8List> readBlock({
     @required int blockIndex,
   }) async {
     return channel.invokeMethod('MifareClassic#readBlock', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'blockIndex': blockIndex,
     });
   }
 
-  // writeBlock
+  /// Sends the Write Block command to the tag.
+  /// 
+  /// This uses MifareClassic#writeBlock API on Android.
   Future<void> writeBlock({
     @required int blockIndex,
     @required Uint8List data,
   }) async {
     return channel.invokeMethod('MifareClassic#writeBlock', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'blockIndex': blockIndex,
       'data': data,
     });
   }
 
-  // restore
+  /// Sends the Restore command to the tag.
+  /// 
+  /// This uses MifareClassic#restore API on Android.
   Future<void> restore({
     @required int blockIndex,
   }) async {
     return channel.invokeMethod('MifareClassic#restore', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'blockIndex': blockIndex,
     });
   }
 
-  // transfer
+  /// Sends the Transfer command to the tag.
+  /// 
+  /// This uses MifareClassic#transfer API on Android.
   Future<void> transfer({
     @required int blockIndex,
   }) async {
     return channel.invokeMethod('MifareClassic#transfer', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'blockIndex': blockIndex,
     });
   }
 
-  // transceive
+  /// Sends the NfcA command to the tag.
+  /// 
+  /// This uses MifareClassic#transceive API on Android.
+  /// This is equivalent to obtaining via `NfcA.from` this tag and calling `NfcA#transceive`.
   Future<Uint8List> transceive({
     @required int data,
   }) async {
     return channel.invokeMethod('MifareClassic#transceive', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'data': data,
     });
   }

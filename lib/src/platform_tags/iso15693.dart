@@ -6,45 +6,56 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-// Iso15693
+/// (iOS only) The class provides access to Iso15693 operations on the tag.
+/// 
+/// Acquire `Iso15693` instance using `Iso15693.from`.
 class Iso15693 {
-  // Iso15693
+  /// Constructs an instance with the given values for testing.
+  /// 
+  /// The instances constructs by this way are not valid in the production environment.
+  /// Only instances obtained from the `Iso15693.from` are valid.
   const Iso15693({
-    @required this.tag,
+    @required NfcTag tag,
     @required this.identifier,
     @required this.icManufacturerCode,
     @required this.icSerialNumber,
-  });
+  }) : _tag = tag;
 
-  // tag
-  final NfcTag tag;
+  // _tag
+  final NfcTag _tag;
 
-  // identifier
+  /// The value from NFCISO15693Tag#identifier on iOS.
   final Uint8List identifier;
 
-  // icManufacturerCode
+  /// The value from NFCISO15693Tag#icManufacturerCode on iOS.
   final int icManufacturerCode;
 
-  // icSerialNumber
+  /// The value from NFCISO15693Tag#icSerialNumber on iOS.
   final Uint8List icSerialNumber;
 
-  // Iso15693.from
+  /// Get an instance of `Iso15693` for the given tag.
+  ///
+  /// Returns null if the tag is not compatible with Iso15693.
   factory Iso15693.from(NfcTag tag) => $GetIso15693(tag);
 
-  // readSingleBlock
+  /// Sends the Read Single Block command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#readSingleBlock API on iOS.
   Future<Uint8List> readSingleBlock({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int blockNumber,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#readSingleBlock', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber?.toUnsigned(8),
     });
   }
 
-  // writeSingleBlock
+  /// Sends the Write Single Block command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#writeSingleBlock API on iOS.
   Future<void> writeSingleBlock({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int blockNumber,
@@ -52,27 +63,31 @@ class Iso15693 {
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#writeSingleBlock', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber?.toUnsigned(8),
       'dataBlock': dataBlock,
     });
   }
 
-  // lockBlock
+  /// Sends the Lock Block command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#lockBlock API on iOS.
   Future<void> lockBlock({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int blockNumber,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#lockBlock', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber?.toUnsigned(8),
     });
   }
 
-  // readMultipleBlocks
+  /// Sends the Read Multiple Blocks command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#readMultipleBlocks API on iOS.
   Future<List<Uint8List>> readMultipleBlocks({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int blockNumber,
@@ -80,14 +95,16 @@ class Iso15693 {
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#readMultipleBlocks', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
     });
   }
 
-  // writeMultipleBlocks
+  /// Sends the Write Multiple Blocks command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#writeMultipleBlocks API on iOS.
   Future<void> writeMultipleBlocks({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int blockNumber,
@@ -96,7 +113,7 @@ class Iso15693 {
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#writeMultipleBlocks', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
@@ -104,7 +121,9 @@ class Iso15693 {
     });
   }
 
-  // getMultipleBlockSecurityStatus
+  /// Sends the Get Multiple Block Security Status command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#getMultipleBlockSecurityStatus API on iOS.
   Future<List<int>> getMultipleBlockSecurityStatus({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int blockNumber,
@@ -112,104 +131,122 @@ class Iso15693 {
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#getMultipleBlockSecurityStatus', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
     });
   }
 
-  // writeAfi
+  /// Sends the Write AFI command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#writeAFI API on iOS.
   Future<void> writeAfi({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int afi,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#writeAfi', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'afi': afi?.toUnsigned(8),
     });
   }
 
-  // lockAfi
+  /// Sends the Lock AFI command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#lockAFI API on iOS.
   Future<void> lockAfi({
     @required Set<Iso15693RequestFlag> requestFlags,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#lockAfi', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
     });
   }
 
-  // writeDsfId
+  /// Sends the Write DSFID command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#writeDSFID API on iOS.
   Future<void> writeDsfId({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int dsfId,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#writeDsfId', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'dsfId': dsfId?.toUnsigned(8),
     });
   }
 
-  // lockDsfId
+  /// Sends the Lock DSFID command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#lockDSFID API on iOS.
   Future<void> lockDsfId({
     @required Set<Iso15693RequestFlag> requestFlags,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#lockDsfId', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
     });
   }
 
-  // resetToReady
+  /// Sends the Reset To Ready command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#resetToReady API on iOS.
   Future<void> resetToReady({
     @required Set<Iso15693RequestFlag> requestFlags,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#resetToReady', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
     });
   }
 
-  // select
+  /// Sends the Select command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#select API on iOS.
   Future<void> select({
     @required Set<Iso15693RequestFlag> requestFlags,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#select', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
     });
   }
 
-  // stayQuiet
+  /// Sends the Stay Quiet command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#stayQuiet API on iOS.
   Future<void> stayQuiet() async {
     return channel.invokeMethod('Iso15693#stayQuiet', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
     });
   }
 
-  // extendedReadSingleBlock
+  /// Sends the Extended Read Single Block command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#extendedReadSingleBlock API on iOS.
   Future<Uint8List> extendedReadSingleBlock({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int blockNumber,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#extendedReadSingleBlock', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
     });
   }
 
-  // extendedWriteSingleBlock
+  /// Sends the Extended Write Single Block command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#extendedWriteSingleBlock API on iOS.
   Future<void> extendedWriteSingleBlock({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int blockNumber,
@@ -217,27 +254,31 @@ class Iso15693 {
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#extendedWriteSingleBlock', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
       'dataBlock': dataBlock,
     });
   }
 
-  // extendedLockBlock
+  /// Sends the Extended Lock Block command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#extendedLockBlock API on iOS.
   Future<void> extendedLockBlock({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int blockNumber,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#extendedLockBlock', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
     });
   }
 
-  // extendedReadMultipleBlocks
+  /// Sends the Extended Read Multiple Blocks command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#extendedReadMultipleBlocks API on iOS.
   Future<List<Uint8List>> extendedReadMultipleBlocks({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int blockNumber,
@@ -245,25 +286,29 @@ class Iso15693 {
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#extendedReadMultipleBlocks', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
     });
   }
 
-  // getSystemInfo
+  /// Sends the Get System Info command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#getSystemInfo API on iOS.
   Future<Iso15693SystemInfo> getSystemInfo({
     @required Set<Iso15693RequestFlag> requestFlags,
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#getSystemInfo', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
     }).then((value) => $GetIso15693SystemInfo(Map.from(value)));
   }
 
-  // customCommand
+  /// Sends the custom command to the tag.
+  /// 
+  /// This uses NFCISO15693Tag#customCommand API on iOS.
   Future<Uint8List> customCommand({
     @required Set<Iso15693RequestFlag> requestFlags,
     @required int customCommandCode,
@@ -271,7 +316,7 @@ class Iso15693 {
   }) async {
     requestFlags ??= {};
     return channel.invokeMethod('Iso15693#customCommand', {
-      'handle': tag.handle,
+      'handle': _tag.handle,
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'customCommandCode': customCommandCode,
       'customRequestParameters': customRequestParameters,
@@ -279,9 +324,9 @@ class Iso15693 {
   }
 }
 
-// Iso15693SystemInfo
+/// The class represents the response of the Get System Info command.
 class Iso15693SystemInfo {
-  // Iso15693SystemInfo
+  /// Constructs an instance with the given values.
   const Iso15693SystemInfo({
     @required this.applicationFamilyIdentifier,
     @required this.blockSize,
@@ -290,39 +335,39 @@ class Iso15693SystemInfo {
     @required this.totalBlocks,
   });
 
-  // applicationFamilyIdentifier
+  /// Application Family Identifier.
   final int applicationFamilyIdentifier;
 
-  // blockSize
+  /// Block Size.
   final int blockSize;
 
-  // dataStorageFormatIdentifier
+  /// Data Storage Format Identifier.
   final int dataStorageFormatIdentifier;
 
-  // icReference
+  // IC Reference.
   final int icReference;
 
-  // totalBlocks
+  /// Total Blocks.
   final int totalBlocks;
 }
 
-// Iso15693RequestFlag
+/// Represents RequestFlag on iOS.
 enum Iso15693RequestFlag {
-  // address
+  /// Indicates RequestFlag#address on iOS.
   address,
 
-  // dualSubCarriers
+  /// Indicates RequestFlag#dualSubCarriers on iOS.
   dualSubCarriers,
 
-  // highDataRate
+  /// Indicates RequestFlag#highDataRate on iOS.
   highDataRate,
 
-  // option
+  /// Indicates RequestFlag#option on iOS.
   option,
 
-  // protocolExtension
+  /// Indicates RequestFlag#protocolExtension on iOS.
   protocolExtension,
 
-  // select
+  /// Indicates RequestFlag#select on iOS.
   select,
 }
