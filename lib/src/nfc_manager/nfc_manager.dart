@@ -84,7 +84,7 @@ class NfcManager {
   }
 
   // _handleMethodCall
-  void _handleMethodCall(MethodCall call) async {
+  Future<void> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'onDiscovered': _handleOnDiscovered(call); break;
       case 'onError': _handleOnError(call); break;

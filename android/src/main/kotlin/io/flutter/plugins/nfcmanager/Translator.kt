@@ -7,6 +7,7 @@ import android.nfc.Tag
 import android.nfc.tech.IsoDep
 import android.nfc.tech.MifareClassic
 import android.nfc.tech.MifareUltralight
+import android.nfc.tech.Ndef
 import android.nfc.tech.NfcA
 import android.nfc.tech.NfcB
 import android.nfc.tech.NfcF
@@ -100,6 +101,16 @@ fun getTagMap(arg: Tag): Map<String, Any?> {
           "identifier" to arg.id,
           "maxTransceiveLength" to it.maxTransceiveLength,
           "timeout" to it.timeout,
+          "type" to it.type
+        )
+      }
+      Ndef::class.java.name -> Ndef.get(arg).let {
+        mapOf(
+          "identifier" to arg.id,
+          "isWritable" to it.isWritable,
+          "maxSize" to it.maxSize,
+          "canMakeReadOnly" to it.canMakeReadOnly(),
+          "cachedMessage" to if (it.cachedNdefMessage == null) null else getNdefMessageMap(it.cachedNdefMessage),
           "type" to it.type
         )
       }

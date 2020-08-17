@@ -2,6 +2,7 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:nfc_manager/nfc_manager.dart';
+import 'package:nfc_manager/platform_tags.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -77,8 +78,8 @@ class MyAppState extends State<MyApp> {
   void _ndefWrite() {
     NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
       Ndef ndef = Ndef.from(tag);
-      if (ndef == null) {
-        result.value = 'Tag is not ndef';
+      if (ndef == null || !ndef.isWritable) {
+        result.value = 'Tag is not ndef writable';
         NfcManager.instance.stopSession(errorMessage: result.value);
         return;
       }

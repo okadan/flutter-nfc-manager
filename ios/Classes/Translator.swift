@@ -59,10 +59,10 @@ func getNDEFMessageMap(_ arg: NFCNDEFMessage) -> [String : Any?] {
 @available(iOS 13.0, *)
 func getNFCTagMapAsync(_ arg: NFCTag, _ completionHandler: @escaping (NFCNDEFTag, [String:Any?], Error?) -> Void) {
   switch (arg) {
-  case .feliCa(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, ["felica": data], error) }
-  case .miFare(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, ["mifare": data], error) }
-  case .iso7816(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, ["iso7816": data], error) }
-  case .iso15693(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, ["iso15693": data], error) }
+  case .feliCa(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
+  case .miFare(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
+  case .iso7816(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
+  case .iso15693(let tag): getNDEFTagMapAsync(tag) { data, error in completionHandler(tag, data, error) }
   @unknown default: print("Unknown tag cannot be serialized")
   }
 }
@@ -82,16 +82,12 @@ func getNDEFTagMapAsync(_ arg: NFCNDEFTag, _ completionHandler: @escaping ([Stri
       return
     }
 
-    arg.readNDEF { message, error in
-      if let error = error {
-        completionHandler(data, error)
-        return
-      }
+    var ndefData: [String : Any?] = [
+      "isWritable": (status == .readWrite),
+      "maxSize": capacity,
+    ]
 
-      var ndefData: [String : Any?] = [
-        "isWritable": (status == .readWrite),
-        "maxSize": capacity
-      ]
+    arg.readNDEF { message, _ in
 
       if let message = message {
         ndefData["cachedMessage"] = getNDEFMessageMap(message)
@@ -105,31 +101,39 @@ func getNDEFTagMapAsync(_ arg: NFCNDEFTag, _ completionHandler: @escaping ([Stri
 }
 
 @available(iOS 13.0, *)
-func getNDEFTagMap(_ arg: NFCNDEFTag) -> [String : Any?] {
+func getNDEFTagMap(_ arg: NFCNDEFTag) -> [String : [String : Any?]] {
   if let arg = arg as? NFCFeliCaTag {
     return [
-      "currentIDm": arg.currentIDm,
-      "currentSystemCode": arg.currentSystemCode
+      "felica": [
+        "currentIDm": arg.currentIDm,
+        "currentSystemCode": arg.currentSystemCode
+      ]
     ]
   } else if let arg = arg as? NFCISO15693Tag {
     return [
-      "icManufacturerCode": arg.icManufacturerCode,
-      "icSerialNumber": arg.icSerialNumber,
-      "identifier": arg.identifier
+      "iso15693": [
+        "icManufacturerCode": arg.icManufacturerCode,
+        "icSerialNumber": arg.icSerialNumber,
+        "identifier": arg.identifier
+      ]
     ]
   } else if let arg = arg as? NFCISO7816Tag {
     return [
-      "applicationData": arg.applicationData,
-      "historicalBytes": arg.historicalBytes,
-      "identifier": arg.identifier,
-      "initialSelectedAID": arg.initialSelectedAID,
-      "proprietaryApplicationDataCoding": arg.proprietaryApplicationDataCoding
+      "iso7816": [
+        "applicationData": arg.applicationData,
+        "historicalBytes": arg.historicalBytes,
+        "identifier": arg.identifier,
+        "initialSelectedAID": arg.initialSelectedAID,
+        "proprietaryApplicationDataCoding": arg.proprietaryApplicationDataCoding
+      ]
     ]
   } else if let arg = arg as? NFCMiFareTag {
     return [
-      "historicalBytes": arg.historicalBytes,
-      "identifier": arg.identifier,
-      "mifareFamily": arg.mifareFamily.rawValue
+      "mifare": [
+        "historicalBytes": arg.historicalBytes,
+        "identifier": arg.identifier,
+        "mifareFamily": arg.mifareFamily.rawValue
+      ]
     ]
   } else {
     return [:]
@@ -142,7 +146,7 @@ func getErrorMap(_ arg: Error) -> [String : Any?] {
     return [
       "type": getErrorTypeString(arg.code),
       "message": arg.localizedDescription,
-      "details": arg.userInfo,
+      "details": nil,
     ]
   }
   return [

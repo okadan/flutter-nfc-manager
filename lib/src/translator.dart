@@ -160,19 +160,19 @@ Iso7816ResponseApdu $GetIso7816ResponseApdu(Map<String, dynamic> arg) {
 
 Ndef $GetNdef(NfcTag arg) {
   if (arg.data['ndef'] == null) return null;
-  final data = Map.from(arg.data['ndef']);
+  final data = Map<String, dynamic>.from(arg.data['ndef']);
   return Ndef(
     tag: arg,
     isWritable: data.remove('isWritable'),
     maxSize: data.remove('maxSize'),
-    cachedMessage: data['cachedMessage'] == null ? null : $GetNdefMessage(Map.from(data.remove('cachedMessage'))),
+    cachedMessage: data['cachedMessage'] == null ? null : $GetNdefMessage(Map<String, dynamic>.from(data.remove('cachedMessage'))),
     additionalData: data,
   );
 }
 
 FeliCa $GetFeliCa(NfcTag arg) {
   if (arg.data['felica'] == null) return null;
-  final data = Map.from(arg.data['felica']);
+  final data = Map<String, dynamic>.from(arg.data['felica']);
   return FeliCa(
     tag: arg,
     currentSystemCode: data['currentSystemCode'],
@@ -182,7 +182,7 @@ FeliCa $GetFeliCa(NfcTag arg) {
 
 Iso7816 $GetIso7816(NfcTag arg) {
   if (arg.data['iso7816'] == null) return null;
-  final data = Map.from(arg.data['iso7816']);
+  final data = Map<String, dynamic>.from(arg.data['iso7816']);
   return Iso7816(
     tag: arg,
     identifier: data['identifier'],
@@ -195,7 +195,7 @@ Iso7816 $GetIso7816(NfcTag arg) {
 
 Iso15693 $GetIso15693(NfcTag arg) {
   if (arg.data['iso15693'] == null) return null;
-  final data = Map.from(arg.data['iso15693']);
+  final data = Map<String, dynamic>.from(arg.data['iso15693']);
   return Iso15693(
     tag: arg,
     identifier: data['identifier'],
@@ -206,7 +206,7 @@ Iso15693 $GetIso15693(NfcTag arg) {
 
 MiFare $GetMiFare(NfcTag arg) {
   if (arg.data['mifare'] == null) return null;
-  final data = Map.from(arg.data['mifare']);
+  final data = Map<String, dynamic>.from(arg.data['mifare']);
   return MiFare(
     tag: arg,
     identifier: data['identifier'],
@@ -217,7 +217,7 @@ MiFare $GetMiFare(NfcTag arg) {
 
 NfcA $GetNfcA(NfcTag arg) {
   if (arg.data['nfca'] == null) return null;
-  final data = Map.from(arg.data['nfca']);
+  final data = Map<String, dynamic>.from(arg.data['nfca']);
   return NfcA(
     tag: arg,
     identifier: data['identifier'],
@@ -230,7 +230,7 @@ NfcA $GetNfcA(NfcTag arg) {
 
 NfcB $GetNfcB(NfcTag arg) {
   if (arg.data['nfcb'] == null) return null;
-  final data = Map.from(arg.data['nfcb']);
+  final data = Map<String, dynamic>.from(arg.data['nfcb']);
   return NfcB(
     tag: arg,
     identifier: data['identifier'],
@@ -242,7 +242,7 @@ NfcB $GetNfcB(NfcTag arg) {
 
 NfcF $GetNfcF(NfcTag arg) {
   if (arg.data['nfcf'] == null) return null;
-  final data = Map.from(arg.data['nfcf']);
+  final data = Map<String, dynamic>.from(arg.data['nfcf']);
   return NfcF(
     tag: arg,
     identifier: data['identifier'],
@@ -255,7 +255,7 @@ NfcF $GetNfcF(NfcTag arg) {
 
 NfcV $GetNfcV(NfcTag arg) {
   if (arg.data['nfcv'] == null) return null;
-  final data = Map.from(arg.data['nfcv']);
+  final data = Map<String, dynamic>.from(arg.data['nfcv']);
   return NfcV(
     tag: arg,
     identifier: data['identifier'],
@@ -267,7 +267,7 @@ NfcV $GetNfcV(NfcTag arg) {
 
 IsoDep $GetIsoDep(NfcTag arg) {
   if (arg.data['isodep'] == null) return null;
-  final data = Map.from(arg.data['isodep']);
+  final data = Map<String, dynamic>.from(arg.data['isodep']);
   return IsoDep(
     tag: arg,
     identifier: data['identifier'],
@@ -281,7 +281,7 @@ IsoDep $GetIsoDep(NfcTag arg) {
 
 MifareClassic $GetMifareClassic(NfcTag arg) {
   if (arg.data['mifareclassic'] == null) return null;
-  final data = Map.from(arg.data['mifareclassic']);
+  final data = Map<String, dynamic>.from(arg.data['mifareclassic']);
   return MifareClassic(
     tag: arg,
     identifier: data['identifier'],
@@ -296,7 +296,7 @@ MifareClassic $GetMifareClassic(NfcTag arg) {
 
 MifareUltralight $GetMifareUltralight(NfcTag arg) {
   if (arg.data['mifareultralight'] == null) return null;
-  final data = Map.from(arg.data['mifareultralight']);
+  final data = Map<String, dynamic>.from(arg.data['mifareultralight']);
   return MifareUltralight(
     tag: arg,
     identifier: data['identifier'],
@@ -308,7 +308,7 @@ MifareUltralight $GetMifareUltralight(NfcTag arg) {
 
 NdefFormatable $GetNdefFormatable(NfcTag arg) {
   if (arg.data['ndefformatable'] == null) return null;
-  final data = Map.from(arg.data['ndefformatable']);
+  final data = Map<String, dynamic>.from(arg.data['ndefformatable']);
   return NdefFormatable(
     tag: arg,
     identifier: data['identifier'],
