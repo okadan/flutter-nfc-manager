@@ -42,7 +42,7 @@ class Ndef {
 
   /// Get an instance of `Ndef` for the given tag.
   ///
-  /// Returns null if the tag is not compatible with Ndef.
+  /// Returns null if the tag is not compatible with NDEF.
   factory Ndef.from(NfcTag tag) => $GetNdef(tag);
 
   /// Read the current NDEF message on this tag.
@@ -162,7 +162,7 @@ class NdefRecord {
 
   /// Constructs an instance with the given values.
   /// 
-  /// Recommend to use other factory constructors such as `createText` or `createText` where possible,
+  /// Recommend to use other factory constructors such as `createText` or `createUri` where possible,
   /// since they will ensure that the records are formatted correctly according to the NDEF specification.
   factory NdefRecord({
     @required NdefTypeNameFormat typeNameFormat,

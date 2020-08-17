@@ -6,7 +6,7 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-/// (Android only) The class provides access to MifareClassic operations on the tag.
+/// (Android only) The class provides access to MifareClassic API for Android.
 /// 
 /// Acquire `MifareClassic` instance using `MifareClassic.from`.
 class MifareClassic {

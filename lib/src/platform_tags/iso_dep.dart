@@ -6,7 +6,7 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-/// (Android only) The class provides access to IsoDep operations on the tag.
+/// The class provides access to IsoDep API for Android.
 /// 
 /// Acquire `IsoDep` instance using `IsoDep.from`.
 class IsoDep {

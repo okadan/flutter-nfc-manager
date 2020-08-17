@@ -6,7 +6,7 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-/// (Android only) The class provides access to NfcB operations on the tag.
+/// (Android only) The class provides access to NfcB API for Android.
 /// 
 /// Acquire `NfcB` instance using `NfcB.from`.
 class NfcB {

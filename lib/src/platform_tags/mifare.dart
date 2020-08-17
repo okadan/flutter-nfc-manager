@@ -7,7 +7,7 @@ import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 import './iso7816.dart';
 
-/// (iOS only) The class provides access to MiFare operations on the tag.
+/// (iOS only) The class provides access to NFCMiFareTag API for iOS.
 /// 
 /// Acquire `MiFare` instance using `MiFare.from`.
 class MiFare {

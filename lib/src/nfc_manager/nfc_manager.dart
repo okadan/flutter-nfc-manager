@@ -57,7 +57,7 @@ class NfcManager {
   }
 
 
-  /// Stop the session and unregister all callbacks.
+  /// Stop the session and unregister callbacks.
   /// 
   /// This uses the NFCTagReaderSession (on iOS) or NfcAdapter#disableReaderMode (on Android).
   /// Requires iOS 13.0 or Android API 19, or later.

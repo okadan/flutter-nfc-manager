@@ -6,7 +6,7 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-/// (iOS only) The class provides access to Iso7816 operations on the tag.
+/// (iOS only) The class provides access to NFCISO7816Tag API for iOS.
 /// 
 /// Acquire `Iso7816` instance using `Iso7816.from`.
 class Iso7816 {

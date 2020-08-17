@@ -6,7 +6,7 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-/// (iOS only) The class provides access to FeliCa operations on the tag.
+/// The class provides access to NFCFelicaTag API for iOS.
 /// 
 /// Acquire `FeliCa` instance using `FeliCa.from`.
 class FeliCa {
@@ -23,10 +23,10 @@ class FeliCa {
   // _tag
   final NfcTag _tag;
 
-  /// The value from NFCFelicaTag#currentSystemCode on iOS.
+  /// The value from NFCFeliCaTag#currentSystemCode on iOS.
   final Uint8List currentSystemCode;
 
-  /// The value from NFCFelicaTag#currentIDm on iOS.
+  /// The value from NFCFeliCaTag#currentIDm on iOS.
   final Uint8List currentIDm;
 
   /// Get an instance of `FeliCa` for the given tag.
