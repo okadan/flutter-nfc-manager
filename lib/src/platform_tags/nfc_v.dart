@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:meta/meta.dart';
+import 'package:flutter/foundation.dart';
 
 import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';

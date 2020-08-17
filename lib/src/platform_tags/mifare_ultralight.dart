@@ -1,10 +1,10 @@
 import 'dart:typed_data';
 
-import 'package:meta/meta.dart';
-import 'package:nfc_manager/src/translator.dart';
+import 'package:flutter/foundation.dart';
 
 import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
+import '../translator.dart';
 
 /// (Android only) The class provides access to MifareUltralight operations on the tag.
 /// 
