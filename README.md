@@ -2,7 +2,7 @@
 
 Flutter plugin for accessing the NFC features on Android and iOS.
 
-Note: This plugin depends on `NFCTagReaderSession` on iOS and `NfcAdapter#enableReaderMode` on Android, so it requires iOS 13.0 or later or Android API level 19 or later.
+Note: This plugin depends on `NFCTagReaderSession` (requires iOS 13.0 or later) and `NfcAdapter#enableReaderMode` (requires Android API level 19 or later).
 
 ## Setup
 
@@ -27,9 +27,11 @@ Note: This plugin depends on `NFCTagReaderSession` on iOS and `NfcAdapter#enable
 bool isAvailable = await NfcManager.instance.isAvailable();
 
 // Start Session
-NfcManager.instance.startSession(onDiscovered(NfcTag tag) async {
-  // Handling Tag
-});
+NfcManager.instance.startSession(
+  onDiscovered(NfcTag tag) async {
+    // Do something with an NfcTag instance.
+  },
+);
 
 // Stop Session
 NfcManager.instance.stopSession();
@@ -66,7 +68,7 @@ if (ndef == null) {
 // Do something with an Ndef instance
 ```
 
-For more information, please see the [API Doc](https://pub.dev/documentation/nfc_manager/latest/).
+Please see the [API Doc](https://pub.dev/documentation/nfc_manager/latest/) for more details.
 
 ## Real-World-App
 
