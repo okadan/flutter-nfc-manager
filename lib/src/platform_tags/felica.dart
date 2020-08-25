@@ -65,7 +65,7 @@ class FeliCa {
   Future<List<Uint8List>> requestSystemCode() async {
     return channel.invokeMethod('FeliCa#requestSystemCode', {
       'handle': _tag.handle,
-    });
+    }).then((value) => List.from(value));
   }
 
   /// Sends the Request Service command to the tag.
@@ -77,7 +77,7 @@ class FeliCa {
     return channel.invokeMethod('FeliCa#requestService', {
       'handle': _tag.handle,
       'nodeCodeList': nodeCodeList,
-    });
+    }).then((value) => List.from(value));
   }
 
   /// Sends the Request Service V2 command to the tag.

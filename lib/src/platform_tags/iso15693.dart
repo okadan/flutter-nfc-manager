@@ -99,7 +99,7 @@ class Iso15693 {
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
-    });
+    }).then((value) => List.from(value));
   }
 
   /// Sends the Write Multiple Blocks command to the tag.
@@ -135,7 +135,7 @@ class Iso15693 {
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
-    });
+    }).then((value) => List.from(value));
   }
 
   /// Sends the Write AFI command to the tag.
@@ -290,7 +290,7 @@ class Iso15693 {
       'requestFlags': requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
-    });
+    }).then((value) => List.from(value));
   }
 
   /// Sends the Get System Info command to the tag.
