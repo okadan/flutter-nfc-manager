@@ -1,4 +1,8 @@
-# 2.0.0-dev
+# 2.0.0+1
+
+* Update doc.
+
+# 2.0.0
 
 **Has many breaking changes.**
 
