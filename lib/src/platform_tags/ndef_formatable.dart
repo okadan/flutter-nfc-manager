@@ -7,7 +7,7 @@ import '../nfc_manager/nfc_manager.dart';
 import '../nfc_manager/nfc_ndef.dart';
 import '../translator.dart';
 
-/// (Android only) The class provides access to NdefFormatable API for Android.
+/// The class provides access to NdefFormatable API for Android.
 /// 
 /// Acquire `NdefFormatable` instance using `NdefFormatable.from`.
 class NdefFormatable {

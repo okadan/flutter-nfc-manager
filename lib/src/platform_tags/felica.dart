@@ -6,7 +6,7 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-/// The class provides access to NFCFelicaTag API for iOS.
+/// The class provides access to NFCFeliCaTag API for iOS.
 /// 
 /// Acquire `FeliCa` instance using `FeliCa.from`.
 class FeliCa {

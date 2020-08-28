@@ -6,7 +6,7 @@ import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
-/// (Android only) The class provides access to NfcA API for Android.
+/// The class provides access to NfcA API for Android.
 /// 
 /// Acquire `NfcA` instance using `NfcA.from`.
 class NfcA {
