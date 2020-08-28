@@ -75,28 +75,39 @@ NfcTag $GetNfcTag(Map<String, dynamic> arg) {
 
 NfcError $GetNfcError(Map<String, dynamic> arg) {
   return NfcError(
-    type: $NfcErrorTypeTable.entries.firstWhere((e) => e.value == arg['type'], orElse: () => null)?.key ?? NfcErrorType.unknown,
+    type: $NfcErrorTypeTable.entries
+            .firstWhere((e) => e.value == arg['type'], orElse: () => null)
+            ?.key ??
+        NfcErrorType.unknown,
     message: arg['message'],
     details: arg['details'],
   );
 }
 
 NdefMessage $GetNdefMessage(Map<String, dynamic> arg) {
-  return NdefMessage((arg['records'] as Iterable).map((e) => NdefRecord(
-    typeNameFormat: $NdefTypeNameFormatTable.entries.firstWhere((ee) => ee.value == e['typeNameFormat']).key,
-    type: e['type'],
-    identifier: e['identifier'],
-    payload: e['payload'],
-  )).toList());
+  return NdefMessage((arg['records'] as Iterable)
+      .map((e) => NdefRecord(
+            typeNameFormat: $NdefTypeNameFormatTable.entries
+                .firstWhere((ee) => ee.value == e['typeNameFormat'])
+                .key,
+            type: e['type'],
+            identifier: e['identifier'],
+            payload: e['payload'],
+          ))
+      .toList());
 }
 
 Map<String, dynamic> $GetNdefMessageMap(NdefMessage arg) {
-  return {'records': arg.records.map((e) => {
-    'typeNameFormat': $NdefTypeNameFormatTable[e.typeNameFormat],
-    'type': e.type,
-    'identifier': e.identifier,
-    'payload': e.payload,
-  }).toList()};
+  return {
+    'records': arg.records
+        .map((e) => {
+              'typeNameFormat': $NdefTypeNameFormatTable[e.typeNameFormat],
+              'type': e.type,
+              'identifier': e.identifier,
+              'payload': e.payload,
+            })
+        .toList()
+  };
 }
 
 FeliCaPollingResponse $GetFeliCaPollingResponse(Map<String, dynamic> arg) {
@@ -106,7 +117,8 @@ FeliCaPollingResponse $GetFeliCaPollingResponse(Map<String, dynamic> arg) {
   );
 }
 
-FeliCaRequestServiceV2Response $GetFeliCaRequestServiceV2Response(Map<String, dynamic> arg) {
+FeliCaRequestServiceV2Response $GetFeliCaRequestServiceV2Response(
+    Map<String, dynamic> arg) {
   return FeliCaRequestServiceV2Response(
     statusFlag1: arg['statusFlag1'],
     statusFlag2: arg['statusFlag2'],
@@ -116,7 +128,8 @@ FeliCaRequestServiceV2Response $GetFeliCaRequestServiceV2Response(Map<String, dy
   );
 }
 
-FeliCaReadWithoutEncryptionResponse $GetFeliCaReadWithoutEncryptionResponse(Map<String, dynamic> arg) {
+FeliCaReadWithoutEncryptionResponse $GetFeliCaReadWithoutEncryptionResponse(
+    Map<String, dynamic> arg) {
   return FeliCaReadWithoutEncryptionResponse(
     statusFlag1: arg['statusFlag1'],
     statusFlag2: arg['statusFlag2'],
@@ -131,7 +144,8 @@ FeliCaStatusFlag $GetFeliCaStatusFlag(Map<String, dynamic> arg) {
   );
 }
 
-FeliCaRequestSpecificationVersionResponse $GetFeliCaRequestSpecificationVersionResponse(Map<String, dynamic> arg) {
+FeliCaRequestSpecificationVersionResponse
+    $GetFeliCaRequestSpecificationVersionResponse(Map<String, dynamic> arg) {
   return FeliCaRequestSpecificationVersionResponse(
     statusFlag1: arg['statusFlag1'],
     statusFlag2: arg['statusFlag2'],
@@ -165,7 +179,10 @@ Ndef $GetNdef(NfcTag arg) {
     tag: arg,
     isWritable: data.remove('isWritable'),
     maxSize: data.remove('maxSize'),
-    cachedMessage: data['cachedMessage'] == null ? null : $GetNdefMessage(Map<String, dynamic>.from(data.remove('cachedMessage'))),
+    cachedMessage: data['cachedMessage'] == null
+        ? null
+        : $GetNdefMessage(
+            Map<String, dynamic>.from(data.remove('cachedMessage'))),
     additionalData: data,
   );
 }
@@ -208,11 +225,12 @@ MiFare $GetMiFare(NfcTag arg) {
   if (arg.data['mifare'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['mifare']);
   return MiFare(
-    tag: arg,
-    identifier: data['identifier'],
-    mifareFamily: $MiFareFamilyTable.entries.firstWhere((e) => e.value == data['mifareFamily']).key,
-    historicalBytes: data['historicalBytes']
-  );
+      tag: arg,
+      identifier: data['identifier'],
+      mifareFamily: $MiFareFamilyTable.entries
+          .firstWhere((e) => e.value == data['mifareFamily'])
+          .key,
+      historicalBytes: data['historicalBytes']);
 }
 
 NfcA $GetNfcA(NfcTag arg) {

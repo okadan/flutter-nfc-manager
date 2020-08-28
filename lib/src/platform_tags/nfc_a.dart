@@ -7,11 +7,11 @@ import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
 /// The class provides access to NfcA API for Android.
-/// 
+///
 /// Acquire `NfcA` instance using `NfcA.from`.
 class NfcA {
   /// Constructs an instance with the given values for testing.
-  /// 
+  ///
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `NfcA.from` are valid.
   const NfcA({
@@ -47,7 +47,7 @@ class NfcA {
   factory NfcA.from(NfcTag tag) => $GetNfcA(tag);
 
   /// Sends the NfcA command to the tag.
-  /// 
+  ///
   /// This uses NfcA#transceive API on Android.
   Future<Uint8List> transceive({
     @required Uint8List data,

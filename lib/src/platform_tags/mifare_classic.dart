@@ -7,11 +7,11 @@ import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
 /// The class provides access to MifareClassic API for Android.
-/// 
+///
 /// Acquire `MifareClassic` instance using `MifareClassic.from`.
 class MifareClassic {
   /// Constructs an instance with the given values for testing.
-  /// 
+  ///
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `MifareClassic.from` are valid.
   const MifareClassic({
@@ -55,7 +55,7 @@ class MifareClassic {
   factory MifareClassic.from(NfcTag tag) => $GetMifareClassic(tag);
 
   /// Sends the Authenticate Sector With Key A command to the tag.
-  /// 
+  ///
   /// This uses MifareClassic#authenticateSectorWithKeyA API on Android.
   Future<bool> authenticateSectorWithKeyA({
     @required int sectorIndex,
@@ -69,7 +69,7 @@ class MifareClassic {
   }
 
   /// Sends the Authenticate Sector With Key B command to the tag.
-  /// 
+  ///
   /// This uses MifareClassic#authenticateSectorWithKeyB API on Android.
   Future<bool> authenticateSectorWithKeyB({
     @required int sectorIndex,
@@ -83,7 +83,7 @@ class MifareClassic {
   }
 
   /// Sends the Increment command to the tag.
-  /// 
+  ///
   /// This uses MifareClassic#increment API on Android.
   Future<void> increment({
     @required int blockIndex,
@@ -97,7 +97,7 @@ class MifareClassic {
   }
 
   /// Sends the Decrement command to the tag.
-  /// 
+  ///
   /// This uses MifareClassic#decrement API on Android.
   Future<void> decrement({
     @required int blockIndex,
@@ -111,7 +111,7 @@ class MifareClassic {
   }
 
   /// Sends the Read Block command to the tag.
-  /// 
+  ///
   /// This uses MifareClassic#readBlock API on Android.
   Future<Uint8List> readBlock({
     @required int blockIndex,
@@ -123,7 +123,7 @@ class MifareClassic {
   }
 
   /// Sends the Write Block command to the tag.
-  /// 
+  ///
   /// This uses MifareClassic#writeBlock API on Android.
   Future<void> writeBlock({
     @required int blockIndex,
@@ -137,7 +137,7 @@ class MifareClassic {
   }
 
   /// Sends the Restore command to the tag.
-  /// 
+  ///
   /// This uses MifareClassic#restore API on Android.
   Future<void> restore({
     @required int blockIndex,
@@ -149,7 +149,7 @@ class MifareClassic {
   }
 
   /// Sends the Transfer command to the tag.
-  /// 
+  ///
   /// This uses MifareClassic#transfer API on Android.
   Future<void> transfer({
     @required int blockIndex,
@@ -161,7 +161,7 @@ class MifareClassic {
   }
 
   /// Sends the NfcA command to the tag.
-  /// 
+  ///
   /// This uses MifareClassic#transceive API on Android.
   /// This is equivalent to obtaining via `NfcA.from` this tag and calling `NfcA#transceive`.
   Future<Uint8List> transceive({

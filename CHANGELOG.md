@@ -1,3 +1,8 @@
+# 2.0.0+2
+
+* Update doc.
+* Flutter format.
+
 # 2.0.0+1
 
 * Update doc.

@@ -8,11 +8,11 @@ import '../translator.dart';
 import './iso7816.dart';
 
 /// The class provides access to NFCMiFareTag API for iOS.
-/// 
+///
 /// Acquire `MiFare` instance using `MiFare.from`.
 class MiFare {
   /// Constructs an instance with the given values for testing.
-  /// 
+  ///
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `MiFare.from` are valid.
   const MiFare({
@@ -40,7 +40,7 @@ class MiFare {
   factory MiFare.from(NfcTag tag) => $GetMiFare(tag);
 
   /// Sends the native MiFare command to the tag.
-  /// 
+  ///
   /// This uses NFCMiFareTag#sendMiFareCommand API on iOS.
   Future<Uint8List> sendMiFareCommand(Uint8List commandPacket) async {
     return channel.invokeMethod('MiFare#sendMiFareCommand', {
@@ -50,7 +50,7 @@ class MiFare {
   }
 
   /// Sends the ISO7816 APDU to the tag.
-  /// 
+  ///
   /// This uses NFCMiFareTag#sendMiFareISO7816Command API on iOS.
   Future<Iso7816ResponseApdu> sendMiFareIso7816Command({
     @required int instructionClass,
@@ -72,9 +72,10 @@ class MiFare {
   }
 
   /// Sends the ISO7816 APDU to the tag.
-  /// 
+  ///
   /// This uses NFCMiFareTag#sendMiFareISO7816Command API on iOS.
-  Future<Iso7816ResponseApdu> sendMiFareIso7816CommandRaw(Uint8List data) async {
+  Future<Iso7816ResponseApdu> sendMiFareIso7816CommandRaw(
+      Uint8List data) async {
     return channel.invokeMethod('MiFare#sendMiFareIso7816CommandRaw', {
       'handle': _tag.handle,
       'data': data,

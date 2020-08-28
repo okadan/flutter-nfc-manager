@@ -7,11 +7,11 @@ import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
 /// The class provides access to IsoDep API for Android.
-/// 
+///
 /// Acquire `IsoDep` instance using `IsoDep.from`.
 class IsoDep {
   /// Constructs an instance with the given values for testing.
-  /// 
+  ///
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `IsoDep.from` are valid.
   const IsoDep({
@@ -51,7 +51,7 @@ class IsoDep {
   factory IsoDep.from(NfcTag tag) => $GetIsoDep(tag);
 
   /// Sends the IsoDep command to the tag.
-  /// 
+  ///
   /// This uses IsoDep#transceive API on Android.
   Future<Uint8List> transceive({
     @required Uint8List data,

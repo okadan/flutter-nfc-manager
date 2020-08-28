@@ -7,11 +7,11 @@ import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
 /// The class provides access to NFCFeliCaTag API for iOS.
-/// 
+///
 /// Acquire `FeliCa` instance using `FeliCa.from`.
 class FeliCa {
   /// Constructs an instance with the given values for testing.
-  /// 
+  ///
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `FeliCa.from` are valid.
   const FeliCa({
@@ -35,7 +35,7 @@ class FeliCa {
   factory FeliCa.from(NfcTag tag) => $GetFeliCa(tag);
 
   /// Sends the Polling command to the tag.
-  /// 
+  ///
   /// This uses NFCFeliCaTag#polling API on iOS.
   Future<FeliCaPollingResponse> polling({
     @required Uint8List systemCode,
@@ -51,7 +51,7 @@ class FeliCa {
   }
 
   /// Sends the Request Response command to the tag.
-  /// 
+  ///
   /// This uses NFCFeliCaTag#requestResponse API on iOS.
   Future<int> requestResponse() async {
     return channel.invokeMethod('FeliCa#requestResponse', {
@@ -60,7 +60,7 @@ class FeliCa {
   }
 
   /// Sends the Request System Code command to the tag.
-  /// 
+  ///
   /// This uses NFCFeliCaTag#requestSystemCode API on iOS.
   Future<List<Uint8List>> requestSystemCode() async {
     return channel.invokeMethod('FeliCa#requestSystemCode', {
@@ -69,7 +69,7 @@ class FeliCa {
   }
 
   /// Sends the Request Service command to the tag.
-  /// 
+  ///
   /// This uses NFCFeliCaTag#requestService API on iOS.
   Future<List<Uint8List>> requestService({
     @required List<Uint8List> nodeCodeList,
@@ -81,7 +81,7 @@ class FeliCa {
   }
 
   /// Sends the Request Service V2 command to the tag.
-  /// 
+  ///
   /// This uses NFCFeliCaTag#requestServiceV2 API on iOS.
   Future<FeliCaRequestServiceV2Response> requestServiceV2({
     @required List<Uint8List> nodeCodeList,
@@ -93,7 +93,7 @@ class FeliCa {
   }
 
   /// Sends the Read Without Encryption command to the tag.
-  /// 
+  ///
   /// This uses NFCFeliCaTag#readWithoutEncryption API on iOS.
   Future<FeliCaReadWithoutEncryptionResponse> readWithoutEncryption({
     @required List<Uint8List> serviceCodeList,
@@ -103,11 +103,12 @@ class FeliCa {
       'handle': _tag.handle,
       'serviceCodeList': serviceCodeList,
       'blockList': blockList,
-    }).then((value) => $GetFeliCaReadWithoutEncryptionResponse(Map.from(value)));
+    }).then(
+        (value) => $GetFeliCaReadWithoutEncryptionResponse(Map.from(value)));
   }
 
   /// Sends the Write Without Encryption command to the tag.
-  /// 
+  ///
   /// This uses NFCFeliCaTag#writeWithoutEncryption API on iOS.
   Future<FeliCaStatusFlag> writeWithoutEncryption({
     @required List<Uint8List> serviceCodeList,
@@ -123,16 +124,18 @@ class FeliCa {
   }
 
   /// Sends the Request Specification Version command to the tag.
-  /// 
+  ///
   /// This uses NFCFeliCaTag#requestSpecificationVersion API on iOS.
-  Future<FeliCaRequestSpecificationVersionResponse> requestSpecificationVersion() async {
+  Future<FeliCaRequestSpecificationVersionResponse>
+      requestSpecificationVersion() async {
     return channel.invokeMethod('FeliCa#requestSpecificationVersionResponse', {
       'handle': _tag.handle,
-    }).then((value) => $GetFeliCaRequestSpecificationVersionResponse(Map.from(value)));
+    }).then((value) =>
+        $GetFeliCaRequestSpecificationVersionResponse(Map.from(value)));
   }
 
   /// Sends the Reset Mode command to the tag.
-  /// 
+  ///
   /// This uses NFCFeliCaTag#resetMode API on iOS.
   Future<FeliCaStatusFlag> resetMode() async {
     return channel.invokeMethod('FeliCa#resetMode', {
@@ -141,7 +144,7 @@ class FeliCa {
   }
 
   /// Sends the FeliCa command packet data to the tag.
-  /// 
+  ///
   /// This uses NFCFeliCaTag#sendFeliCaCommand API on iOS.
   Future<Uint8List> sendFeliCaCommand(Uint8List commandPacket) async {
     return channel.invokeMethod('FeliCa#transceive', {

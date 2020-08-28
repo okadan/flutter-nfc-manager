@@ -7,11 +7,11 @@ import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
 
 /// The class provides access to NFCISO7816Tag API for iOS.
-/// 
+///
 /// Acquire `Iso7816` instance using `Iso7816.from`.
 class Iso7816 {
   /// Constructs an instance with the given values for testing.
-  /// 
+  ///
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `Iso7816.from` are valid.
   const Iso7816({
@@ -47,7 +47,7 @@ class Iso7816 {
   factory Iso7816.from(NfcTag tag) => $GetIso7816(tag);
 
   /// Sends the APDU to the tag.
-  /// 
+  ///
   /// This uses NFCISO7816Tag#sendCommand API on iOS.
   Future<Iso7816ResponseApdu> sendCommand({
     @required int instructionClass,
@@ -69,7 +69,7 @@ class Iso7816 {
   }
 
   /// Sends the APDU to the tag.
-  /// 
+  ///
   /// This uses NFCISO7816Tag#sendCommand API on iOS.
   Future<Iso7816ResponseApdu> sendCommandRaw(Uint8List data) async {
     return channel.invokeMethod('Iso7816#sendCommandRaw', {
