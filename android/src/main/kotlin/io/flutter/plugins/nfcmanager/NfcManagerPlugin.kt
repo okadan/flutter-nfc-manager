@@ -25,14 +25,13 @@ import io.flutter.plugin.common.MethodChannel.Result
 import io.flutter.plugin.common.PluginRegistry.Registrar
 import java.io.IOException
 import java.lang.Exception
-import java.lang.NullPointerException
 import java.util.*
 
 class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var channel : MethodChannel
-  private lateinit var adapter: NfcAdapter
   private lateinit var activity: Activity
   private lateinit var tags: MutableMap<String, Tag>
+  private var adapter: NfcAdapter? = null
   private var connectedTech: TagTechnology? = null
 
   // This static function is optional and equivalent to onAttachedToEngine. It supports the old
@@ -119,17 +118,17 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   private fun handleNfcIsAvailable(call: MethodCall, result: Result) {
-    try {
-      result.success(adapter.isEnabled)
-    } catch (e: NullPointerException) {
-      result.success(false)
-    }
+    result.success(adapter?.isEnabled == true)
   }
 
   private fun handleNfcStartSession(call: MethodCall, result: Result) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
       result.error("unavailable", "Requires API level 19.", null)
     } else {
+      val adapter = adapter ?: run {
+        result.error("unavailable", "NFC is not available for device.", null)
+        return
+      }
       adapter.enableReaderMode(activity, {
         val handle = UUID.randomUUID().toString()
         tags[handle] = it
@@ -143,6 +142,10 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
       result.error("unavailable", "Requires API level 19.", null)
     } else {
+      val adapter = adapter ?: run {
+        result.error("unavailable", "NFC is not available for device.", null)
+        return
+      }
       adapter.disableReaderMode(activity)
       result.success(null)
     }
