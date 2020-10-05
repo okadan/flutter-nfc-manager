@@ -28,7 +28,7 @@ bool isAvailable = await NfcManager.instance.isAvailable();
 
 // Start Session
 NfcManager.instance.startSession(
-  onDiscovered(NfcTag tag) async {
+  onDiscovered: (NfcTag tag) async {
     // Do something with an NfcTag instance.
   },
 );

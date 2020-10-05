@@ -1,3 +1,7 @@
+# 2.0.1+1
+
+* Update README.
+
 # 2.0.1
 
 * Fix an error when initializing plugin for non-NFC Android devices.
