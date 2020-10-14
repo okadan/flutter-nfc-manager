@@ -1,3 +1,7 @@
+# 2.0.2
+
+* Fixed a bug in calling `FeliCa.sendFeliCaCommand` method.
+
 # 2.0.1+1
 
 * Update README.

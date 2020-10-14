@@ -147,7 +147,7 @@ class FeliCa {
   ///
   /// This uses NFCFeliCaTag#sendFeliCaCommand API on iOS.
   Future<Uint8List> sendFeliCaCommand(Uint8List commandPacket) async {
-    return channel.invokeMethod('FeliCa#transceive', {
+    return channel.invokeMethod('FeliCa#sendFeliCaCommand', {
       'handle': _tag.handle,
       'commandPacket': commandPacket,
     });
