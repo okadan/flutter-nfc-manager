@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import './nfc_manager/nfc_manager.dart';
 import './nfc_manager/nfc_ndef.dart';
 import './platform_tags/felica.dart';
@@ -123,8 +125,8 @@ FeliCaRequestServiceV2Response $GetFeliCaRequestServiceV2Response(
     statusFlag1: arg['statusFlag1'],
     statusFlag2: arg['statusFlag2'],
     encryptionIdentifier: arg['encryptionIdentifier'],
-    nodeKeyVersionListAes: arg['nodeKeyVersionListAes'],
-    nodeKeyVersionListDes: arg['nodeKeyVersionListDes'],
+    nodeKeyVersionListAes: List<Uint8List>.from(arg['nodeKeyVersionListAes']),
+    nodeKeyVersionListDes: List<Uint8List>.from(arg['nodeKeyVersionListDes']),
   );
 }
 
@@ -133,7 +135,7 @@ FeliCaReadWithoutEncryptionResponse $GetFeliCaReadWithoutEncryptionResponse(
   return FeliCaReadWithoutEncryptionResponse(
     statusFlag1: arg['statusFlag1'],
     statusFlag2: arg['statusFlag2'],
-    blockData: arg['blockData'],
+    blockData: List<Uint8List>.from(arg['blockData']),
   );
 }
 

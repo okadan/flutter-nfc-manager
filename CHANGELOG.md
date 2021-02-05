@@ -1,6 +1,10 @@
+# 2.0.3
+
+* Fix type conversion errors in `FeliCa#readWithoutEncryption` and `FeliCa#requestServiceV2`.
+
 # 2.0.2
 
-* Fixed a bug in calling `FeliCa.sendFeliCaCommand` method.
+* Fix a bug in calling `FeliCa.sendFeliCaCommand` method.
 
 # 2.0.1+1
 
