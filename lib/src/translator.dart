@@ -78,8 +78,10 @@ NfcTag $GetNfcTag(Map<String, dynamic> arg) {
 NfcError $GetNfcError(Map<String, dynamic> arg) {
   return NfcError(
     type: $NfcErrorTypeTable.values.contains(arg['type'])
-      ? $NfcErrorTypeTable.entries.firstWhere((e) => e.value == arg['type']).key
-      : NfcErrorType.unknown,
+        ? $NfcErrorTypeTable.entries
+            .firstWhere((e) => e.value == arg['type'])
+            .key
+        : NfcErrorType.unknown,
     message: arg['message'],
     details: arg['details'],
   );

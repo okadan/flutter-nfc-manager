@@ -27,8 +27,7 @@ class NfcManager {
 
   /// Checks whether the NFC features are available.
   Future<bool> isAvailable() async {
-    return channel.invokeMethod('Nfc#isAvailable')
-      .then((value) => value!);
+    return channel.invokeMethod('Nfc#isAvailable').then((value) => value!);
   }
 
   /// Start the session and register callbacks for tag discovery.

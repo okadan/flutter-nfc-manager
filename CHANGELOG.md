@@ -1,3 +1,7 @@
+# 3.0.0+1
+
+* Flutter format.
+
 # 3.0.0
 
 * Upgrade to null safety.

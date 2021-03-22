@@ -25,42 +25,48 @@ class MyAppState extends State<MyApp> {
           child: FutureBuilder<bool>(
             future: NfcManager.instance.isAvailable(),
             builder: (context, ss) => ss.data != true
-              ? Center(child: Text('NfcManager.isAvailable(): ${ss.data}'))
-              : Flex(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                direction: Axis.vertical,
-                children: [
-                  Flexible(
-                    flex: 2,
-                    child: Container(
-                      margin: EdgeInsets.all(4),
-                      constraints: BoxConstraints.expand(),
-                      decoration: BoxDecoration(border: Border.all()),
-                      child: SingleChildScrollView(
-                        child: ValueListenableBuilder<dynamic>(
-                          valueListenable: result,
-                          builder: (context, value, _) => Text('${value ?? ''}'),
+                ? Center(child: Text('NfcManager.isAvailable(): ${ss.data}'))
+                : Flex(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    direction: Axis.vertical,
+                    children: [
+                      Flexible(
+                        flex: 2,
+                        child: Container(
+                          margin: EdgeInsets.all(4),
+                          constraints: BoxConstraints.expand(),
+                          decoration: BoxDecoration(border: Border.all()),
+                          child: SingleChildScrollView(
+                            child: ValueListenableBuilder<dynamic>(
+                              valueListenable: result,
+                              builder: (context, value, _) =>
+                                  Text('${value ?? ''}'),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
+                      Flexible(
+                        flex: 3,
+                        child: GridView.count(
+                          padding: EdgeInsets.all(4),
+                          crossAxisCount: 2,
+                          childAspectRatio: 4,
+                          crossAxisSpacing: 4,
+                          mainAxisSpacing: 4,
+                          children: [
+                            ElevatedButton(
+                                child: Text('Tag Read'), onPressed: _tagRead),
+                            ElevatedButton(
+                                child: Text('Ndef Write'),
+                                onPressed: _ndefWrite),
+                            ElevatedButton(
+                                child: Text('Ndef Write Lock'),
+                                onPressed: _ndefWriteLock),
+                          ],
+                        ),
+                      ),
+                    ],
                   ),
-                  Flexible(
-                    flex: 3,
-                    child: GridView.count(
-                      padding: EdgeInsets.all(4),
-                      crossAxisCount: 2,
-                      childAspectRatio: 4,
-                      crossAxisSpacing: 4,
-                      mainAxisSpacing: 4,
-                      children: [
-                        ElevatedButton(child: Text('Tag Read'), onPressed: _tagRead),
-                        ElevatedButton(child: Text('Ndef Write'), onPressed: _ndefWrite),
-                        ElevatedButton(child: Text('Ndef Write Lock'), onPressed: _ndefWriteLock),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
           ),
         ),
       ),
@@ -86,8 +92,10 @@ class MyAppState extends State<MyApp> {
       NdefMessage message = NdefMessage([
         NdefRecord.createText('Hello World!'),
         NdefRecord.createUri(Uri.parse('https://flutter.dev')),
-        NdefRecord.createMime('text/plain', Uint8List.fromList('Hello'.codeUnits)),
-        NdefRecord.createExternal('com.example', 'mytype', Uint8List.fromList('mydata'.codeUnits)),
+        NdefRecord.createMime(
+            'text/plain', Uint8List.fromList('Hello'.codeUnits)),
+        NdefRecord.createExternal(
+            'com.example', 'mytype', Uint8List.fromList('mydata'.codeUnits)),
       ]);
 
       try {
