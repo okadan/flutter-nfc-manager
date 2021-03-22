@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-
 import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
@@ -15,12 +13,12 @@ class NfcA {
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `NfcA.from` are valid.
   const NfcA({
-    @required NfcTag tag,
-    @required this.identifier,
-    @required this.atqa,
-    @required this.sak,
-    @required this.maxTransceiveLength,
-    @required this.timeout,
+    required NfcTag tag,
+    required this.identifier,
+    required this.atqa,
+    required this.sak,
+    required this.maxTransceiveLength,
+    required this.timeout,
   }) : _tag = tag;
 
   // _tag
@@ -44,17 +42,17 @@ class NfcA {
   /// Get an instance of `NfcA` for the given tag.
   ///
   /// Returns null if the tag is not compatible with NfcA.
-  factory NfcA.from(NfcTag tag) => $GetNfcA(tag);
+  static NfcA? from(NfcTag tag) => $GetNfcA(tag);
 
   /// Sends the NfcA command to the tag.
   ///
   /// This uses NfcA#transceive API on Android.
   Future<Uint8List> transceive({
-    @required Uint8List data,
+    required Uint8List data,
   }) async {
     return channel.invokeMethod('NfcA#transceive', {
       'handle': _tag.handle,
       'data': data,
-    });
+    }).then((value) => value!);
   }
 }

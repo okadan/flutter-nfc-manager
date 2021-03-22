@@ -756,3 +756,4 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
     }
   }
 }
+

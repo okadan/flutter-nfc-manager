@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-
 import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
@@ -15,9 +13,9 @@ class FeliCa {
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `FeliCa.from` are valid.
   const FeliCa({
-    @required NfcTag tag,
-    @required this.currentSystemCode,
-    @required this.currentIDm,
+    required NfcTag tag,
+    required this.currentSystemCode,
+    required this.currentIDm,
   }) : _tag = tag;
 
   // _tag
@@ -32,15 +30,15 @@ class FeliCa {
   /// Get an instance of `FeliCa` for the given tag.
   ///
   /// Returns null if the tag is not compatible with FeliCa.
-  factory FeliCa.from(NfcTag tag) => $GetFeliCa(tag);
+  static FeliCa? from(NfcTag tag) => $GetFeliCa(tag);
 
   /// Sends the Polling command to the tag.
   ///
   /// This uses NFCFeliCaTag#polling API on iOS.
   Future<FeliCaPollingResponse> polling({
-    @required Uint8List systemCode,
-    @required FeliCaPollingRequestCode requestCode,
-    @required FeliCaPollingTimeSlot timeSlot,
+    required Uint8List systemCode,
+    required FeliCaPollingRequestCode requestCode,
+    required FeliCaPollingTimeSlot timeSlot,
   }) async {
     return channel.invokeMethod('FeliCa#polling', {
       'handle': _tag.handle,
@@ -56,7 +54,7 @@ class FeliCa {
   Future<int> requestResponse() async {
     return channel.invokeMethod('FeliCa#requestResponse', {
       'handle': _tag.handle,
-    });
+    }).then((value) => value!);
   }
 
   /// Sends the Request System Code command to the tag.
@@ -72,7 +70,7 @@ class FeliCa {
   ///
   /// This uses NFCFeliCaTag#requestService API on iOS.
   Future<List<Uint8List>> requestService({
-    @required List<Uint8List> nodeCodeList,
+    required List<Uint8List> nodeCodeList,
   }) async {
     return channel.invokeMethod('FeliCa#requestService', {
       'handle': _tag.handle,
@@ -84,7 +82,7 @@ class FeliCa {
   ///
   /// This uses NFCFeliCaTag#requestServiceV2 API on iOS.
   Future<FeliCaRequestServiceV2Response> requestServiceV2({
-    @required List<Uint8List> nodeCodeList,
+    required List<Uint8List> nodeCodeList,
   }) async {
     return channel.invokeMethod('FeliCa#requestServiceV2', {
       'handle': _tag.handle,
@@ -96,8 +94,8 @@ class FeliCa {
   ///
   /// This uses NFCFeliCaTag#readWithoutEncryption API on iOS.
   Future<FeliCaReadWithoutEncryptionResponse> readWithoutEncryption({
-    @required List<Uint8List> serviceCodeList,
-    @required List<Uint8List> blockList,
+    required List<Uint8List> serviceCodeList,
+    required List<Uint8List> blockList,
   }) async {
     return channel.invokeMethod('FeliCa#readWithoutEncryption', {
       'handle': _tag.handle,
@@ -111,9 +109,9 @@ class FeliCa {
   ///
   /// This uses NFCFeliCaTag#writeWithoutEncryption API on iOS.
   Future<FeliCaStatusFlag> writeWithoutEncryption({
-    @required List<Uint8List> serviceCodeList,
-    @required List<Uint8List> blockList,
-    @required List<Uint8List> blockData,
+    required List<Uint8List> serviceCodeList,
+    required List<Uint8List> blockList,
+    required List<Uint8List> blockData,
   }) async {
     return channel.invokeMethod('FeliCa#writeWithoutEncryption', {
       'handle': _tag.handle,
@@ -150,7 +148,7 @@ class FeliCa {
     return channel.invokeMethod('FeliCa#sendFeliCaCommand', {
       'handle': _tag.handle,
       'commandPacket': commandPacket,
-    });
+    }).then((value) => value!);
   }
 }
 
@@ -158,8 +156,8 @@ class FeliCa {
 class FeliCaPollingResponse {
   /// Constructs an instance with the given values.
   const FeliCaPollingResponse({
-    @required this.manufacturerParameter,
-    @required this.requestData,
+    required this.manufacturerParameter,
+    required this.requestData,
   });
 
   /// Manufacturer Parameter.
@@ -173,10 +171,10 @@ class FeliCaPollingResponse {
 class FeliCaRequestSpecificationVersionResponse {
   /// Constructs an instance with the given values.
   const FeliCaRequestSpecificationVersionResponse({
-    @required this.statusFlag1,
-    @required this.statusFlag2,
-    @required this.basicVersion,
-    @required this.optionVersion,
+    required this.statusFlag1,
+    required this.statusFlag2,
+    required this.basicVersion,
+    required this.optionVersion,
   });
 
   /// Status Flag1.
@@ -196,11 +194,11 @@ class FeliCaRequestSpecificationVersionResponse {
 class FeliCaRequestServiceV2Response {
   /// Constructs an instance with the given values.
   const FeliCaRequestServiceV2Response({
-    @required this.statusFlag1,
-    @required this.statusFlag2,
-    @required this.encryptionIdentifier,
-    @required this.nodeKeyVersionListAes,
-    @required this.nodeKeyVersionListDes,
+    required this.statusFlag1,
+    required this.statusFlag2,
+    required this.encryptionIdentifier,
+    required this.nodeKeyVersionListAes,
+    required this.nodeKeyVersionListDes,
   });
 
   /// Status Flag1.
@@ -223,9 +221,9 @@ class FeliCaRequestServiceV2Response {
 class FeliCaReadWithoutEncryptionResponse {
   /// Constructs an instance with the given values.
   const FeliCaReadWithoutEncryptionResponse({
-    @required this.statusFlag1,
-    @required this.statusFlag2,
-    @required this.blockData,
+    required this.statusFlag1,
+    required this.statusFlag2,
+    required this.blockData,
   });
 
   /// Status Flag1.
@@ -242,8 +240,8 @@ class FeliCaReadWithoutEncryptionResponse {
 class FeliCaStatusFlag {
   /// Constructs an instance with the given values.
   const FeliCaStatusFlag({
-    @required this.statusFlag1,
-    @required this.statusFlag2,
+    required this.statusFlag1,
+    required this.statusFlag2,
   });
 
   /// Status Flag1.

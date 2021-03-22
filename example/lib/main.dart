@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:nfc_manager/nfc_manager.dart';
-import 'package:nfc_manager/platform_tags.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
@@ -54,9 +53,9 @@ class MyAppState extends State<MyApp> {
                       crossAxisSpacing: 4,
                       mainAxisSpacing: 4,
                       children: [
-                        RaisedButton(child: Text('Tag Read'), onPressed: _tagRead),
-                        RaisedButton(child: Text('Ndef Write'), onPressed: _ndefWrite),
-                        RaisedButton(child: Text('Ndef Write Lock'), onPressed: _ndefWriteLock),
+                        ElevatedButton(child: Text('Tag Read'), onPressed: _tagRead),
+                        ElevatedButton(child: Text('Ndef Write'), onPressed: _ndefWrite),
+                        ElevatedButton(child: Text('Ndef Write Lock'), onPressed: _ndefWriteLock),
                       ],
                     ),
                   ),
@@ -77,7 +76,7 @@ class MyAppState extends State<MyApp> {
 
   void _ndefWrite() {
     NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
-      Ndef ndef = Ndef.from(tag);
+      var ndef = Ndef.from(tag);
       if (ndef == null || !ndef.isWritable) {
         result.value = 'Tag is not ndef writable';
         NfcManager.instance.stopSession(errorMessage: result.value);
@@ -105,7 +104,7 @@ class MyAppState extends State<MyApp> {
 
   void _ndefWriteLock() {
     NfcManager.instance.startSession(onDiscovered: (NfcTag tag) async {
-      Ndef ndef = Ndef.from(tag);
+      var ndef = Ndef.from(tag);
       if (ndef == null) {
         result.value = 'Tag is not ndef';
         NfcManager.instance.stopSession(errorMessage: result.value.toString());

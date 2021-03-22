@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-
 import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
@@ -16,10 +14,10 @@ class MiFare {
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `MiFare.from` are valid.
   const MiFare({
-    @required NfcTag tag,
-    @required this.mifareFamily,
-    @required this.identifier,
-    @required this.historicalBytes,
+    required NfcTag tag,
+    required this.mifareFamily,
+    required this.identifier,
+    required this.historicalBytes,
   }) : _tag = tag;
 
   // _tag
@@ -37,7 +35,7 @@ class MiFare {
   /// Get an instance of `MiFare` for the given tag.
   ///
   /// Returns null if the tag is not compatible with MiFare.
-  factory MiFare.from(NfcTag tag) => $GetMiFare(tag);
+  static MiFare? from(NfcTag tag) => $GetMiFare(tag);
 
   /// Sends the native MiFare command to the tag.
   ///
@@ -46,19 +44,19 @@ class MiFare {
     return channel.invokeMethod('MiFare#sendMiFareCommand', {
       'handle': _tag.handle,
       'commandPacket': commandPacket,
-    });
+    }).then((value) => value!);
   }
 
   /// Sends the ISO7816 APDU to the tag.
   ///
   /// This uses NFCMiFareTag#sendMiFareISO7816Command API on iOS.
   Future<Iso7816ResponseApdu> sendMiFareIso7816Command({
-    @required int instructionClass,
-    @required int instructionCode,
-    @required int p1Parameter,
-    @required int p2Parameter,
-    @required Uint8List data,
-    @required int expectedResponseLength,
+    required int instructionClass,
+    required int instructionCode,
+    required int p1Parameter,
+    required int p2Parameter,
+    required Uint8List data,
+    required int expectedResponseLength,
   }) async {
     return channel.invokeMethod('MiFare#sendMiFareIso7816Command', {
       'handle': _tag.handle,

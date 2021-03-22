@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-
 import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../nfc_manager/nfc_ndef.dart';
@@ -16,8 +14,8 @@ class NdefFormatable {
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `NdefFormatable.from` are valid.
   const NdefFormatable({
-    @required NfcTag tag,
-    @required this.identifier,
+    required NfcTag tag,
+    required this.identifier,
   }) : _tag = tag;
 
   // _tag
@@ -29,7 +27,7 @@ class NdefFormatable {
   /// Get an instance of `NdefFormatable` for the given tag.
   ///
   /// Returns null if the tag is not NDEF formatable.
-  factory NdefFormatable.from(NfcTag tag) => $GetNdefFormatable(tag);
+  static NdefFormatable? from(NfcTag tag) => $GetNdefFormatable(tag);
 
   /// Format the tag as NDEF, and write the given NDEF message.
   ///

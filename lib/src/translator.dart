@@ -77,10 +77,9 @@ NfcTag $GetNfcTag(Map<String, dynamic> arg) {
 
 NfcError $GetNfcError(Map<String, dynamic> arg) {
   return NfcError(
-    type: $NfcErrorTypeTable.entries
-            .firstWhere((e) => e.value == arg['type'], orElse: () => null)
-            ?.key ??
-        NfcErrorType.unknown,
+    type: $NfcErrorTypeTable.values.contains(arg['type'])
+      ? $NfcErrorTypeTable.entries.firstWhere((e) => e.value == arg['type']).key
+      : NfcErrorType.unknown,
     message: arg['message'],
     details: arg['details'],
   );
@@ -174,7 +173,7 @@ Iso7816ResponseApdu $GetIso7816ResponseApdu(Map<String, dynamic> arg) {
   );
 }
 
-Ndef $GetNdef(NfcTag arg) {
+Ndef? $GetNdef(NfcTag arg) {
   if (arg.data['ndef'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['ndef']);
   return Ndef(
@@ -189,7 +188,7 @@ Ndef $GetNdef(NfcTag arg) {
   );
 }
 
-FeliCa $GetFeliCa(NfcTag arg) {
+FeliCa? $GetFeliCa(NfcTag arg) {
   if (arg.data['felica'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['felica']);
   return FeliCa(
@@ -199,7 +198,7 @@ FeliCa $GetFeliCa(NfcTag arg) {
   );
 }
 
-Iso7816 $GetIso7816(NfcTag arg) {
+Iso7816? $GetIso7816(NfcTag arg) {
   if (arg.data['iso7816'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['iso7816']);
   return Iso7816(
@@ -212,7 +211,7 @@ Iso7816 $GetIso7816(NfcTag arg) {
   );
 }
 
-Iso15693 $GetIso15693(NfcTag arg) {
+Iso15693? $GetIso15693(NfcTag arg) {
   if (arg.data['iso15693'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['iso15693']);
   return Iso15693(
@@ -223,7 +222,7 @@ Iso15693 $GetIso15693(NfcTag arg) {
   );
 }
 
-MiFare $GetMiFare(NfcTag arg) {
+MiFare? $GetMiFare(NfcTag arg) {
   if (arg.data['mifare'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['mifare']);
   return MiFare(
@@ -235,7 +234,7 @@ MiFare $GetMiFare(NfcTag arg) {
       historicalBytes: data['historicalBytes']);
 }
 
-NfcA $GetNfcA(NfcTag arg) {
+NfcA? $GetNfcA(NfcTag arg) {
   if (arg.data['nfca'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['nfca']);
   return NfcA(
@@ -248,7 +247,7 @@ NfcA $GetNfcA(NfcTag arg) {
   );
 }
 
-NfcB $GetNfcB(NfcTag arg) {
+NfcB? $GetNfcB(NfcTag arg) {
   if (arg.data['nfcb'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['nfcb']);
   return NfcB(
@@ -260,7 +259,7 @@ NfcB $GetNfcB(NfcTag arg) {
   );
 }
 
-NfcF $GetNfcF(NfcTag arg) {
+NfcF? $GetNfcF(NfcTag arg) {
   if (arg.data['nfcf'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['nfcf']);
   return NfcF(
@@ -273,7 +272,7 @@ NfcF $GetNfcF(NfcTag arg) {
   );
 }
 
-NfcV $GetNfcV(NfcTag arg) {
+NfcV? $GetNfcV(NfcTag arg) {
   if (arg.data['nfcv'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['nfcv']);
   return NfcV(
@@ -285,7 +284,7 @@ NfcV $GetNfcV(NfcTag arg) {
   );
 }
 
-IsoDep $GetIsoDep(NfcTag arg) {
+IsoDep? $GetIsoDep(NfcTag arg) {
   if (arg.data['isodep'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['isodep']);
   return IsoDep(
@@ -299,7 +298,7 @@ IsoDep $GetIsoDep(NfcTag arg) {
   );
 }
 
-MifareClassic $GetMifareClassic(NfcTag arg) {
+MifareClassic? $GetMifareClassic(NfcTag arg) {
   if (arg.data['mifareclassic'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['mifareclassic']);
   return MifareClassic(
@@ -314,7 +313,7 @@ MifareClassic $GetMifareClassic(NfcTag arg) {
   );
 }
 
-MifareUltralight $GetMifareUltralight(NfcTag arg) {
+MifareUltralight? $GetMifareUltralight(NfcTag arg) {
   if (arg.data['mifareultralight'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['mifareultralight']);
   return MifareUltralight(
@@ -326,7 +325,7 @@ MifareUltralight $GetMifareUltralight(NfcTag arg) {
   );
 }
 
-NdefFormatable $GetNdefFormatable(NfcTag arg) {
+NdefFormatable? $GetNdefFormatable(NfcTag arg) {
   if (arg.data['ndefformatable'] == null) return null;
   final data = Map<String, dynamic>.from(arg.data['ndefformatable']);
   return NdefFormatable(

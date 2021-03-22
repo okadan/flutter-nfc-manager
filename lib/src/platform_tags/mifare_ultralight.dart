@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-
 import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
@@ -15,11 +13,11 @@ class MifareUltralight {
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `MifareUltralight.from` are valid.
   const MifareUltralight({
-    @required NfcTag tag,
-    @required this.identifier,
-    @required this.type,
-    @required this.maxTransceiveLength,
-    @required this.timeout,
+    required NfcTag tag,
+    required this.identifier,
+    required this.type,
+    required this.maxTransceiveLength,
+    required this.timeout,
   }) : _tag = tag;
 
   // _tag
@@ -40,26 +38,26 @@ class MifareUltralight {
   /// Get an instance of `MifareUltralight` for the given tag.
   ///
   /// Returns null if the tag is not compatible with MifareUltralight.
-  factory MifareUltralight.from(NfcTag tag) => $GetMifareUltralight(tag);
+  static MifareUltralight? from(NfcTag tag) => $GetMifareUltralight(tag);
 
   /// Sends the Read Pages command to the tag.
   ///
   /// This uses MifareUltralight#readPages API on Android.
   Future<Uint8List> readPages({
-    @required int pageOffset,
+    required int pageOffset,
   }) async {
     return channel.invokeMethod('MifareUltralight#readPages', {
       'handle': _tag.handle,
       'pageOffset': pageOffset,
-    });
+    }).then((value) => value!);
   }
 
   /// Sends the Write Page command to the tag.
   ///
   /// This uses MifareUltralight#writePage API on Android.
   Future<void> writePage({
-    @required int pageOffset,
-    @required Uint8List data,
+    required int pageOffset,
+    required Uint8List data,
   }) async {
     return channel.invokeMethod('MifareUltralight#writePage', {
       'handle': _tag.handle,
@@ -73,11 +71,11 @@ class MifareUltralight {
   /// This uses MifareUltralight#transceive API on Android.
   /// This is equivalent to obtaining via `NfcA.from` this tag and calling `NfcA#transceive`.
   Future<Uint8List> transceive({
-    @required Uint8List data,
+    required Uint8List data,
   }) async {
     return channel.invokeMethod('MifareUltralight#transceive', {
       'handle': _tag.handle,
       'data': data,
-    });
+    }).then((value) => value!);
   }
 }

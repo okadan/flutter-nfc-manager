@@ -1,3 +1,7 @@
+# 3.0.0
+
+* Upgrade to null safety.
+
 # 2.0.3
 
 * Fix type conversion errors in `FeliCa#readWithoutEncryption` and `FeliCa#requestServiceV2`.

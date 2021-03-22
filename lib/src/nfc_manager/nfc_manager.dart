@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../channel.dart';
@@ -15,20 +14,21 @@ class NfcManager {
   NfcManager._() {
     channel.setMethodCallHandler(_handleMethodCall);
   }
-  static NfcManager _instance;
+  static NfcManager? _instance;
 
   /// A Singleton instance of NfcManager.
   static NfcManager get instance => _instance ??= NfcManager._();
 
   // _onDiscovered
-  NfcTagCallback _onDiscovered;
+  NfcTagCallback? _onDiscovered;
 
   // _onError
-  NfcErrorCallback _onError;
+  NfcErrorCallback? _onError;
 
   /// Checks whether the NFC features are available.
   Future<bool> isAvailable() async {
-    return channel.invokeMethod('Nfc#isAvailable');
+    return channel.invokeMethod('Nfc#isAvailable')
+      .then((value) => value!);
   }
 
   /// Start the session and register callbacks for tag discovery.
@@ -44,10 +44,10 @@ class NfcManager {
   ///
   /// (iOS only) `onError` is called when the session is stopped for some reason after the session has started.
   Future<void> startSession({
-    @required NfcTagCallback onDiscovered,
-    Set<NfcPollingOption> pollingOptions,
-    String alertMessage,
-    NfcErrorCallback onError,
+    required NfcTagCallback onDiscovered,
+    Set<NfcPollingOption>? pollingOptions,
+    String? alertMessage,
+    NfcErrorCallback? onError,
   }) async {
     _onDiscovered = onDiscovered;
     _onError = onError;
@@ -67,8 +67,8 @@ class NfcManager {
   /// (iOS only) `alertMessage` and `errorMessage` are used to display the success or error message on the popup.
   /// if both are used, `errorMessage` is used.
   Future<void> stopSession({
-    String alertMessage,
-    String errorMessage,
+    String? alertMessage,
+    String? errorMessage,
   }) async {
     _onDiscovered = null;
     _onError = null;
@@ -102,14 +102,14 @@ class NfcManager {
   // _handleOnDiscovered
   void _handleOnDiscovered(MethodCall call) async {
     final tag = $GetNfcTag(Map.from(call.arguments));
-    if (_onDiscovered != null) await _onDiscovered(tag);
+    await _onDiscovered?.call(tag);
     await _disposeTag(tag.handle);
   }
 
   // _handleOnError
   void _handleOnError(MethodCall call) async {
     final error = $GetNfcError(Map.from(call.arguments));
-    if (_onError != null) await _onError(error);
+    await _onError?.call(error);
   }
 }
 
@@ -120,8 +120,8 @@ class NfcTag {
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the onDiscovered callback of `NfcManager#startSession` are valid.
   const NfcTag({
-    @required this.handle,
-    @required this.data,
+    required this.handle,
+    required this.data,
   });
 
   /// The value used by this plugin internally.
@@ -145,9 +145,9 @@ class NfcError {
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the onError callback of `NfcManager#startSession` are valid.
   const NfcError({
-    @required this.type,
-    @required this.message,
-    @required this.details,
+    required this.type,
+    required this.message,
+    this.details,
   });
 
   /// The error type.

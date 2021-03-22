@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-
 import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
@@ -15,13 +13,13 @@ class IsoDep {
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `IsoDep.from` are valid.
   const IsoDep({
-    @required NfcTag tag,
-    @required this.identifier,
-    @required this.hiLayerResponse,
-    @required this.historicalBytes,
-    @required this.isExtendedLengthApduSupported,
-    @required this.maxTransceiveLength,
-    @required this.timeout,
+    required NfcTag tag,
+    required this.identifier,
+    required this.hiLayerResponse,
+    required this.historicalBytes,
+    required this.isExtendedLengthApduSupported,
+    required this.maxTransceiveLength,
+    required this.timeout,
   }) : _tag = tag;
 
   // _tag
@@ -48,17 +46,17 @@ class IsoDep {
   /// Get an instance of `IsoDep` for the given tag.
   ///
   /// Returns null if the tag is not compatible with IsoDep.
-  factory IsoDep.from(NfcTag tag) => $GetIsoDep(tag);
+  static IsoDep? from(NfcTag tag) => $GetIsoDep(tag);
 
   /// Sends the IsoDep command to the tag.
   ///
   /// This uses IsoDep#transceive API on Android.
   Future<Uint8List> transceive({
-    @required Uint8List data,
+    required Uint8List data,
   }) async {
     return channel.invokeMethod('IsoDep#transceive', {
       'handle': _tag.handle,
       'data': data,
-    });
+    }).then((value) => value!);
   }
 }

@@ -1,7 +1,5 @@
 import 'dart:typed_data';
 
-import 'package:flutter/foundation.dart';
-
 import '../channel.dart';
 import '../nfc_manager/nfc_manager.dart';
 import '../translator.dart';
@@ -15,12 +13,12 @@ class Iso7816 {
   /// The instances constructs by this way are not valid in the production environment.
   /// Only instances obtained from the `Iso7816.from` are valid.
   const Iso7816({
-    @required NfcTag tag,
-    @required this.identifier,
-    @required this.initialSelectedAID,
-    @required this.historicalBytes,
-    @required this.applicationData,
-    @required this.proprietaryApplicationDataCoding,
+    required NfcTag tag,
+    required this.identifier,
+    required this.initialSelectedAID,
+    required this.historicalBytes,
+    required this.applicationData,
+    required this.proprietaryApplicationDataCoding,
   }) : _tag = tag;
 
   // _tag
@@ -44,18 +42,18 @@ class Iso7816 {
   /// Get an instance of `Iso7816` for the given tag.
   ///
   /// Returns null if the tag is not compatible with Iso7816.
-  factory Iso7816.from(NfcTag tag) => $GetIso7816(tag);
+  static Iso7816? from(NfcTag tag) => $GetIso7816(tag);
 
   /// Sends the APDU to the tag.
   ///
   /// This uses NFCISO7816Tag#sendCommand API on iOS.
   Future<Iso7816ResponseApdu> sendCommand({
-    @required int instructionClass,
-    @required int instructionCode,
-    @required int p1Parameter,
-    @required int p2Parameter,
-    @required Uint8List data,
-    @required int expectedResponseLength,
+    required int instructionClass,
+    required int instructionCode,
+    required int p1Parameter,
+    required int p2Parameter,
+    required Uint8List data,
+    required int expectedResponseLength,
   }) async {
     return channel.invokeMethod('Iso7816#sendCommand', {
       'handle': _tag.handle,
@@ -83,9 +81,9 @@ class Iso7816 {
 class Iso7816ResponseApdu {
   /// Constructs an instance with the given values.
   const Iso7816ResponseApdu({
-    @required this.payload,
-    @required this.statusWord1,
-    @required this.statusWord2,
+    required this.payload,
+    required this.statusWord1,
+    required this.statusWord2,
   });
 
   /// Payload.
