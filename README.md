@@ -55,10 +55,10 @@ The following platform-tag-classes are available:
 * MifareUtralight (Android only)
 * NdefFormatable (Android only)
 
-Obtain an instance by calling the factory constructor `from()` on the class. For example:
+Obtain an instance by calling the factory constructor `from` on the class. For example:
 
 ```dart
-Ndef ndef = Ndef.from(tag);
+Ndef? ndef = Ndef.from(tag);
 
 if (ndef == null) {
   print('Tag is not compatible with NDEF');

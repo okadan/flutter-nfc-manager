@@ -131,8 +131,12 @@ class NfcTag {
   /// Don't use this values directly. Instead, access it via the platform_tags classes. For example:
   ///
   /// ```dart
-  /// final mifare = MiFare.from(tag);
-  /// print(mifare.identifier);
+  /// Ndef? ndef = Ndef.from(tag);
+  /// if (ndef == null) {
+  ///   print('Tag is not compatible with NDEF');
+  ///   return;
+  /// }
+  /// // Do something with an Ndef instance.
   /// ```
   final Map<String, dynamic> data;
 }
