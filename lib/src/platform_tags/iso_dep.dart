@@ -29,10 +29,10 @@ class IsoDep {
   final Uint8List identifier;
 
   /// The value from IsoDep#hiLayerResponse on Android.
-  final Uint8List hiLayerResponse;
+  final Uint8List? hiLayerResponse;
 
   /// The value from IsoDep#historicalBytes on Android.
-  final Uint8List historicalBytes;
+  final Uint8List? historicalBytes;
 
   /// The value from IsoDep#isExtendedLengthApduSupported on Android.
   final bool isExtendedLengthApduSupported;
