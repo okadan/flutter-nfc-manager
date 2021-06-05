@@ -30,7 +30,7 @@ class MiFare {
   final Uint8List identifier;
 
   /// The value from NFCMiFareTag#historicalBytes on iOS.
-  final Uint8List historicalBytes;
+  final Uint8List? historicalBytes;
 
   /// Get an instance of `MiFare` for the given tag.
   ///

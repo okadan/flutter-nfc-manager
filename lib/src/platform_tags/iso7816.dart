@@ -31,10 +31,10 @@ class Iso7816 {
   final String initialSelectedAID;
 
   /// The value from NFCISO7816Tag#historicalBytes on iOS.
-  final Uint8List historicalBytes;
+  final Uint8List? historicalBytes;
 
   /// The value from NFCISO7816Tag#applicationData on iOS.
-  final Uint8List applicationData;
+  final Uint8List? applicationData;
 
   /// The value from NFCISO7816Tag#proprietaryApplicationDataCoding on iOS.
   final bool proprietaryApplicationDataCoding;

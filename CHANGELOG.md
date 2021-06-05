@@ -1,3 +1,13 @@
+# 3.1.0
+
+* Fix Null-Safety related issues. The following properties are now nullable.
+
+  * `IsoDep#hiLayerResponse`
+  * `IsoDep#historicalBytes`
+  * `Iso7816#historicalBytes`
+  * `Iso7816#applicationData`
+  * `MiFare#historicalBytes`
+
 # 3.0.0+2
 
 * Update doc.
