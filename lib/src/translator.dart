@@ -296,7 +296,7 @@ IsoDep? $GetIsoDep(NfcTag arg) {
     historicalBytes: data['historicalBytes'],
     isExtendedLengthApduSupported: data['isExtendedLengthApduSupported'],
     maxTransceiveLength: data['maxTransceiveLength'],
-    timeout: data['timeout'],
+    initialTimeout: data['timeout'],
   );
 }
 

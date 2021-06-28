@@ -19,7 +19,7 @@ class IsoDep {
     required this.historicalBytes,
     required this.isExtendedLengthApduSupported,
     required this.maxTransceiveLength,
-    required this.timeout,
+    required this.initialTimeout,
   }) : _tag = tag;
 
   // _tag
@@ -40,8 +40,8 @@ class IsoDep {
   /// The value from IsoDep#maxTransceiveLength on Android.
   final int maxTransceiveLength;
 
-  /// The value from IsoDep#timeout on Android.
-  final int timeout;
+  /// The value from IsoDep#timeout on Android in initialize.
+  final int initialTimeout;
 
   /// Get an instance of `IsoDep` for the given tag.
   ///
@@ -57,6 +57,23 @@ class IsoDep {
     return channel.invokeMethod('IsoDep#transceive', {
       'handle': _tag.handle,
       'data': data,
+    }).then((value) => value!);
+  }
+
+  /// This uses IsoDep#setTimeout API on Android.
+  Future<int> setTimeout({
+    required int time,
+  }) async {
+    return channel.invokeMethod('IsoDep#setTimeout', {
+      'handle': _tag.handle,
+      'time': time,
+    }).then((value) => value!);
+  }
+
+  /// This uses IsoDep#getTimeout API on Android.
+  Future<int> getTimeout() async {
+    return channel.invokeMethod('IsoDep#getTimeout', {
+      'handle': _tag.handle,
     }).then((value) => value!);
   }
 }

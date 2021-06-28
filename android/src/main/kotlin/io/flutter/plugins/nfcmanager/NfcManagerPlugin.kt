@@ -74,6 +74,8 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       "NfcF#transceive" -> handleNfcFTransceive(call, result)
       "NfcV#transceive" -> handleNfcVTransceive(call, result)
       "IsoDep#transceive" -> handleIsoDepTransceive(call, result)
+      "IsoDep#getTimeout" -> handleIsoDepGetTimeout(call, result)
+      "IsoDep#setTimeout" -> handleIsoDepSetTimeout(call, result)
       "MifareClassic#authenticateSectorWithKeyA" -> handleMifareClassicAuthenticateSectorWithKeyA(call, result)
       "MifareClassic#authenticateSectorWithKeyB" -> handleMifareClassicAuthenticateSectorWithKeyB(call, result)
       "MifareClassic#increment" -> handleMifareClassicIncrement(call, result)
@@ -199,6 +201,19 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
     tagHandler(call, result, { IsoDep.get(it) }) {
       val data = call.argument<ByteArray>("data")!!
       result.success(it.transceive(data))
+    }
+  }
+
+  private fun handleIsoDepGetTimeout(call: MethodCall, result: Result) {
+    tagHandler(call, result, { IsoDep.get(it) }) {
+      result.success(it.timeout)
+    }
+  }
+
+  private fun handleIsoDepSetTimeout(call: MethodCall, result: Result) {
+    tagHandler(call, result, { IsoDep.get(it) }) {
+      it.timeout = call.argument<Int>("time")!!
+      result.success(it.timeout)
     }
   }
 
