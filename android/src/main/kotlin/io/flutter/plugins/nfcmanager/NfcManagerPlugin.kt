@@ -1,6 +1,7 @@
 package io.flutter.plugins.nfcmanager
 
 import android.app.Activity
+import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
 import android.nfc.tech.IsoDep
@@ -22,20 +23,72 @@ import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
+import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.EventChannel.EventSink
+import io.flutter.plugin.common.EventChannel.StreamHandler
 import java.io.IOException
 import java.lang.Exception
 import java.util.*
 
-class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
+class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware{
   private lateinit var channel : MethodChannel
   private lateinit var activity: Activity
   private lateinit var tags: MutableMap<String, Tag>
+
+  private var tagFromIntent: Tag? = null
+  private var sinkTagDiscoveredEvents = ArrayList<EventSink>()
+
+
   private var adapter: NfcAdapter? = null
   private var connectedTech: TagTechnology? = null
 
   override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
-    channel = MethodChannel(binding.binaryMessenger, "plugins.flutter.io/nfc_manager")
+    val baseChannelName = "plugins.flutter.io/nfc_manager"
+    
+    channel = MethodChannel(binding.binaryMessenger, baseChannelName)
     channel.setMethodCallHandler(this)
+
+    EventChannel(binding.binaryMessenger,
+      baseChannelName + "/stream").setStreamHandler(
+         object : StreamHandler {
+            private lateinit var currentEvents : EventSink
+
+            override fun onListen(arguments: Any?, events: EventSink) {
+              if (sinkTagDiscoveredEvents.isEmpty()) {
+                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                  events.error("unavailable", "Requires API level 19.", null)
+                } else {
+                  val adapter = adapter ?: run {
+                    events.error("unavailable", "NFC is not available for device.", null)
+                    return
+                  }
+
+                  var argMaps = arguments as HashMap<String,Any?>
+                  adapter.enableReaderMode(activity, NfcAdapter.ReaderCallback {
+                    activity.runOnUiThread { broadcastPreparedTag(it) }
+                  }, getFlags(argMaps["pollingOptions"] as List<String>), null)
+                }
+              }
+
+              currentEvents = events;
+              sinkTagDiscoveredEvents.add(currentEvents);
+
+              tagFromIntent?.let {
+                currentEvents.success(prepareTag(it))
+                tagFromIntent = null
+              }              
+            }
+
+            override fun onCancel(arguments: Any?) {
+              sinkTagDiscoveredEvents.remove(currentEvents);
+
+              if (sinkTagDiscoveredEvents.isEmpty()) {
+                adapter?.disableReaderMode(activity)
+              }
+            }
+         }
+      )
+
     adapter = NfcAdapter.getDefaultAdapter(binding.applicationContext)
     tags = mutableMapOf()
   }
@@ -46,6 +99,24 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activity = binding.activity
+
+    binding.addOnNewIntentListener(fun(intent: Intent?): Boolean {
+        var tagProcessed = false;
+
+        if (intent != null){
+          val tag = processIntent(intent)
+        
+
+          if (tag != null) {
+            broadcastPreparedTag(tag)
+            tagProcessed = true
+          }
+        }
+
+        return tagProcessed
+    })    
+
+    processIntent(activity.intent)
   }
 
   override fun onDetachedFromActivity() {
@@ -104,11 +175,11 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         result.error("unavailable", "NFC is not available for device.", null)
         return
       }
-      adapter.enableReaderMode(activity, {
-        val handle = UUID.randomUUID().toString()
-        tags[handle] = it
-        activity.runOnUiThread { channel.invokeMethod("onDiscovered", getTagMap(it).toMutableMap().apply { put("handle", handle) }) }
+      
+      adapter.enableReaderMode(activity, NfcAdapter.ReaderCallback {
+        activity.runOnUiThread { channel.invokeMethod("onDiscovered", prepareTag(it)) }
       }, getFlags(call.argument<List<String>>("pollingOptions")!!), null)
+
       result.success(null)
     }
   }
@@ -345,4 +416,24 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       connectedTech = tech
     }
   }
+
+  private fun processIntent(intent: Intent) : Tag? {
+    tagFromIntent = intent?.getParcelableExtra(NfcAdapter.EXTRA_TAG)
+
+    return tagFromIntent
+  }
+
+  private fun broadcastPreparedTag(tag: Tag) {
+    sinkTagDiscoveredEvents.forEach {
+      val preparedTag = prepareTag(tag)
+      it.success(preparedTag)
+    }
+  }
+
+  private fun prepareTag(tag: Tag): MutableMap<String, Any?> {
+    val handle = UUID.randomUUID().toString()
+    tags[handle] = tag
+
+    return getTagMap(tag).toMutableMap().apply { put("handle", handle) }
+  } 
 }
