@@ -8,7 +8,7 @@ Note: This plugin depends on `NFCTagReaderSession` (requires iOS 13.0 or later) 
 
 **Android Setup**
 
-* Add [android.permission.NFC](https://developer.android.com/reference/android/Manifest.permission.html#NFC) to your `AndroidMenifest.xml`.
+* Add [android.permission.NFC](https://developer.android.com/reference/android/Manifest.permission.html#NFC) to your `AndroidManifest.xml`.
 
 **iOS Setup**
 
