@@ -1,6 +1,7 @@
 package io.flutter.plugins.nfcmanager
 
 import android.app.Activity
+import androidx.lifecycle.*
 import android.content.Intent
 import android.nfc.NfcAdapter
 import android.nfc.Tag
@@ -19,28 +20,32 @@ import android.os.Build
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
+import io.flutter.embedding.engine.plugins.lifecycle.FlutterLifecycleAdapter
 import io.flutter.plugin.common.MethodCall
 import io.flutter.plugin.common.MethodChannel
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler
 import io.flutter.plugin.common.MethodChannel.Result
-import io.flutter.plugin.common.EventChannel;
+import io.flutter.plugin.common.EventChannel
 import io.flutter.plugin.common.EventChannel.EventSink
 import io.flutter.plugin.common.EventChannel.StreamHandler
 import java.io.IOException
 import java.lang.Exception
 import java.util.*
 
-class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware{
+class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware, LifecycleObserver {
   private lateinit var channel : MethodChannel
   private lateinit var activity: Activity
   private lateinit var tags: MutableMap<String, Tag>
+  private lateinit var lifecycle: Lifecycle
 
   private var tagFromIntent: Tag? = null
   private var sinkTagDiscoveredEvents = ArrayList<EventSink>()
 
-
   private var adapter: NfcAdapter? = null
   private var connectedTech: TagTechnology? = null
+
+  private lateinit var enableActivityReaderMode : () -> Unit
+  private lateinit var disableActivityReaderMode : () -> Unit
 
   override fun onAttachedToEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     val baseChannelName = "plugins.flutter.io/nfc_manager"
@@ -55,23 +60,36 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware{
 
             override fun onListen(arguments: Any?, events: EventSink) {
               if (sinkTagDiscoveredEvents.isEmpty()) {
-                if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-                  events.error("unavailable", "Requires API level 19.", null)
-                } else {
-                  val adapter = adapter ?: run {
-                    events.error("unavailable", "NFC is not available for device.", null)
-                    return
+                enableActivityReaderMode = {
+                  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                    events.error("unavailable", "Requires API level 19.", null)
+                  } else {
+                    val adapter = adapter
+                    
+                    if (adapter != null) {
+                      var argMaps = arguments as HashMap<String,Any?>
+                      adapter.enableReaderMode(activity, NfcAdapter.ReaderCallback {
+                        activity.runOnUiThread { broadcastPreparedTag(it) }
+                      }, getFlags(argMaps["pollingOptions"] as List<String>), null)
+                    } else {
+                      events.error("unavailable", "NFC is not available for device.", null)
+                    }
                   }
-
-                  var argMaps = arguments as HashMap<String,Any?>
-                  adapter.enableReaderMode(activity, NfcAdapter.ReaderCallback {
-                    activity.runOnUiThread { broadcastPreparedTag(it) }
-                  }, getFlags(argMaps["pollingOptions"] as List<String>), null)
                 }
+
+                disableActivityReaderMode = {
+                  if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
+                    events.error("unavailable", "Requires API level 19.", null)
+                  } else {
+                    adapter?.disableReaderMode(activity)
+                  }
+                }
+
+                enableActivityReaderMode()
               }
 
-              currentEvents = events;
-              sinkTagDiscoveredEvents.add(currentEvents);
+              currentEvents = events
+              sinkTagDiscoveredEvents.add(currentEvents)
 
               tagFromIntent?.let {
                 currentEvents.success(prepareTag(it))
@@ -80,10 +98,10 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware{
             }
 
             override fun onCancel(arguments: Any?) {
-              sinkTagDiscoveredEvents.remove(currentEvents);
+              sinkTagDiscoveredEvents.remove(currentEvents)
 
               if (sinkTagDiscoveredEvents.isEmpty()) {
-                adapter?.disableReaderMode(activity)
+                disableActivityReaderMode()
               }
             }
          }
@@ -98,12 +116,49 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware{
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
+    initBinding(binding)
+    processIntent(activity.intent)
+  }
+
+  override fun onDetachedFromActivity() {
+  }
+
+  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
+    initBinding(binding)
+    autoEnableReaderMode()
+  }
+
+  override fun onDetachedFromActivityForConfigChanges() {
+    // autoDisableReaderMode()
+    // lifecycle.removeObserver(this)
+  }
+
+  @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
+  private fun autoEnableReaderMode() {
+    // For some device (OnePlus for example),
+    // the readerMode is not reenabled after paused
+    if (sinkTagDiscoveredEvents.isNotEmpty()) {
+      enableActivityReaderMode()
+    }
+  }
+
+  @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
+  private fun autoDisableReaderMode() {
+    if (sinkTagDiscoveredEvents.isNotEmpty()) {
+      disableActivityReaderMode()
+    }
+  }
+
+  private fun initBinding(binding: ActivityPluginBinding) {
     activity = binding.activity
+    lifecycle = FlutterLifecycleAdapter.getActivityLifecycle(binding)
+
+    lifecycle.addObserver(this)
 
     binding.addOnNewIntentListener(fun(intent: Intent?): Boolean {
-        var tagProcessed = false;
+        var tagProcessed = false
 
-        if (intent != null){
+        if (intent != null) {
           val tag = processIntent(intent)
         
 
@@ -114,21 +169,7 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware{
         }
 
         return tagProcessed
-    })    
-
-    processIntent(activity.intent)
-  }
-
-  override fun onDetachedFromActivity() {
-    // no op
-  }
-
-  override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-    activity = binding.activity
-  }
-
-  override fun onDetachedFromActivityForConfigChanges() {
-    // no op
+    }) 
   }
 
   override fun onMethodCall(call: MethodCall, result: Result) {
