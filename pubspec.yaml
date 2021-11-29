@@ -10,6 +10,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  flutter_web_plugins:
+    sdk: flutter
 
 dev_dependencies:
   flutter_test:
@@ -23,3 +25,8 @@ flutter:
         pluginClass: NfcManagerPlugin
       ios:
         pluginClass: NfcManagerPlugin
+      web:
+        pluginClass: NfcManagerPlugin
+        fileName: src/web/nfc_manager_web.dart
+  assets:
+    - assets/flutter_nfc.js
