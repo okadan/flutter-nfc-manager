@@ -1,5 +1,5 @@
 @JS()
-library flutter_nfc.js;
+library flutter_nfc_min.js;
 
 import 'dart:async';
 import 'dart:html' as html;
@@ -20,7 +20,7 @@ class NfcManagerPlugin {
     // Insert JS into Html Body
     html.document.body!.append(html.ScriptElement()
       ..src =
-          'assets/packages/nfc_manager/assets/flutter_nfc.js' // ignore: unsafe_html
+          'assets/packages/nfc_manager/assets/flutter_nfc_min.js' // ignore: unsafe_html
       ..type = 'application/javascript'
       ..defer = true);
 

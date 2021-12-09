@@ -29,4 +29,4 @@ flutter:
         pluginClass: NfcManagerPlugin
         fileName: src/web/nfc_manager_web.dart
   assets:
-    - assets/flutter_nfc.js
+    - assets/flutter_nfc_min.js
