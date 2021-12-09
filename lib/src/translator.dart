@@ -25,6 +25,7 @@ const Map<NfcErrorType, String> $NfcErrorTypeTable = {
   NfcErrorType.sessionTimeout: 'sessionTimeout',
   NfcErrorType.systemIsBusy: 'systemIsBusy',
   NfcErrorType.userCanceled: 'userCanceled',
+  NfcErrorType.webNfcError: 'webNfcError',
   NfcErrorType.unknown: 'unknown',
 };
 

@@ -103,27 +103,6 @@ class NfcManager {
   // _handleOnDiscovered
   void _handleOnDiscovered(MethodCall call) async {
     final tag = $GetNfcTag(Map.from(call.arguments));
-    // des da funktioniert:
-    /*
-    final tag2 = $GetNfcTag(Map.from({
-      "handle": "SaschasGeklauterNFCTag",
-      "ndef": {
-        "isWritable": true,
-        "maxSize": 0,
-        "cachedMessage": {
-          "records": [
-            {
-              'typeNameFormat': 0x03,
-              'type': Uint8List.fromList('url'.codeUnits),
-              "identifier": Uint8List.fromList(''.codeUnits),
-              'payload': Uint8List.fromList(
-                  'https://access.netpy.de/#/checkin?room=lol'.codeUnits)
-            }
-          ]
-        }
-      }
-    }));
-    */
     await _onDiscovered?.call(tag);
     await _disposeTag(tag.handle);
   }
@@ -210,6 +189,9 @@ enum NfcErrorType {
 
   /// The user canceled the session.
   userCanceled,
+
+  // Error from Web Platform
+  webNfcError,
 
   /// The session failed because the unexpected error has occurred.
   unknown,
