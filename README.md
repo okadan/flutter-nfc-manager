@@ -1,8 +1,8 @@
 # nfc_manager
 
-Flutter plugin for accessing the NFC features on Android and iOS.
+Flutter plugin for accessing the NFC features on Android, iOS and Web.
 
-Note: This plugin depends on `NFCTagReaderSession` (requires iOS 13.0 or later) and `NfcAdapter#enableReaderMode` (requires Android API level 19 or later).
+Note: This plugin depends on `NFCTagReaderSession` (requires iOS 13.0 or later), `NfcAdapter#enableReaderMode` (requires Android API level 19 or later) and `Web-NFC (NdefReader)` (requires Chrome >= v.89 on Android) 
 
 ## Setup
 
@@ -41,7 +41,7 @@ NfcManager.instance.stopSession();
 
 The following platform-tag-classes are available:
 
-* Ndef
+* Ndef (iOS, Android, Web)
 * FeliCa (iOS only)
 * Iso7816 (iOS only)
 * Iso15693 (iOS only)
