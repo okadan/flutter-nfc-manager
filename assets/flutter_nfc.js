@@ -3,7 +3,7 @@
  * @description Flutter_NFC is responsible for implementing Web-NFC
  * @author Sascha Villing
  * 
- * !Attention!
+ * Important:
  * In order for any changes to take effect, this file has to be minified to ./flutter_nfc_min.js
  * e.g. -> uglifyjs --compress --mangle --output ./flutter_nfc_min.js ../flutter-nfc-manager/assets/flutter_nfc.js
  * 
@@ -119,23 +119,22 @@ class Translator {
             mediaType = decoder.decode(type);
         }
         // Data, Encoding, Lang
-        if (payload != null) {
-            switch (recordType) {
-                case "text":
-                    // String
-                    encoding = "utf-8";
-                    let languageByteLength = payload.slice(0,1)[0]; 
-                    lang = decoder.decode(payload.slice(1, 1 + languageByteLength));
-                    data = decoder.decode(payload.slice(1 + languageByteLength));
-                    break;
-                case "url":
-                    // String with URI Prefix
-                    data = (Translator.URI_PREFIX_LIST[payload.slice(0,1)] ?? "") + decoder.decode(payload.slice(1));
-                    break;
-                default: // mime, external
-                    // DataView
-                    data = payload;
-            }
+        if (payload != null) throw TypeError("Empty payload in NDEF record not supported from nfc_manager_web");
+        switch (recordType) {
+            case "text":
+                // String
+                encoding = "utf-8";
+                let languageByteLength = payload.slice(0,1)[0]; 
+                lang = decoder.decode(payload.slice(1, 1 + languageByteLength));
+                data = decoder.decode(payload.slice(1 + languageByteLength));
+                break;
+            case "url":
+                // String with URI Prefix
+                data = (Translator.URI_PREFIX_LIST[payload.slice(0,1)] ?? "") + decoder.decode(payload.slice(1));
+                break;
+            default: // mime, external
+                // DataView
+                data = payload;
         }
         return {
             recordType: recordType,
@@ -181,9 +180,9 @@ class Translator {
         }
         if (type == null) throw TypeError("RecordType " + record.recordType + " not supported from nfc_manager_web");
         type = encoder.encode(type);
-        // Encoding TODO:
+        // Encoding
         if (record.encoding != null && record.encoding != "utf-8") throw TypeError("Encoding " + record.encoding + " not supported from nfc_manager_web");
-        // Return as Map
+        // Return Map
         return {
             typeNameFormat: typeNameFormat,
             type: type, 
@@ -310,7 +309,7 @@ async function startNDEFWriterJS(nativeNDEFRecords) {
     } catch(error) {
         console.log(error);
         // raiseErrorEvent("writeErrorJS", error);
-        // TODO: how to give back error on write
+        // TODO: how to trigger error on write
     };
 }
 
