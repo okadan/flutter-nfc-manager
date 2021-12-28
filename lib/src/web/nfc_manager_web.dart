@@ -24,7 +24,7 @@ class NfcManagerPlugin {
       ..type = 'application/javascript'
       ..defer = true);
 
-    // Register Methodchannel
+    // Register MethodChannel
     channel = MethodChannel(
       'plugins.flutter.io/nfc_manager',
       const StandardMethodCodec(),
@@ -43,12 +43,15 @@ class NfcManagerPlugin {
         return _startSession();
       case 'Nfc#stopSession':
         return _stopSession();
-      case 'Nfc#disposeTag':
-        // do nothing
-        return;
+      case 'Ndef#read':
+        throw PlatformException(
+          code: 'Unimplemented',
+          details:
+              'nfc_manager for web doesn\'t implement Ndef.read(). Instead use Ndef.from(tag) and access the cachedMessage',
+        );
       case 'Ndef#write':
         final Map<String, dynamic> recordsJson = call.arguments['message'];
-        await _startNFCWrite(recordsJson);
+        await promiseToFuture(_startNFCWrite(recordsJson));
         return;
       default:
         throw PlatformException(
@@ -62,12 +65,12 @@ class NfcManagerPlugin {
   void _startSession() {
     // Attach event handler for JS callback
     jsSuccessSubscription =
-        html.document.on['readSuccessJS'].listen((html.Event event) {
+        html.document.on['nfcSuccessJS'].listen((html.Event event) {
       Map<dynamic, dynamic> jsTag = (event as html.CustomEvent).detail;
       channel?.invokeMethod("onDiscovered", jsTag);
     });
     jsErrorSubscription =
-        html.document.on['readErrorJS'].listen((html.Event event) {
+        html.document.on['nfcErrorJS'].listen((html.Event event) {
       Map<dynamic, dynamic> jsErrorObj = (event as html.CustomEvent).detail;
       channel?.invokeMethod("onError", jsErrorObj);
     });

@@ -274,7 +274,7 @@ async function startNDEFReaderJS() {
                 // Create NDEF Message
                 let nativeNDEFMessage = Translator.getNativefromWebNDEFMessage(nativeNDEFRecords);
                 // Dispatch Event to Dart
-                let customEvent = new CustomEvent("readSuccessJS", {detail: nativeNDEFMessage});
+                let customEvent = new CustomEvent("nfcSuccessJS", {detail: nativeNDEFMessage});
                 document.dispatchEvent(customEvent);
                 return;
             } catch (error) {
@@ -308,8 +308,7 @@ async function startNDEFWriterJS(nativeNDEFRecords) {
         await ndef.write({records: webNDEFRecords});
     } catch(error) {
         console.log(error);
-        // raiseErrorEvent("writeErrorJS", error);
-        // TODO: how to trigger error on write
+        raiseErrorEvent("Error during NFC reading" + error);
     };
 }
 
@@ -329,7 +328,7 @@ async function startNDEFWriterJS(nativeNDEFRecords) {
  */
 function raiseErrorEvent(errMessage) {
     let ndefError = Translator.getNativeFromWebNDEFError(errMessage);
-    let customEvent = new CustomEvent("readErrorJS", {detail: ndefError});
+    let customEvent = new CustomEvent("nfcErrorJS", {detail: ndefError});
     document.dispatchEvent(customEvent);
 }
 
