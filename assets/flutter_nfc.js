@@ -119,7 +119,7 @@ class Translator {
             mediaType = decoder.decode(type);
         }
         // Data, Encoding, Lang
-        if (payload != null) throw TypeError("Empty payload in NDEF record not supported from nfc_manager_web");
+        if (payload == null) throw TypeError("Empty payload in NDEF record not supported from nfc_manager_web");
         switch (recordType) {
             case "text":
                 // String
