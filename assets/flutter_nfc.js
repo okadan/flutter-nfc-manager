@@ -5,7 +5,7 @@
  * 
  * Important:
  * In order for any changes to take effect, this file has to be minified to ./flutter_nfc_min.js
- * e.g. -> uglifyjs --compress --mangle --output ./flutter_nfc_min.js ../flutter-nfc-manager/assets/flutter_nfc.js
+ * e.g. -> uglifyjs --compress --mangle --output ./assets/flutter_nfc_min.js ./assets/flutter_nfc.js
  * 
 */
 

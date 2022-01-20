@@ -1,5 +1,5 @@
 @JS()
-library flutter_nfc_min.js;
+library flutter_nfc;
 
 import 'dart:async';
 import 'dart:html' as html;
@@ -20,7 +20,7 @@ class NfcManagerPlugin {
     // Insert JS into Html Body
     html.document.body!.append(html.ScriptElement()
       ..src =
-          'assets/packages/nfc_manager/assets/flutter_nfc_min.js' // ignore: unsafe_html
+          'assets/packages/nfc_manager/assets/flutter_nfc.js' // ignore: unsafe_html
       ..type = 'application/javascript'
       ..defer = true);
 
@@ -51,7 +51,7 @@ class NfcManagerPlugin {
         );
       case 'Ndef#write':
         final Map<String, dynamic> recordsJson = call.arguments['message'];
-        await promiseToFuture(_startNFCWrite(recordsJson));
+        await _startNFCWrite(recordsJson);
         return;
       default:
         throw PlatformException(
@@ -66,12 +66,12 @@ class NfcManagerPlugin {
     // Attach event handler for JS callback
     jsSuccessSubscription =
         html.document.on['nfcSuccessJS'].listen((html.Event event) {
-      Map<dynamic, dynamic> jsTag = (event as html.CustomEvent).detail;
+      Map<String, dynamic> jsTag = (event as html.CustomEvent).detail;
       channel?.invokeMethod("onDiscovered", jsTag);
     });
     jsErrorSubscription =
         html.document.on['nfcErrorJS'].listen((html.Event event) {
-      Map<dynamic, dynamic> jsErrorObj = (event as html.CustomEvent).detail;
+      Map<String, dynamic> jsErrorObj = (event as html.CustomEvent).detail;
       channel?.invokeMethod("onError", jsErrorObj);
     });
     startNDEFReaderJS();
@@ -95,7 +95,7 @@ class NfcManagerPlugin {
           ndefRecordMap["payload"]);
       ndefRecords.add(record);
     }
-    await startNDEFWriterJS(ndefRecords);
+    await promiseToFuture(startNDEFWriterJS(ndefRecords));
     return;
   }
 }

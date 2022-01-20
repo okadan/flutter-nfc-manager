@@ -1,5 +1,6 @@
 import 'dart:typed_data';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 
 import '../channel.dart';
@@ -104,7 +105,7 @@ class NfcManager {
   void _handleOnDiscovered(MethodCall call) async {
     final tag = $GetNfcTag(Map.from(call.arguments));
     await _onDiscovered?.call(tag);
-    await _disposeTag(tag.handle);
+    if (!kIsWeb) await _disposeTag(tag.handle);
   }
 
   // _handleOnError

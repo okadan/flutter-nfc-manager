@@ -70,6 +70,11 @@ if (ndef == null) {
 
 Please see the [API Doc](https://pub.dev/documentation/nfc_manager/latest/) for more details.
 
+**Web-Usage**
+
+To read NDEF-data from a discovered NFC-Tag on web, `Ndef.read` cannot be used. Instead use `Ndef.from(NfcTag tag)` and read the data from the `cachedMessage`.
+
+Decoding NDEF URI Record: On the native platforms (Android/iOS) you have to decode the first byte of a URI-payload via `NdefRecord.URI_PREFIX_LIST`. In contrast to this, on Web you do not have to decode the URI prefix separately. You can decode the whole URI via `utf8.decode(record.payload)`.
 ## Real-World-App
 
 See [this repo](https://github.com/okadan/flutter-nfc-manager-app) which is a Real-World-App demonstrates how to use this plugin.
