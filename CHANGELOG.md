@@ -1,3 +1,7 @@
+# 3.1.1
+
+* Upgrade kotlin version.
+
 # 3.1.0
 
 * Fix Null-Safety related issues. The following properties are now nullable.
