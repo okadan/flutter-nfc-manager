@@ -4,11 +4,19 @@ import Flutter
 public class SwiftNfcManagerPlugin: NSObject, FlutterPlugin {
   private let channel: FlutterMethodChannel
 
+  private var _session: Any?
   @available(iOS 13.0, *)
-  private lazy var session: NFCTagReaderSession? = nil
+  private var session: NFCTagReaderSession? {
+    get { return _session as? NFCTagReaderSession }
+    set { _session = newValue }
+  }
 
+  private var _tags: Any?
   @available(iOS 13.0, *)
-  private lazy var tags: [String : NFCNDEFTag] = [:]
+  private var tags: [String : NFCNDEFTag] {
+    get { return _tags as? [String : NFCNDEFTag] ?? [:] }
+    set { _tags = newValue }
+  }
 
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "plugins.flutter.io/nfc_manager", binaryMessenger: registrar.messenger())

@@ -1,3 +1,7 @@
+# 3.2.0
+
+* Fix build issues
+
 # 3.1.1
 
 * Upgrade kotlin version.
