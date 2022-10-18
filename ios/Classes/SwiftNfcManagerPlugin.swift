@@ -748,6 +748,7 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
       if let error = error {
         // skip tag detection
         print(error)
+        session.restartPolling()
         return
       }
 
@@ -755,13 +756,14 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
         if let error = error {
           // skip tag detection
           print(error)
+          session.restartPolling()
           return
         }
 
         self.tags[handle] = tag
         self.channel.invokeMethod("onDiscovered", arguments: data.merging(["handle": handle]) { cur, _ in cur })
+        session.restartPolling()
       }
     }
   }
 }
-
