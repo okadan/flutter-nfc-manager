@@ -751,6 +751,7 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
       if let error = error {
         // skip tag detection
         print(error)
+        self.channel.invokeMethod("onError", arguments: getErrorMap(error))
         if !self.shouldInvalidateSessionAfterFirstRead { session.restartPolling() }
         return
       }
@@ -759,6 +760,7 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
         if let error = error {
           // skip tag detection
           print(error)
+          self.channel.invokeMethod("onError", arguments: getErrorMap(error))
           if !self.shouldInvalidateSessionAfterFirstRead { session.restartPolling() }
           return
         }
