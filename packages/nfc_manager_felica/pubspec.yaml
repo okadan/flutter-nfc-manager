@@ -1,0 +1,17 @@
+name: nfc_manager_felica
+description: A Flutter package that provides FeliCa abstraction using nfc_manager plugin.
+repository: https://github.com/okadan/flutter-nfc-manager/packages/nfc_manager_felica
+version: 1.0.0
+resolution: workspace
+
+environment:
+  sdk: ^3.7.2
+  flutter: '>=3.3.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+  nfc_manager:
+
+dev_dependencies:
+  lints: ^5.0.0
