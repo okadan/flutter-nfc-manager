@@ -1,8 +1,10 @@
 # nfc_manager
 
-Flutter plugin for accessing the NFC features on Android and iOS.
+A Flutter plugin for accessing the NFC features on Android and iOS.
 
-Note: This plugin depends on `NFCTagReaderSession` (requires iOS 13.0 or later) and `NfcAdapter#enableReaderMode` (requires Android API level 19 or later).
+## Requirements
+
+Android SDK Version >= 19 or iOS >= 13.0.
 
 ## Setup
 
@@ -16,60 +18,75 @@ Note: This plugin depends on `NFCTagReaderSession` (requires iOS 13.0 or later) 
 
 * Add [NFCReaderUsageDescription](https://developer.apple.com/documentation/bundleresources/information_property_list/nfcreaderusagedescription) to your `Info.plist`.
 
-* Add [com.apple.developer.nfc.readersession.felica.systemcodes](https://developer.apple.com/documentation/bundleresources/information_property_list/systemcodes) and [com.apple.developer.nfc.readersession.iso7816.select-identifiers](https://developer.apple.com/documentation/bundleresources/information_property_list/select-identifiers) to your `Info.plist` as needed.
+* Add [com.apple.developer.nfc.readersession.iso7816.select-identifiers](https://developer.apple.com/documentation/bundleresources/information_property_list/select-identifiers) to your `Info.plist`. (Optional)
 
-## Usage
+* Add [com.apple.developer.nfc.readersession.felica.systemcodes](https://developer.apple.com/documentation/bundleresources/information_property_list/systemcodes) to your `Info.plist`. (Optional but required if you specify the `NfcPollingOptions.iso18092` to the `pollingOptions`)
 
-**Handling Session**
+## Minimum Usage
 
 ```dart
-// Check availability
 bool isAvailable = await NfcManager.instance.isAvailable();
 
-// Start Session
-NfcManager.instance.startSession(
-  onDiscovered: (NfcTag tag) async {
-    // Do something with an NfcTag instance.
-  },
-);
-
-// Stop Session
-NfcManager.instance.stopSession();
-```
-
-**Handling Platform Tag**
-
-The following platform-tag-classes are available:
-
-* Ndef
-* FeliCa (iOS only)
-* Iso7816 (iOS only)
-* Iso15693 (iOS only)
-* MiFare (iOS only)
-* NfcA (Android only)
-* NfcB (Android only)
-* NfcF (Android only)
-* NfcV (Android only)
-* IsoDep (Android only)
-* MifareClassic (Android only)
-* MifareUtralight (Android only)
-* NdefFormatable (Android only)
-
-Obtain an instance by calling the factory constructor `from` on the class. For example:
-
-```dart
-Ndef? ndef = Ndef.from(tag);
-
-if (ndef == null) {
-  print('Tag is not compatible with NDEF');
+if (!isAvailable) {
+  print("The NFC features may not be supported on this device.");
   return;
 }
 
-// Do something with an Ndef instance
+NfcManager.instance.startSession(
+  pollingOptions: ...,
+  onDiscovered: (NfcTag tag) async {
+    // Do something with an NfcTag instance.
+
+    // Stop the session when the processing is completed.
+    NfcManager.instance.stopSession();
+  },
+);
 ```
 
-Please see the [API Doc](https://pub.dev/documentation/nfc_manager/latest/) for more details.
+## Handling the NfcTag instance.
 
-## Real-World-App
+NfcTag is typically not used directly, but only to obtain an instance of a specific tag type. This plugin provides the following tag types:
 
-See [this repo](https://github.com/okadan/flutter-nfc-manager-app) which is a Real-World-App demonstrates how to use this plugin.
+**Android Only**
+
+* `NdefAndroid`
+* `NfcAAndroid`
+* `NfcBAndroid`
+* `NfcFAndroid`
+* `NfcVAndroid`
+* `IsoDepAndroid`
+* `MifareClassicAndroid`
+* `MifareUltralightAndroid`
+* `NdefFormatableAndroid`
+* `NfcBarcodeAndroid`
+
+**iOS Only**
+
+* `NdefIOS`
+* `MiFareIOS`
+* `FeliCaIOS`
+* `Iso15693IOS`
+* `Iso7618IOS`
+
+**Abstraction between Android and iOS (sub packages)**
+
+* `Ndef` ([nfc_manager_ndef](https://github.com/okadan/flutter-nfc-manager-ndef))
+* `FeliCa` ([nfc_manager_felica](https://github.com/okadan/flutter-nfc-manager-felica))
+* Add more in the future...
+
+Use `from(NfcTag)` static method to obtain an instance of a specific tag type. For example, to instantiate the `Ndef`:
+
+```dart
+import 'package:nfc_manager_ndef/nfc_manager_ndef.dart';
+
+Ndef? ndef = Ndef.from(tag);
+
+if (ndef == null) {
+  print("The tag is not compatible with an NDEF.");
+  return;
+}
+
+// Do something with an Ndef instance.
+```
+
+See the [example](#) directory or [Real World App](#) for more details.
