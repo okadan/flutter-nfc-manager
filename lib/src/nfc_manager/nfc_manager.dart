@@ -41,11 +41,15 @@ class NfcManager {
   ///
   /// (iOS only) `alertMessage` is used to display the message on the popup shown when the session is started.
   ///
+  /// (iOS only) `invalidateAfterFirstRead` is used to specify whether the session should be invalidated 
+  /// after the first tag is discovered. Default is true.
+  ///
   /// (iOS only) `onError` is called when the session is stopped for some reason after the session has started.
   Future<void> startSession({
     required NfcTagCallback onDiscovered,
     Set<NfcPollingOption>? pollingOptions,
     String? alertMessage,
+    bool? invalidateAfterFirstRead = true,
     NfcErrorCallback? onError,
   }) async {
     _onDiscovered = onDiscovered;
@@ -55,6 +59,7 @@ class NfcManager {
       'pollingOptions':
           pollingOptions.map((e) => $NfcPollingOptionTable[e]).toList(),
       'alertMessage': alertMessage,
+      'invalidateAfterFirstRead': invalidateAfterFirstRead,
     });
   }
 
