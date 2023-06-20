@@ -1,3 +1,7 @@
+# 3.3.0
+
+* Added `invalidateAfterFirstRead` argument to `startSession`. This enables `restartPolling` on iOS.
+
 # 3.2.0
 
 * Fix build issues
