@@ -26,6 +26,13 @@ import java.io.IOException
 import java.lang.Exception
 import java.util.*
 
+import com.github.devnied.emvnfccard.parser.IProvider;
+import com.github.devnied.emvnfccard.exception.CommunicationException;
+import com.github.devnied.emvnfccard.parser.EmvTemplate;
+import java.time.ZoneId
+import java.time.LocalDate
+
+
 class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   private lateinit var channel : MethodChannel
   private lateinit var activity: Activity
@@ -105,9 +112,45 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
         return
       }
       adapter.enableReaderMode(activity, {
+        val provider: IProvider = Provider()
+        (provider as Provider).setmTagCom(IsoDep.get(it))
+        val config: EmvTemplate.Config = EmvTemplate.Config()
+                .setContactLess(true) // Enable contact less reading (default: true)
+                .setReadAllAids(true) // Read all aids in card (default: true)
+                .setReadTransactions(true) // Read all transactions (default: true)
+                .setReadCplc(false) // Read and extract CPCLC data (default: false)
+                .setRemoveDefaultParsers(false) // Remove default parsers for GeldKarte and EmvCard (default: false)
+                .setReadAt(true) // Read and extract ATR/ATS and description
+        val parser = EmvTemplate.Builder() //
+                .setProvider(provider) // Define provider
+                .setConfig(config) // Define config
+                //.setTerminal(terminal) (optional) you can define a custom terminal implementation to create APDU
+                .build()
+
+        val mIsoDep = IsoDep.get(it)
+        mIsoDep.connect()
+        val card = parser.readEmvCard()
+
+        val expireDate = card.expireDate
+        var date = LocalDate.of(1999, 12, 31)
+        var dateToString: String? = null
+
+        if (expireDate != null) {
+          date = expireDate.toInstant()
+                  .atZone(ZoneId.systemDefault())
+                  .toLocalDate()
+
+          dateToString = date.toString()
+        }
+
+        val cardDetails = mapOf<String, String?>("cardNumber" to card.cardNumber, "validDate" to dateToString)
+
         val handle = UUID.randomUUID().toString()
         tags[handle] = it
-        activity.runOnUiThread { channel.invokeMethod("onDiscovered", getTagMap(it).toMutableMap().apply { put("handle", handle) }) }
+        activity.runOnUiThread { channel.invokeMethod("onDiscovered", getTagMap(it).toMutableMap().apply {
+          put("handle", handle)
+          put("cardDetails", cardDetails)
+        }) }
       }, getFlags(call.argument<List<String>>("pollingOptions")!!), null)
       result.success(null)
     }
@@ -344,5 +387,28 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       tech.connect()
       connectedTech = tech
     }
+  }
+}
+
+class Provider : IProvider {
+  private var mTagCom: IsoDep? = null
+  @Throws(CommunicationException::class)
+  override fun transceive(pCommand: ByteArray): ByteArray {
+    val response: ByteArray = try {
+      // send command to emv card
+      mTagCom!!.transceive(pCommand)
+    } catch (e: IOException) {
+      throw CommunicationException(e.message)
+    }
+    return response
+  }
+  override fun getAt(): ByteArray {
+    // For NFC-A
+    return mTagCom!!.historicalBytes
+    // For NFC-B
+    // return mTagCom.getHiLayerResponse();
+  }
+  fun setmTagCom(mTagCom: IsoDep?) {
+    this.mTagCom = mTagCom
   }
 }

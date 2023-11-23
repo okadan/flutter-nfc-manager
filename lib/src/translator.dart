@@ -70,6 +70,7 @@ const Map<MiFareFamily, int> $MiFareFamilyTable = {
 
 NfcTag $GetNfcTag(Map<String, dynamic> arg) {
   return NfcTag(
+    cardDetails: arg.remove("cardDetails"),
     handle: arg.remove('handle'),
     data: arg,
   );

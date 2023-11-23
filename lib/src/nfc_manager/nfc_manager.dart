@@ -126,6 +126,7 @@ class NfcTag {
   const NfcTag({
     required this.handle,
     required this.data,
+    required this.cardDetails,
   });
 
   /// The value used by this plugin internally.
@@ -144,6 +145,7 @@ class NfcTag {
   /// // Do something with an Ndef instance.
   /// ```
   final Map<String, dynamic> data;
+  final Map<Object?, Object?> cardDetails;
 }
 
 /// The class represents the error when the session is stopped.
