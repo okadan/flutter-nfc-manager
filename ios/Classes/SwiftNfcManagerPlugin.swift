@@ -741,7 +741,9 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
   }
 
   public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
-    channel.invokeMethod("onError", arguments: getErrorMap(error))
+    DispatchQueue.main.sync {
+      channel.invokeMethod("onError", arguments: getErrorMap(error))
+    }
   }
 
   public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
@@ -764,7 +766,9 @@ extension SwiftNfcManagerPlugin: NFCTagReaderSessionDelegate {
         }
 
         self.tags[handle] = tag
-        self.channel.invokeMethod("onDiscovered", arguments: data.merging(["handle": handle]) { cur, _ in cur })
+        DispatchQueue.main.sync {
+          self.channel.invokeMethod("onDiscovered", arguments: data.merging(["handle": handle]) { cur, _ in cur })
+        }
         if !self.shouldInvalidateSessionAfterFirstRead { session.restartPolling() }
       }
     }
