@@ -1,3 +1,9 @@
+# 3.4.0
+
+* Fix iOS background isolate issue.
+* Add namespace to Gradle for Android.
+* Rebuild projects on Flutter stable channel.
+
 # 3.3.0
 
 * Added `invalidateAfterFirstRead` argument to `startSession`. This enables `restartPolling` on iOS.
