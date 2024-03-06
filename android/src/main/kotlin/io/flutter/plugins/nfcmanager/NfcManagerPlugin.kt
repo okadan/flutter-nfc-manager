@@ -63,6 +63,7 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   override fun onMethodCall(call: MethodCall, result: Result) {
     when (call.method) {
       "Nfc#isAvailable" -> handleNfcIsAvailable(call, result)
+      "Nfc#isSupported" -> handleNfcIsSupported(call, result)
       "Nfc#startSession" -> handleNfcStartSession(call, result)
       "Nfc#stopSession" -> handleNfcStopSession(call, result)
       "Nfc#disposeTag" -> handleNfcDisposeTag(call, result)
@@ -94,6 +95,10 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
 
   private fun handleNfcIsAvailable(call: MethodCall, result: Result) {
     result.success(adapter?.isEnabled == true)
+  }
+
+  private fun handleNfcIsSupported(call: MethodCall, result: Result) {
+    result.success(this.adapter != null)
   }
 
   private fun handleNfcStartSession(call: MethodCall, result: Result) {
