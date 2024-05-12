@@ -23,8 +23,11 @@ Note: This plugin depends on `NFCTagReaderSession` (requires iOS 13.0 or later) 
 **Handling Session**
 
 ```dart
-// Check availability
+// Check hardware availability
 bool isAvailable = await NfcManager.instance.isAvailable();
+
+// Check if enabled on device
+bool isEnabled = await NfcManager.instance.isEnabled();
 
 // Start Session
 NfcManager.instance.startSession(
