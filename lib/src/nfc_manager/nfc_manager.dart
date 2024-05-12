@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'dart:io' show Platform;
 
 import '../channel.dart';
 import '../translator.dart';
@@ -33,6 +34,15 @@ class NfcManager {
   /// Checks whether the NFC features are enabled.
   Future<bool> isEnabled() async {
     return channel.invokeMethod('Nfc#isEnabled').then((value) => value!);
+  }
+
+  /// Open the NFC settings page in Android
+  Future<void> openAndroidNFCSettings() async {
+    if (Platform.isAndroid) {
+      channel.invokeMethod('Nfc#openSettings');
+    } else {
+      throw Exception('This method is only available on Android');
+    }
   }
 
   /// Start the session and register callbacks for tag discovery.

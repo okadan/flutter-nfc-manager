@@ -27,7 +27,10 @@ Note: This plugin depends on `NFCTagReaderSession` (requires iOS 13.0 or later) 
 bool isAvailable = await NfcManager.instance.isAvailable();
 
 // Check if enabled on device
-bool isEnabled = await NfcManager.instance.isEnabled();
+bool isEnabled = await NfcManager.instance.isEnabled()
+
+// Open NFC Settings in Android
+await NfcManager.instance.openAndroidNFCSettings();
 
 // Start Session
 NfcManager.instance.startSession(
