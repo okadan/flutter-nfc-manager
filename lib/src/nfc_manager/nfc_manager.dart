@@ -31,9 +31,14 @@ class NfcManager {
     return channel.invokeMethod('Nfc#isAvailable').then((value) => value!);
   }
 
-  /// Checks whether the NFC features are enabled.
+  /// Checks whether the NFC features are enabled in Android
   Future<bool> isEnabled() async {
-    return channel.invokeMethod('Nfc#isEnabled').then((value) => value!);
+    if (Platform.isAndroid) {
+      return channel.invokeMethod('Nfc#isEnabled').then((value) => value!);
+    } else {
+      throw Exception('This method is only available on Android');
+      //NFC is always enabled in iOS
+    }
   }
 
   /// Open the NFC settings page in Android
