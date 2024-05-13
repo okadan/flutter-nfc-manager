@@ -14,6 +14,8 @@ import android.nfc.tech.NfcF
 import android.nfc.tech.NfcV
 import android.nfc.tech.TagTechnology
 import android.os.Build
+import android.content.Intent
+import android.provider.Settings
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
@@ -63,6 +65,8 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   override fun onMethodCall(call: MethodCall, result: Result) {
     when (call.method) {
       "Nfc#isAvailable" -> handleNfcIsAvailable(call, result)
+      "Nfc#isEnabled" -> handleNfcIsEnabled(call, result)
+      "Nfc#openSettings" -> handleNfcOpenSettings(call, result)
       "Nfc#startSession" -> handleNfcStartSession(call, result)
       "Nfc#stopSession" -> handleNfcStopSession(call, result)
       "Nfc#disposeTag" -> handleNfcDisposeTag(call, result)
@@ -93,8 +97,19 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
   }
 
   private fun handleNfcIsAvailable(call: MethodCall, result: Result) {
+    result.success(adapter != null)
+  }
+
+  private fun handleNfcIsEnabled(call: MethodCall, result: Result) {
     result.success(adapter?.isEnabled == true)
   }
+
+  private fun handleNfcOpenSettings(call: MethodCall, result: Result) {
+    val intent = Intent(Settings.ACTION_NFC_SETTINGS)
+    this.activity?.startActivity(intent)
+    result.success(null)
+  }
+
 
   private fun handleNfcStartSession(call: MethodCall, result: Result) {
     if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {

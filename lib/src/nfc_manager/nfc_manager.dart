@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'dart:io' show Platform;
 
 import '../channel.dart';
 import '../translator.dart';
@@ -25,9 +26,28 @@ class NfcManager {
   // _onError
   NfcErrorCallback? _onError;
 
-  /// Checks whether the NFC features are available.
+  /// Checks whether the NFC features are available. (i.e hardware)
   Future<bool> isAvailable() async {
     return channel.invokeMethod('Nfc#isAvailable').then((value) => value!);
+  }
+
+  /// Checks whether the NFC features are enabled in Android
+  Future<bool> isEnabled() async {
+    if (Platform.isAndroid) {
+      return channel.invokeMethod('Nfc#isEnabled').then((value) => value!);
+    } else {
+      throw Exception('This method is only available on Android');
+      //NFC is always enabled in iOS
+    }
+  }
+
+  /// Open the NFC settings page in Android
+  Future<void> openAndroidNFCSettings() async {
+    if (Platform.isAndroid) {
+      channel.invokeMethod('Nfc#openSettings');
+    } else {
+      throw Exception('This method is only available on Android');
+    }
   }
 
   /// Start the session and register callbacks for tag discovery.
@@ -41,7 +61,7 @@ class NfcManager {
   ///
   /// (iOS only) `alertMessage` is used to display the message on the popup shown when the session is started.
   ///
-  /// (iOS only) `invalidateAfterFirstRead` is used to specify whether the session should be invalidated 
+  /// (iOS only) `invalidateAfterFirstRead` is used to specify whether the session should be invalidated
   /// after the first tag is discovered. Default is true.
   ///
   /// (iOS only) `onError` is called when the session is stopped for some reason after the session has started.
