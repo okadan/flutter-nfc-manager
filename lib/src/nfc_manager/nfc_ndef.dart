@@ -149,11 +149,14 @@ class NdefRecord {
     var length = 3 + type.length + identifier.length + payload.length;
 
     // not short record
-    if (payload.length > 255) length += 3;
+    if (payload.length > 255) {
+      length += 3;
+    }
 
     // id length
-    if (typeNameFormat == NdefTypeNameFormat.empty || identifier.length > 0)
+    if (typeNameFormat == NdefTypeNameFormat.empty || identifier.isNotEmpty) {
       length += 1;
+    }
 
     return length;
   }
