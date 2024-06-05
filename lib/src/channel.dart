@@ -1,3 +1,6 @@
 import 'package:flutter/services.dart';
 
-const MethodChannel channel = MethodChannel('plugins.flutter.io/nfc_manager');
+const baseChannelName = 'plugins.flutter.io/nfc_manager';
+
+const MethodChannel channel = MethodChannel(baseChannelName);
+const EventChannel eventChannel = EventChannel(baseChannelName + '/stream');
