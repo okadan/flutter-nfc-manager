@@ -32,6 +32,10 @@ fun getFlags(options: List<String> = listOf()): Int {
     flags = flags or NfcAdapter.FLAG_READER_NFC_F
   }
 
+  if (options.contains("noSound")) {
+    flags = flags or NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS
+  }
+
   return flags
 }
 
