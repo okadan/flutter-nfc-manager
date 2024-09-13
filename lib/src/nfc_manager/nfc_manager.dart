@@ -185,13 +185,6 @@ enum NfcPollingOption {
   noSound,
 }
 
-// NfcAdapter.FLAG_READER_NFC_A |
-//   NfcAdapter.FLAG_READER_NFC_B |
-//   NfcAdapter.FLAG_READER_NFC_F |
-//   NfcAdapter.FLAG_READER_NFC_V |
-//   NfcAdapter.FLAG_READER_NFC_BARCODE |
-//   NfcAdapter.FLAG_READER_NO_PLATFORM_SOUNDS,
-
 /// Represents the type of error that occurs when the session has stopped.
 enum NfcErrorType {
   /// The session timed out.

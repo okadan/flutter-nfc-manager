@@ -19,7 +19,7 @@ const Map<NfcPollingOption, String> $NfcPollingOptionTable = {
   NfcPollingOption.iso14443: 'iso14443',
   NfcPollingOption.iso15693: 'iso15693',
   NfcPollingOption.iso18092: 'iso18092',
-  NfcPollingOption.noSound: 'noSound'
+  NfcPollingOption.noSound: 'noSound',
 };
 
 const Map<NfcErrorType, String> $NfcErrorTypeTable = {
