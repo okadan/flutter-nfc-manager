@@ -363,10 +363,11 @@ class Iso15693 {
   /// Sends the Extended Write Multiple Blocks command to the tag.
   ///
   /// This uses NFCISO15693Tag#extendedWriteMultipleBlocks API on iOS.
-  Future<List<Uint8List>> extendedWriteMultipleBlocks({
+  Future<void> extendedWriteMultipleBlocks({
     required Set<Iso15693RequestFlag> requestFlags,
     required int blockNumber,
     required int numberOfBlocks,
+    required List<Uint8List> dataBlocks,
   }) async {
     return channel.invokeMethod('Iso15693#extendedWriteMultipleBlocks', {
       'handle': _tag.handle,
@@ -374,7 +375,8 @@ class Iso15693 {
           requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
       'blockNumber': blockNumber,
       'numberOfBlocks': numberOfBlocks,
-    }).then((value) => List.from(value!));
+      'dataBlocks': dataBlocks,
+    });
   }
 
   /// Sends the Get System Info command to the tag.
