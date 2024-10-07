@@ -51,6 +51,22 @@ class Iso15693 {
     }).then((value) => value!);
   }
 
+  /// Sends the Fast Read Single Block command to the tag.
+  ///
+  /// This uses NFCISO15693Tag#fastReadSingleBlock API on iOS.
+  Future<Uint8List> fastReadSingleBlock({
+    required Set<Iso15693RequestFlag> requestFlags,
+    required int blockNumber,
+  }) async {
+    return channel.invokeMethod('Iso15693#fastReadSingleBlock', {
+      'handle': _tag.handle,
+      'requestFlags':
+          requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
+      'blockNumber': blockNumber.toUnsigned(8),
+    }).then((value) => value!);
+  }
+
+
   /// Sends the Write Single Block command to the tag.
   ///
   /// This uses NFCISO15693Tag#writeSingleBlock API on iOS.
@@ -60,6 +76,23 @@ class Iso15693 {
     required Uint8List dataBlock,
   }) async {
     return channel.invokeMethod('Iso15693#writeSingleBlock', {
+      'handle': _tag.handle,
+      'requestFlags':
+          requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
+      'blockNumber': blockNumber.toUnsigned(8),
+      'dataBlock': dataBlock,
+    });
+  }
+
+  /// Sends the Fast Write Single Block command to the tag.
+  ///
+  /// This uses NFCISO15693Tag#fastWriteSingleBlock API on iOS.
+  Future<void> fastWriteSingleBlock({
+    required Set<Iso15693RequestFlag> requestFlags,
+    required int blockNumber,
+    required Uint8List dataBlock,
+  }) async {
+    return channel.invokeMethod('Iso15693#fastWriteSingleBlock', {
       'handle': _tag.handle,
       'requestFlags':
           requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
@@ -100,6 +133,23 @@ class Iso15693 {
     }).then((value) => List.from(value!));
   }
 
+  /// Sends the Fast Read Multiple Blocks command to the tag.
+  ///
+  /// This uses NFCISO15693Tag#fastReadMultipleBlocks API on iOS.
+  Future<List<Uint8List>> fastReadMultipleBlocks({
+    required Set<Iso15693RequestFlag> requestFlags,
+    required int blockNumber,
+    required int numberOfBlocks,
+  }) async {
+    return channel.invokeMethod('Iso15693#fastReadMultipleBlocks', {
+      'handle': _tag.handle,
+      'requestFlags':
+          requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
+      'blockNumber': blockNumber,
+      'numberOfBlocks': numberOfBlocks,
+    }).then((value) => List.from(value!));
+  }
+
   /// Sends the Write Multiple Blocks command to the tag.
   ///
   /// This uses NFCISO15693Tag#writeMultipleBlocks API on iOS.
@@ -110,6 +160,25 @@ class Iso15693 {
     required List<Uint8List> dataBlocks,
   }) async {
     return channel.invokeMethod('Iso15693#writeMultipleBlocks', {
+      'handle': _tag.handle,
+      'requestFlags':
+          requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
+      'blockNumber': blockNumber,
+      'numberOfBlocks': numberOfBlocks,
+      'dataBlocks': dataBlocks,
+    });
+  }
+
+  /// Sends the Fast Write Multiple Blocks command to the tag.
+  ///
+  /// This uses NFCISO15693Tag#writeMultipleBlocks API on iOS.
+  Future<void> fastWriteMultipleBlocks({
+    required Set<Iso15693RequestFlag> requestFlags,
+    required int blockNumber,
+    required int numberOfBlocks,
+    required List<Uint8List> dataBlocks,
+  }) async {
+    return channel.invokeMethod('Iso15693#fastWriteMultipleBlocks', {
       'handle': _tag.handle,
       'requestFlags':
           requestFlags.map((e) => $Iso15693RequestFlagTable[e]).toList(),
