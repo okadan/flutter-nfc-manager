@@ -136,9 +136,16 @@ class NfcManagerPlugin: FlutterPlugin, MethodCallHandler, ActivityAware {
       result.success(null)
       return
     }
-
-    if (tech.tag == tag && tech.isConnected)
-      try { tech.close() } catch (e: IOException) { /* no op */ }
+    try {
+      if (tech.tag == tag && tech.isConnected) {
+        tech.close()
+      }
+    } catch (ex: Exception) {
+      when (ex) {
+        is IOException, is SecurityException -> { /* no op */}
+        else -> throw ex
+      }
+    }
 
     connectedTech = null
 
