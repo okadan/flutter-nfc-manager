@@ -1,3 +1,7 @@
+# 3.5.1
+
+* Make compatible for Kotlin 2.1.0
+
 # 3.5.0
 
 * Upgrade Flutter.
