@@ -40,7 +40,7 @@ fun getTagMap(arg: Tag): Map<String, Any?> {
 
   arg.techList.forEach { tech ->
     // normalize tech string (e.g. "android.nfc.tech.NfcA" => "nfca"
-    data[tech.toLowerCase(Locale.ROOT).split(".").last()] = when (tech) {
+    data[tech.lowercase(Locale.ROOT).split(".").last()] = when (tech) {
       NfcA::class.java.name -> NfcA.get(arg).let {
         mapOf(
           "identifier" to arg.id,
