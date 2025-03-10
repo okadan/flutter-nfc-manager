@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/services.dart';
 
 import '../channel.dart';
@@ -8,6 +10,19 @@ typedef NfcTagCallback = Future<void> Function(NfcTag tag);
 
 /// Signature for `NfcManager.startSession` onError callback.
 typedef NfcErrorCallback = Future<void> Function(NfcError error);
+
+/// Handle the discovering nfc tag session
+class NfcSessionHandler {
+  final StreamSubscription<NfcTag> _subscription;
+
+  const NfcSessionHandler._({required StreamSubscription<NfcTag> subscription})
+      : _subscription = subscription;
+
+  /// Stop the current session
+  Future<void> stop() {
+    return _subscription.cancel();
+  }
+}
 
 /// The entry point for accessing the NFC session.
 class NfcManager {
@@ -28,6 +43,64 @@ class NfcManager {
   /// Checks whether the NFC features are available.
   Future<bool> isAvailable() async {
     return channel.invokeMethod('Nfc#isAvailable').then((value) => value!);
+  }
+
+  /// (Android only)
+  /// Get the NFC on startup or resume of the application and start session
+  ///
+  /// `pollingOptions` is used to specify the type of tags to be discovered. All types by default.
+  ///
+  /// Think to stop session after discovering
+  /// ```dart
+  /// final session = NfcManager.instance.discover(onDiscovered: (tag) {
+  ///   // Do something with tag
+  /// });
+  ///
+  /// session.stop();
+  /// ```
+  ///
+  /// To prevent application from being restarted when a NFC intent resume
+  /// the app, set `android:launchMode="singleTask"` on the main `activity` in
+  /// the `AndroidManifest.xml`
+  NfcSessionHandler discover({
+    required NfcTagCallback onDiscovered,
+    Set<NfcPollingOption>? pollingOptions,
+    String? alertMessage,
+    NfcErrorCallback? onError,
+  }) {
+    pollingOptions ??= NfcPollingOption.values.toSet();
+
+    // Cancellation handled by [NfcSessionManager.stop]
+    // ignore: cancel_subscriptions
+    final subscription = eventChannel
+        .receiveBroadcastStream({
+          'pollingOptions':
+              pollingOptions.map((e) => $NfcPollingOptionTable[e]).toList(),
+        })
+        .handleError((error) {
+          late NfcError nfcError;
+          if (error is PlatformException && error.code == 'unavailable') {
+            nfcError = NfcError(
+                type: NfcErrorType.unavailable,
+                message: error.message ?? 'Unknown',
+                details: error.details);
+          } else {
+            nfcError = $GetNfcError(error);
+          }
+
+          if (onError != null) {
+            onError(nfcError);
+          } else {
+            // To be handled by the framework
+            throw nfcError;
+          }
+        })
+        .map((tagMap) => $GetNfcTag(Map.from(tagMap)))
+        .listen((tag) {
+          _handleOnDiscovered(tag, onDiscovered);
+        }, cancelOnError: false);
+
+    return NfcSessionHandler._(subscription: subscription);
   }
 
   /// Start the session and register callbacks for tag discovery.
@@ -93,7 +166,8 @@ class NfcManager {
   Future<void> _handleMethodCall(MethodCall call) async {
     switch (call.method) {
       case 'onDiscovered':
-        _handleOnDiscovered(call);
+        _handleOnDiscovered(
+            $GetNfcTag(Map.from(call.arguments)), _onDiscovered);
         break;
       case 'onError':
         _handleOnError(call);
@@ -104,10 +178,13 @@ class NfcManager {
   }
 
   // _handleOnDiscovered
-  void _handleOnDiscovered(MethodCall call) async {
-    final tag = $GetNfcTag(Map.from(call.arguments));
-    await _onDiscovered?.call(tag);
-    await _disposeTag(tag.handle);
+  Future<void> _handleOnDiscovered(
+      NfcTag tag, NfcTagCallback? onDiscovered) async {
+    try {
+      await onDiscovered?.call(tag);
+    } finally {
+      await _disposeTag(tag.handle);
+    }
   }
 
   // _handleOnError
@@ -192,6 +269,9 @@ enum NfcErrorType {
 
   /// The user canceled the session.
   userCanceled,
+
+  /// The NFC is unavailable (API, disabled, ...)
+  unavailable,
 
   /// The session failed because the unexpected error has occurred.
   unknown,
