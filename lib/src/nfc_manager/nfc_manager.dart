@@ -30,6 +30,13 @@ class NfcManager {
     return channel.invokeMethod('Nfc#isAvailable').then((value) => value!);
   }
 
+  /// Update iOS default bottomSheet's alertMessage
+  Future<void> updateSession(String alertMessage) async {
+    return channel.invokeMethod('Nfc#updateSession', {
+      'alertMessage': alertMessage,
+    });
+  }
+
   /// Start the session and register callbacks for tag discovery.
   ///
   /// This uses the NFCTagReaderSession (on iOS) or NfcAdapter#enableReaderMode (on Android).
