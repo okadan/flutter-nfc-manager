@@ -30,6 +30,10 @@ class NfcManager {
     return channel.invokeMethod('Nfc#isAvailable').then((value) => value!);
   }
 
+  /// Checks whether the NFC features are supported in the hardware level
+  Future<bool> isSupported() async {
+    return channel.invokeMethod('Nfc#isSupported').then((value) => value!);
+  }
   /// Start the session and register callbacks for tag discovery.
   ///
   /// This uses the NFCTagReaderSession (on iOS) or NfcAdapter#enableReaderMode (on Android).
