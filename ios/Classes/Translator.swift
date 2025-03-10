@@ -157,5 +157,10 @@ func getErrorMap(_ arg: Error) -> [String : Any?] {
 }
 
 func getFlutterError(_ arg: Error) -> FlutterError {
-  return FlutterError(code: "\((arg as NSError).code)", message:arg.localizedDescription, details: nil)
+  let error = arg as NSError;
+  if let isoError = error.userInfo[NFCISO15693TagResponseErrorKey] {
+      return FlutterError(code: "\(isoError)", message:error.localizedDescription, details: nil);
+  } else {
+      return FlutterError(code: "\(error.code)", message:error.localizedDescription, details: nil);
+  }
 }
