@@ -1,0 +1,18 @@
+name: nfc_manager_example
+description: Demonstrates how to use the nfc_manager plugin.
+publish_to: none
+
+environment:
+  sdk: ^3.7.2
+
+dependencies:
+  flutter:
+    sdk: flutter
+  nfc_manager:
+    path: ../
+
+dev_dependencies:
+  flutter_lints: ^5.0.0
+
+flutter:
+  uses-material-design: true
