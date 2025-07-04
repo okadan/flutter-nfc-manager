@@ -390,7 +390,9 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
 
 extension NfcManagerPlugin: NFCTagReaderSessionDelegate {
   public func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
-    flutterApi.tagSessionDidBecomeActive { _ in /* no op */ }
+    DispatchQueue.main.sync {
+      flutterApi.tagSessionDidBecomeActive { _ in /* no op */ }
+    }
   }
 
   public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
