@@ -390,7 +390,9 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
 
 extension NfcManagerPlugin: NFCTagReaderSessionDelegate {
   public func tagReaderSessionDidBecomeActive(_ session: NFCTagReaderSession) {
-    flutterApi.tagSessionDidBecomeActive { _ in /* no op */ }
+    DispatchQueue.main.sync {
+      flutterApi.tagSessionDidBecomeActive { _ in /* no op */ }
+    }
   }
 
   public func tagReaderSession(_ session: NFCTagReaderSession, didInvalidateWithError error: Error) {
@@ -398,7 +400,9 @@ extension NfcManagerPlugin: NFCTagReaderSessionDelegate {
       code: convert((error as! NFCReaderError).code),
       message: error.localizedDescription
     )
-    flutterApi.tagSessionDidInvalidateWithError(error: pigeonError) { _ in /* no op */ }
+    DispatchQueue.main.sync {
+      flutterApi.tagSessionDidInvalidateWithError(error: pigeonError) { _ in /* no op */ }
+    }
   }
 
   public func tagReaderSession(_ session: NFCTagReaderSession, didDetect tags: [NFCTag]) {
@@ -422,7 +426,9 @@ extension NfcManagerPlugin: NFCTagReaderSessionDelegate {
           return
         }
         self.cachedTags[pigeon.handle] = tag
-        self.flutterApi.tagSessionDidDetect(tag: pigeon) { _ in /* no op */ }
+        DispatchQueue.main.sync {
+          self.flutterApi.tagSessionDidDetect(tag: pigeon) { _ in /* no op */ }
+        }
         if !self.shouldInvalidateSessionAfterFirstRead { session.restartPolling() }
       }
     }
