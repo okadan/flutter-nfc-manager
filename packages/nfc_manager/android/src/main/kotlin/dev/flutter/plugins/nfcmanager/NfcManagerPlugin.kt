@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Context.RECEIVER_NOT_EXPORTED
 import android.content.Intent
+import android.content.IntentFilter
 import android.nfc.NdefMessage
 import android.nfc.NdefRecord
 import android.nfc.NfcAdapter
@@ -46,10 +47,13 @@ class NfcManagerPlugin: FlutterPlugin, ActivityAware, HostApiPigeon, BroadcastRe
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
     activity = binding.activity
+
+    val intentFilter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
+
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      activity.applicationContext.registerReceiver(this, null, RECEIVER_NOT_EXPORTED)
+      activity.applicationContext.registerReceiver(this, intentFilter, RECEIVER_NOT_EXPORTED)
     } else {
-      activity.applicationContext.registerReceiver(this, null)
+      activity.applicationContext.registerReceiver(this, intentFilter)
     }
   }
 
