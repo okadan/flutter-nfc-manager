@@ -87,3 +87,24 @@ The following vendor-specific tag classes are available:
 * `Ndef` ([nfc_manager_ndef](https://pub.dev/packages/nfc_manager_ndef))
 * `FeliCa` ([nfc_manager_felica](https://pub.dev/packages/nfc_manager_felica))
 * and more...
+
+### Android: Suppress the platform default NFC UI when reading a tag
+
+Add these lines to your `MainActivity.kt` class:
+
+```Kotlin
+    override fun onResume() {
+        super.onResume()
+
+        // prevent default System UI from showing up when reading a tag
+        val intent = Intent(context, javaClass).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent, PendingIntent.FLAG_IMMUTABLE)
+        NfcAdapter.getDefaultAdapter(context)
+            ?.enableForegroundDispatch(this, pendingIntent, null, null)
+    }
+
+    override fun onPause() {
+        super.onPause()
+        NfcAdapter.getDefaultAdapter(context)?.disableForegroundDispatch(this)
+    }
+```
