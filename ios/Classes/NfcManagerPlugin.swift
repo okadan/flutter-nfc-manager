@@ -892,7 +892,7 @@ private func convert(_ value: NFCMiFareFamily) -> MiFareFamilyPigeon {
   case .ultralight: return .ultralight
   case .plus: return .plus
   case .desfire: return .desfire
-  default: fatalError()
+  @unknown default: fatalError()
   }
 }
 
@@ -946,15 +946,18 @@ private func convert(_ value: NFCReaderError.Code) -> NfcReaderErrorCodePigeon {
   case .readerTransceiveErrorSessionInvalidated: return .readerTransceiveErrorSessionInvalidated
   case .readerTransceiveErrorPacketTooLong: return .readerTransceiveErrorPacketTooLong
   case .tagCommandConfigurationErrorInvalidParameters: return .tagCommandConfigurationErrorInvalidParameters
-  case .readerErrorAccessNotAccepted: return .readerErrorAccessNotAccepted
-  case .readerErrorIneligible: return .readerErrorIneligible
   case .readerErrorUnsupportedFeature: return .readerErrorUnsupportedFeature
   case .readerErrorInvalidParameter: return .readerErrorInvalidParameter
   case .readerErrorInvalidParameterLength: return .readerErrorInvalidParameterLength
   case .readerErrorParameterOutOfBound: return .readerErrorParameterOutOfBound
   case .readerErrorRadioDisabled: return .readerErrorRadioDisabled
   case .readerErrorSecurityViolation: return .readerErrorSecurityViolation
-  @unknown default: fatalError()
+  default:
+    // Introduced in iOS SDK 26; since we added it before 26 was widely adopted, compare `rawValue` to maintain backward compatibility.
+    // See: https://github.com/okadan/flutter-nfc-manager/issues/249
+    if (value.rawValue == 7) { return .readerErrorIneligible }
+    if (value.rawValue == 8) { return .readerErrorAccessNotAccepted }
+    fatalError()
   }
 }
 
