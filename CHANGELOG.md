@@ -1,3 +1,7 @@
+## 4.1.1
+
+* Avoid iOS SDK version constraints caused by the addition of `NFCReaderError.Code`.
+
 ## 4.1.0
 
 * Deprecated `NfcManager#isAvailable`. Use `NfcManager#checkAvailability` instead.
