@@ -164,7 +164,26 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.polling(systemCode: systemCode.data, requestCode: convert(requestCode), timeSlot: convert(timeSlot)) { manufacturerParameter, requestData, error in
+    feliCaPollingWithTag(tag, systemCode: systemCode.data, requestCode: requestCode, timeSlot: timeSlot, completion: completion)
+  }
+  
+  @available(iOS 14.0, *)
+  private func feliCaPollingWithTag(_ tag: NFCFeliCaTag, systemCode: Data, requestCode: FeliCaPollingRequestCodePigeon, timeSlot: FeliCaPollingTimeSlotPigeon, completion: @escaping (Result<FeliCaPollingResponsePigeon, Error>) -> Void) {
+    tag.polling(systemCode: systemCode, requestCode: convert(requestCode), timeSlot: convert(timeSlot)) { manufacturerParameter, requestData, error in
+      if let error = error {
+        completion(.failure(error))
+        return
+      }
+      completion(.success(FeliCaPollingResponsePigeon(
+        manufacturerParameter: FlutterStandardTypedData(bytes: manufacturerParameter),
+        requestData: FlutterStandardTypedData(bytes: requestData)
+      )))
+    }
+  }
+  
+  @available(iOS 13.0, *)
+  private func feliCaPollingWithTag(_ tag: NFCFeliCaTag, systemCode: Data, requestCode: FeliCaPollingRequestCodePigeon, timeSlot: FeliCaPollingTimeSlotPigeon, completion: @escaping (Result<FeliCaPollingResponsePigeon, Error>) -> Void) {
+    tag.polling(systemCode: systemCode, requestCode: convert(requestCode), timeSlot: convert(timeSlot)) { manufacturerParameter, requestData, error in
       if let error = error {
         completion(.failure(error))
         return
@@ -568,7 +587,23 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.lockDFSID(requestFlags: convert(requestFlags)) { error in
+    lockDsfIdWithTag(tag, requestFlags: convert(requestFlags), completion: completion)
+  }
+  
+  @available(iOS 14.0, *)
+  private func lockDsfIdWithTag(_ tag: NFCISO15693Tag, requestFlags: RequestFlag, completion: @escaping (Result<Void, Error>) -> Void) {
+    tag.lockDSFID(requestFlags: requestFlags) { error in
+      if let error = error {
+        completion(.failure(error))
+        return
+      }
+      completion(.success(()))
+    }
+  }
+  
+  @available(iOS 13.0, *)
+  private func lockDsfIdWithTag(_ tag: NFCISO15693Tag, requestFlags: RequestFlag, completion: @escaping (Result<Void, Error>) -> Void) {
+    tag.lockDFSID(requestFlags: requestFlags) { error in
       if let error = error {
         completion(.failure(error))
         return
@@ -582,7 +617,29 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.getSystemInfo(requestFlags: convert(requestFlags)) { dataStorageFormatIdentifier, applicationFamilyIdentifier, blockSize, totalBlocks, icReference, error in
+    getSystemInfoWithTag(tag, requestFlags: convert(requestFlags), completion: completion)
+  }
+  
+  @available(iOS 14.0, *)
+  private func getSystemInfoWithTag(_ tag: NFCISO15693Tag, requestFlags: RequestFlag, completion: @escaping (Result<Iso15693SystemInfoPigeon, Error>) -> Void) {
+    tag.querySystemInformation(requestFlags: requestFlags) { dataStorageFormatIdentifier, applicationFamilyIdentifier, blockSize, totalBlocks, icReference, error in
+      if let error = error {
+        completion(.failure(error))
+        return
+      }
+      completion(.success(Iso15693SystemInfoPigeon(
+        dataStorageFormatIdentifier: Int64(dataStorageFormatIdentifier),
+        applicationFamilyIdentifier: Int64(applicationFamilyIdentifier),
+        blockSize: Int64(blockSize),
+        totalBlocks: Int64(totalBlocks),
+        icReference: Int64(icReference)
+      )))
+    }
+  }
+  
+  @available(iOS 13.0, *)
+  private func getSystemInfoWithTag(_ tag: NFCISO15693Tag, requestFlags: RequestFlag, completion: @escaping (Result<Iso15693SystemInfoPigeon, Error>) -> Void) {
+    tag.getSystemInfo(requestFlags: requestFlags) { dataStorageFormatIdentifier, applicationFamilyIdentifier, blockSize, totalBlocks, icReference, error in
       if let error = error {
         completion(.failure(error))
         return
@@ -824,6 +881,16 @@ private func convert(_ value: NFCNDEFStatus) -> NdefStatusPigeon {
   }
 }
 
+@available(iOS 14.0, *)
+private func convert(_ value: FeliCaPollingRequestCodePigeon) -> NFCFeliCaPollingRequestCode {
+  switch (value) {
+  case .noRequest: return .noRequest
+  case .systemCode: return .systemCode
+  case .communicationPerformance: return .communicationPerformance
+  }
+}
+
+@available(iOS 13.0, *)
 private func convert(_ value: FeliCaPollingRequestCodePigeon) -> PollingRequestCode {
   switch (value) {
   case .noRequest: return .noRequest
@@ -832,6 +899,18 @@ private func convert(_ value: FeliCaPollingRequestCodePigeon) -> PollingRequestC
   }
 }
 
+@available(iOS 14.0, *)
+private func convert(_ value: FeliCaPollingTimeSlotPigeon) -> NFCFeliCaPollingTimeSlot {
+  switch (value) {
+  case .max1: return .max1
+  case .max2: return .max2
+  case .max4: return .max4
+  case .max8: return .max8
+  case .max16: return .max16
+  }
+}
+
+@available(iOS 13.0, *)
 private func convert(_ value: FeliCaPollingTimeSlotPigeon) -> PollingTimeSlot {
   switch (value) {
   case .max1: return .max1
@@ -979,4 +1058,3 @@ private func convert(_ value1: Int64, _ value2: Int64) -> NSRange {
   return NSRange(location: Int(value1), length: Int(value2))
 }
 
-extension FlutterError: Error {}
