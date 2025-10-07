@@ -765,7 +765,7 @@ private func convert(_ value: NFCNDEFTag, _ completionHandler: @escaping (TagPig
       return
     }
     value.readNDEF { message, error in
-      if let error = error {
+      if let error = error as? NSError, error.code != 403 {
         completionHandler(nil, error)
         return
       }
