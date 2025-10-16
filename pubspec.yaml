@@ -4,13 +4,13 @@ repository: https://github.com/okadan/flutter-nfc-manager
 version: 4.1.0
 
 environment:
-  sdk: ^3.9.2
+  sdk: ^3.5.2
   flutter: '>=3.3.0'
 
 dependencies:
   flutter:
     sdk: flutter
-  ndef_record: ^1.3.3
+  ndef_record: ^1.2.1
 
 dev_dependencies:
   flutter_lints: ^5.0.0

@@ -3,7 +3,7 @@ description: Demonstrates how to use the nfc_manager plugin.
 publish_to: none
 
 environment:
-  sdk: ^3.9.2
+  sdk: ^3.5.2
 
 dependencies:
   flutter:
