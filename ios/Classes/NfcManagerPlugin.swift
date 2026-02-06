@@ -120,6 +120,11 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
     }
     tag.readNDEF { message, error in
       if let error = error {
+        let nsError = error as NSError
+        if nsError.domain == "NFCError" && nsError.code == 403 {
+          completion(.success(nil))
+          return
+        }
         completion(.failure(error))
         return
       }
@@ -766,6 +771,11 @@ private func convert(_ value: NFCNDEFTag, _ completionHandler: @escaping (TagPig
     }
     value.readNDEF { message, error in
       if let error = error {
+        let nsError = error as NSError
+        if nsError.domain == "NFCError" && nsError.code == 403 {
+          completionHandler(pigeon, nil)
+          return
+        }
         completionHandler(nil, error)
         return
       }
