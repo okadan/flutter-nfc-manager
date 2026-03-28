@@ -4,12 +4,12 @@ import 'package:pigeon/pigeon.dart';
   PigeonOptions(
     dartPackageName: 'nfc_manager',
     dartOut: 'lib/src/nfc_manager_ios/pigeon.g.dart',
-    swiftOut: 'ios/Classes/Pigeon.swift',
+    swiftOut: 'ios/nfc_manager/Sources/nfc_manager/Pigeon.swift',
   ),
 )
 
 @FlutterApi()
-abstract final class FlutterApiPigeon {
+abstract class FlutterApiPigeon {
   void tagSessionDidBecomeActive();
   void tagSessionDidDetect(TagPigeon tag);
   void tagSessionDidInvalidateWithError(NfcReaderSessionErrorPigeon error);
@@ -19,7 +19,7 @@ abstract final class FlutterApiPigeon {
 }
 
 @HostApi()
-abstract final class HostApiPigeon {
+abstract class HostApiPigeon {
   bool tagSessionReadingAvailable();
   void tagSessionBegin({required List<PollingOptionPigeon> pollingOptions, required String? alertMessage, required bool invalidateAfterFirstRead});
   void tagSessionInvalidate({required String? alertMessage, required String? errorMessage});
@@ -65,7 +65,7 @@ abstract final class HostApiPigeon {
   @async Uint8List iso15693CustomCommand({required String handle, required List<Iso15693RequestFlagPigeon> requestFlags, required int customCommandCode, required Uint8List customRequestParameters});
 }
 
-final class TagPigeon {
+class TagPigeon {
   const TagPigeon({
     required this.handle,
     required this.ndef,
@@ -82,7 +82,7 @@ final class TagPigeon {
   final MiFarePigeon? miFare;
 }
 
-final class NdefPigeon {
+class NdefPigeon {
   const NdefPigeon({
     required this.status,
     required this.capacity,
@@ -93,7 +93,7 @@ final class NdefPigeon {
   final NdefMessagePigeon? cachedNdefMessage;
 }
 
-final class FeliCaPigeon {
+class FeliCaPigeon {
   const FeliCaPigeon({
     required this.currentSystemCode,
     required this.currentIDm,
@@ -102,7 +102,7 @@ final class FeliCaPigeon {
   final Uint8List currentIDm;
 }
 
-final class Iso15693Pigeon {
+class Iso15693Pigeon {
   const Iso15693Pigeon({
     required this.icManufacturerCode,
     required this.icSerialNumber,
@@ -113,7 +113,7 @@ final class Iso15693Pigeon {
   final Uint8List identifier;
 }
 
-final class Iso7816Pigeon {
+class Iso7816Pigeon {
   const Iso7816Pigeon({
     required this.initialSelectedAID,
     required this.identifier,
@@ -128,7 +128,7 @@ final class Iso7816Pigeon {
   final bool proprietaryApplicationDataCoding;
 }
 
-final class MiFarePigeon {
+class MiFarePigeon {
   const MiFarePigeon({
     required this.mifareFamily,
     required this.identifier,
@@ -139,7 +139,7 @@ final class MiFarePigeon {
   final Uint8List? historicalBytes;
 }
 
-final class NdefQueryStatusPigeon {
+class NdefQueryStatusPigeon {
   const NdefQueryStatusPigeon({
     required this.status,
     required this.capacity,
@@ -148,14 +148,14 @@ final class NdefQueryStatusPigeon {
   final int capacity;
 }
 
-final class NdefMessagePigeon {
+class NdefMessagePigeon {
   const NdefMessagePigeon({
     required this.records,
   });
   final List<NdefPayloadPigeon> records;
 }
 
-final class NdefPayloadPigeon {
+class NdefPayloadPigeon {
   const NdefPayloadPigeon({
     required this.typeNameFormat,
     required this.type,
@@ -168,7 +168,7 @@ final class NdefPayloadPigeon {
   final Uint8List payload;
 }
 
-final class FeliCaPollingResponsePigeon {
+class FeliCaPollingResponsePigeon {
   const FeliCaPollingResponsePigeon({
     required this.manufacturerParameter,
     required this.requestData,
@@ -177,7 +177,7 @@ final class FeliCaPollingResponsePigeon {
   final Uint8List? requestData;
 }
 
-final class FeliCaReadWithoutEncryptionResponsePigeon {
+class FeliCaReadWithoutEncryptionResponsePigeon {
   const FeliCaReadWithoutEncryptionResponsePigeon({
     required this.statusFlag1,
     required this.statusFlag2,
@@ -188,7 +188,7 @@ final class FeliCaReadWithoutEncryptionResponsePigeon {
   final List<Uint8List> blockData;
 }
 
-final class FeliCaRequestServiceV2ResponsePigeon {
+class FeliCaRequestServiceV2ResponsePigeon {
   const FeliCaRequestServiceV2ResponsePigeon({
     required this.statusFlag1,
     required this.statusFlag2,
@@ -203,7 +203,7 @@ final class FeliCaRequestServiceV2ResponsePigeon {
   final List<Uint8List>? nodeKeyVersionListDES;
 }
 
-final class FeliCaRequestSpecificationVersionResponsePigeon {
+class FeliCaRequestSpecificationVersionResponsePigeon {
   const FeliCaRequestSpecificationVersionResponsePigeon({
     required this.statusFlag1,
     required this.statusFlag2,
@@ -216,7 +216,7 @@ final class FeliCaRequestSpecificationVersionResponsePigeon {
   final Uint8List? optionVersion;
 }
 
-final class FeliCaStatusFlagPigeon {
+class FeliCaStatusFlagPigeon {
   const FeliCaStatusFlagPigeon({
     required this.statusFlag1,
     required this.statusFlag2,
@@ -225,7 +225,7 @@ final class FeliCaStatusFlagPigeon {
   final int statusFlag2;
 }
 
-final class Iso7816ApduPigeon {
+class Iso7816ApduPigeon {
   const Iso7816ApduPigeon({
     required this.instructionClass,
     required this.instructionCode,
@@ -242,7 +242,7 @@ final class Iso7816ApduPigeon {
   final int expectedResponseLength;
 }
 
-final class Iso7816ResponseApduPigeon {
+class Iso7816ResponseApduPigeon {
   const Iso7816ResponseApduPigeon({
     required this.payload,
     required this.statusWord1,
@@ -253,7 +253,7 @@ final class Iso7816ResponseApduPigeon {
   final int statusWord2;
 }
 
-final class Iso15693SystemInfoPigeon {
+class Iso15693SystemInfoPigeon {
   const Iso15693SystemInfoPigeon({
     required this.dataStorageFormatIdentifier,
     required this.applicationFamilyIdentifier,
@@ -268,7 +268,7 @@ final class Iso15693SystemInfoPigeon {
   final int icReference;
 }
 
-final class NfcReaderSessionErrorPigeon {
+class NfcReaderSessionErrorPigeon {
   const NfcReaderSessionErrorPigeon({
     required this.code,
     required this.message,
@@ -277,7 +277,7 @@ final class NfcReaderSessionErrorPigeon {
   final String message;
 }
 
-final class NfcVasCommandConfigurationPigeon {
+class NfcVasCommandConfigurationPigeon {
   const NfcVasCommandConfigurationPigeon({
     required this.mode,
     required this.passIdentifier,
@@ -288,7 +288,7 @@ final class NfcVasCommandConfigurationPigeon {
   final String? url;
 }
 
-final class NfcVasResponsePigeon {
+class NfcVasResponsePigeon {
   const NfcVasResponsePigeon({
     required this.status,
     required this.vasData,

@@ -1,3 +1,8 @@
+## 4.2.0
+
+* Add Swift Package Manager support.
+* Bump dependencies.
+
 ## 4.1.1
 
 * Avoid iOS SDK version constraints caused by the addition of `NFCReaderError.Code`.
