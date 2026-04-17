@@ -765,8 +765,11 @@ private func convert(_ value: NFCNDEFTag, _ completionHandler: @escaping (TagPig
       return
     }
     value.readNDEF { message, error in
-      if let error = error as? NSError, error.code != 403 {
-        completionHandler(nil, error)
+      if let error = error {
+        // Blank/unformatted tags (e.g. empty NTAG213) fail readNDEF but are still
+        // writable. Return pigeon without a cached message so onDiscovered fires
+        // in Flutter and the app can write to the card via NDEF commands.
+        completionHandler(pigeon, nil)
         return
       }
       if let message = message {
