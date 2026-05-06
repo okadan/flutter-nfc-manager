@@ -53,6 +53,7 @@ abstract class HostApiPigeon {
   @async void iso15693WriteSingleBlock({required String handle, required List<Iso15693RequestFlagPigeon> requestFlags, required int blockNumber, required Uint8List dataBlock});
   @async void iso15693LockBlock({required String handle, required List<Iso15693RequestFlagPigeon> requestFlags, required int blockNumber});
   @async List<Uint8List> iso15693ReadMultipleBlocks({required String handle, required List<Iso15693RequestFlagPigeon> requestFlags, required int blockNumber, required int numberOfBlocks});
+  @async List<Uint8List> iso15693ExtendedReadMultipleBlocks({required String handle, required List<Iso15693RequestFlagPigeon> requestFlags, required int blockNumber, required int numberOfBlocks});
   @async void iso15693WriteMultipleBlocks({required String handle, required List<Iso15693RequestFlagPigeon> requestFlags, required int blockNumber, required int numberOfBlocks, required List<Uint8List> dataBlocks});
   @async void iso15693Select({required String handle, required List<Iso15693RequestFlagPigeon> requestFlags});
   @async void iso15693ResetToReady({required String handle, required List<Iso15693RequestFlagPigeon> requestFlags});

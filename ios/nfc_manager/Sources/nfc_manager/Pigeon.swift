@@ -1513,6 +1513,7 @@ protocol HostApiPigeon {
   func iso15693WriteSingleBlock(handle: String, requestFlags: [Iso15693RequestFlagPigeon], blockNumber: Int64, dataBlock: FlutterStandardTypedData, completion: @escaping (Result<Void, Error>) -> Void)
   func iso15693LockBlock(handle: String, requestFlags: [Iso15693RequestFlagPigeon], blockNumber: Int64, completion: @escaping (Result<Void, Error>) -> Void)
   func iso15693ReadMultipleBlocks(handle: String, requestFlags: [Iso15693RequestFlagPigeon], blockNumber: Int64, numberOfBlocks: Int64, completion: @escaping (Result<[FlutterStandardTypedData], Error>) -> Void)
+  func iso15693ExtendedReadMultipleBlocks(handle: String, requestFlags: [Iso15693RequestFlagPigeon], blockNumber: Int64, numberOfBlocks: Int64, completion: @escaping (Result<[FlutterStandardTypedData], Error>) -> Void)
   func iso15693WriteMultipleBlocks(handle: String, requestFlags: [Iso15693RequestFlagPigeon], blockNumber: Int64, numberOfBlocks: Int64, dataBlocks: [FlutterStandardTypedData], completion: @escaping (Result<Void, Error>) -> Void)
   func iso15693Select(handle: String, requestFlags: [Iso15693RequestFlagPigeon], completion: @escaping (Result<Void, Error>) -> Void)
   func iso15693ResetToReady(handle: String, requestFlags: [Iso15693RequestFlagPigeon], completion: @escaping (Result<Void, Error>) -> Void)
@@ -2099,6 +2100,26 @@ class HostApiPigeonSetup {
       }
     } else {
       iso15693ReadMultipleBlocksChannel.setMessageHandler(nil)
+    }
+    let iso15693ExtendedReadMultipleBlocksChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.nfc_manager.HostApiPigeon.iso15693ExtendedReadMultipleBlocks\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
+    if let api = api {
+      iso15693ExtendedReadMultipleBlocksChannel.setMessageHandler { message, reply in
+        let args = message as! [Any?]
+        let handleArg = args[0] as! String
+        let requestFlagsArg = args[1] as! [Iso15693RequestFlagPigeon]
+        let blockNumberArg = args[2] as! Int64
+        let numberOfBlocksArg = args[3] as! Int64
+        api.iso15693ExtendedReadMultipleBlocks(handle: handleArg, requestFlags: requestFlagsArg, blockNumber: blockNumberArg, numberOfBlocks: numberOfBlocksArg) { result in
+          switch result {
+          case .success(let res):
+            reply(wrapResult(res))
+          case .failure(let error):
+            reply(wrapError(error))
+          }
+        }
+      }
+    } else {
+      iso15693ExtendedReadMultipleBlocksChannel.setMessageHandler(nil)
     }
     let iso15693WriteMultipleBlocksChannel = FlutterBasicMessageChannel(name: "dev.flutter.pigeon.nfc_manager.HostApiPigeon.iso15693WriteMultipleBlocks\(channelSuffix)", binaryMessenger: binaryMessenger, codec: codec)
     if let api = api {
