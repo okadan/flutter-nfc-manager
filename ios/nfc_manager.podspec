@@ -15,7 +15,7 @@ A Flutter plugin providing access to NFC features on iOS.
   s.source           = { :path => '.' }
   s.source_files = 'nfc_manager/Sources/nfc_manager/**/*'
   s.dependency 'Flutter'
-  s.platform = :ios, '13.0'
+  s.platform = :ios, '14.0'
 
   # Flutter.framework does not contain a i386 slice.
   s.pod_target_xcconfig = { 'DEFINES_MODULE' => 'YES', 'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'i386' }
