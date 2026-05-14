@@ -77,6 +77,22 @@ final class Iso15693Ios {
   }
 
   // DOC:
+  Future<void> extendedWriteSingleBlock({
+    required Set<Iso15693RequestFlagIos> requestFlags,
+    required int blockNumber,
+    required Uint8List dataBlock,
+  }) {
+    return hostApi.iso15693ExtendedWriteSingleBlock(
+      handle: _handle,
+      requestFlags: requestFlags
+          .map((e) => Iso15693RequestFlagPigeon.values.byName(e.name))
+          .toList(),
+      blockNumber: blockNumber,
+      dataBlock: dataBlock,
+    );
+  }
+
+  // DOC:
   Future<void> lockBlock({
     required Set<Iso15693RequestFlagIos> requestFlags,
     required int blockNumber,
@@ -109,6 +125,24 @@ final class Iso15693Ios {
   }
 
   // DOC:
+  Future<List<Uint8List>> extendedReadMultipleBlocks({
+    required Set<Iso15693RequestFlagIos> requestFlags,
+    required int blockNumber,
+    required int numberOfBlocks,
+  }) {
+    return hostApi
+        .iso15693ExtendedReadMultipleBlocks(
+          handle: _handle,
+          requestFlags: requestFlags
+              .map((e) => Iso15693RequestFlagPigeon.values.byName(e.name))
+              .toList(),
+          blockNumber: blockNumber,
+          numberOfBlocks: numberOfBlocks,
+        )
+        .then((value) => List.from(value));
+  }
+
+  // DOC:
   Future<void> writeMultipleBlocks({
     required Set<Iso15693RequestFlagIos> requestFlags,
     required int blockNumber,
@@ -116,6 +150,24 @@ final class Iso15693Ios {
     required List<Uint8List> dataBlocks,
   }) {
     return hostApi.iso15693WriteMultipleBlocks(
+      handle: _handle,
+      requestFlags: requestFlags
+          .map((e) => Iso15693RequestFlagPigeon.values.byName(e.name))
+          .toList(),
+      blockNumber: blockNumber,
+      numberOfBlocks: numberOfBlocks,
+      dataBlocks: dataBlocks,
+    );
+  }
+
+  // DOC:
+  Future<void> extendedWriteMultipleBlocks({
+    required Set<Iso15693RequestFlagIos> requestFlags,
+    required int blockNumber,
+    required int numberOfBlocks,
+    required List<Uint8List> dataBlocks,
+  }) {
+    return hostApi.iso15693ExtendedWriteMultipleBlocks(
       handle: _handle,
       requestFlags: requestFlags
           .map((e) => Iso15693RequestFlagPigeon.values.byName(e.name))

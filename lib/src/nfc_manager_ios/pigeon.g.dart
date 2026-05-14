@@ -2318,6 +2318,31 @@ class HostApiPigeon {
     );
   }
 
+  Future<void> iso15693ExtendedWriteSingleBlock({
+    required String handle,
+    required List<Iso15693RequestFlagPigeon> requestFlags,
+    required int blockNumber,
+    required Uint8List dataBlock,
+  }) async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.nfc_manager.HostApiPigeon.iso15693ExtendedWriteSingleBlock$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[handle, requestFlags, blockNumber, dataBlock],
+    );
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: true,
+    );
+  }
+
   Future<void> iso15693LockBlock({
     required String handle,
     required List<Iso15693RequestFlagPigeon> requestFlags,
@@ -2368,6 +2393,32 @@ class HostApiPigeon {
     return (pigeonVar_replyValue! as List<Object?>).cast<Uint8List>();
   }
 
+  Future<List<Uint8List>> iso15693ExtendedReadMultipleBlocks({
+    required String handle,
+    required List<Iso15693RequestFlagPigeon> requestFlags,
+    required int blockNumber,
+    required int numberOfBlocks,
+  }) async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.nfc_manager.HostApiPigeon.iso15693ExtendedReadMultipleBlocks$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[handle, requestFlags, blockNumber, numberOfBlocks],
+    );
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    final Object? pigeonVar_replyValue = _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: false,
+    );
+    return (pigeonVar_replyValue! as List<Object?>).cast<Uint8List>();
+  }
+
   Future<void> iso15693WriteMultipleBlocks({
     required String handle,
     required List<Iso15693RequestFlagPigeon> requestFlags,
@@ -2377,6 +2428,32 @@ class HostApiPigeon {
   }) async {
     final pigeonVar_channelName =
         'dev.flutter.pigeon.nfc_manager.HostApiPigeon.iso15693WriteMultipleBlocks$pigeonVar_messageChannelSuffix';
+    final pigeonVar_channel = BasicMessageChannel<Object?>(
+      pigeonVar_channelName,
+      pigeonChannelCodec,
+      binaryMessenger: pigeonVar_binaryMessenger,
+    );
+    final Future<Object?> pigeonVar_sendFuture = pigeonVar_channel.send(
+      <Object?>[handle, requestFlags, blockNumber, numberOfBlocks, dataBlocks],
+    );
+    final pigeonVar_replyList = await pigeonVar_sendFuture as List<Object?>?;
+
+    _extractReplyValueOrThrow(
+      pigeonVar_replyList,
+      pigeonVar_channelName,
+      isNullValid: true,
+    );
+  }
+
+  Future<void> iso15693ExtendedWriteMultipleBlocks({
+    required String handle,
+    required List<Iso15693RequestFlagPigeon> requestFlags,
+    required int blockNumber,
+    required int numberOfBlocks,
+    required List<Uint8List> dataBlocks,
+  }) async {
+    final pigeonVar_channelName =
+        'dev.flutter.pigeon.nfc_manager.HostApiPigeon.iso15693ExtendedWriteMultipleBlocks$pigeonVar_messageChannelSuffix';
     final pigeonVar_channel = BasicMessageChannel<Object?>(
       pigeonVar_channelName,
       pigeonChannelCodec,
