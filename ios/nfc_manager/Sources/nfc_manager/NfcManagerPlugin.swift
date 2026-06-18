@@ -752,8 +752,15 @@ private func convert(_ value: NFCNDEFTag, _ completionHandler: @escaping (TagPig
   }
 
   value.queryNDEFStatus { status, capacity, error in
-    if let error = error {
-      completionHandler(nil, error)
+    // Best-effort NDEF probe: some tags (notably NTAG21x-compatible clones)
+    // intermittently return a transient CoreNFC "Stack Error" / "No response
+    // from tag" for queryNDEFStatus right after connecting, even though raw
+    // MIFARE commands work fine. Dropping the tag on that error means the
+    // Dart `onDiscovered` callback never fires and the discovery is lost.
+    // Instead, deliver the tag without NDEF info so the app can still talk to
+    // it over the type-specific interface (e.g. sendMiFareCommand).
+    if error != nil {
+      completionHandler(pigeon, nil)
       return
     }
     pigeon.ndef = NdefPigeon(
@@ -764,11 +771,11 @@ private func convert(_ value: NFCNDEFTag, _ completionHandler: @escaping (TagPig
       completionHandler(pigeon, nil)
       return
     }
-    value.readNDEF { message, error in
-      if let error = error as? NSError, error.code != 403 {
-        completionHandler(nil, error)
-        return
-      }
+    value.readNDEF { message, _ in
+      // Code 403 already means "no NDEF message present" and is not an error.
+      // For any other readNDEF failure, still deliver the tag with the NDEF
+      // status/capacity we already obtained, just without a cached message —
+      // same rationale as above: never lose the discovery over a probe error.
       if let message = message {
         pigeon.ndef?.cachedNdefMessage = convert(message)
       }
