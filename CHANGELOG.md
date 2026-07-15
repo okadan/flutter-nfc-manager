@@ -1,3 +1,7 @@
+## Unreleased
+
+* Fix Android crash (`SecurityException: ... is out of date`, or a `RuntimeException` while enumerating a `TagTechnology` such as `MifareClassic`) when a tag leaves the NFC field before `onTagDiscovered` finishes translating it into a `TagPigeon`. The discovery is now dropped instead of crashing the host app; reader mode keeps polling for the next tag.
+
 ## 4.2.0
 
 * Add Swift Package Manager support.
