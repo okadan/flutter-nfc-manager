@@ -23,6 +23,7 @@ import android.nfc.tech.NfcF
 import android.nfc.tech.NfcV
 import android.nfc.tech.TagTechnology
 import android.os.Build
+import android.util.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
@@ -316,7 +317,19 @@ class NfcManagerPlugin: FlutterPlugin, ActivityAware, HostApiPigeon, BroadcastRe
 
   private fun onTagDiscovered(tag: Tag) {
     val handle = UUID.randomUUID().toString()
-    val pigeonTag = toTagPigeon(tag, handle)
+    val pigeonTag = try {
+      toTagPigeon(tag, handle)
+    } catch (e: Exception) {
+      // The tag can leave the NFC field between reader-mode detecting it and this translation
+      // step (e.g. a quick tap-and-withdraw). Tag#getTagService() then throws
+      // SecurityException("... is out of date"), and some tag types can throw a
+      // RuntimeException while a TagTechnology enumerates (e.g. MifareClassic). Both are
+      // benign - the tag is simply gone - so drop this discovery instead of crashing; reader
+      // mode keeps polling for the next tag.
+      Log.w("NfcManagerPlugin", "Dropped tag discovery: tag went out of range mid-translation", e)
+      return
+    }
+    Log.d("NfcManagerPlugin", "Tag discovered and translated OK, handle=$handle")
     cachedTags[handle] = tag
     activity.runOnUiThread { flutterApi.onTagDiscovered(pigeonTag) { /* no op */ } }
   }
