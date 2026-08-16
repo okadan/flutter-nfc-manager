@@ -1,3 +1,7 @@
+## 4.2.1
+
+* Android Gradle Plugin (AGP) 9.0 support.
+
 ## 4.2.0
 
 * Add Swift Package Manager support.
