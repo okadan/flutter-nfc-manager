@@ -23,7 +23,11 @@ allprojects {
 
 plugins {
     id("com.android.library")
-    id("kotlin-android")
+}
+
+// AGP 9+ compiles Kotlin itself (built-in Kotlin); applying kotlin-android there fails.
+if (com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION.substringBefore('.').toInt() < 9) {
+    apply(plugin = "kotlin-android")
 }
 
 android {
@@ -34,10 +38,6 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
-    }
-
-    kotlinOptions {
-        jvmTarget = JavaVersion.VERSION_17.toString()
     }
 
     sourceSets {
@@ -73,4 +73,10 @@ android {
 dependencies {
     testImplementation("org.jetbrains.kotlin:kotlin-test")
     testImplementation("org.mockito:mockito-core:5.0.0")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
