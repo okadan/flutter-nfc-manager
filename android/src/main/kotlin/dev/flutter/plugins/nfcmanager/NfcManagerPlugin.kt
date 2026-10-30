@@ -31,6 +31,7 @@ import java.util.*
 class NfcManagerPlugin: FlutterPlugin, ActivityAware, HostApiPigeon, BroadcastReceiver() {
   private lateinit var flutterApi: FlutterApiPigeon
   private lateinit var activity: Activity
+  private lateinit var applicationContext: Context
   private var adapter: NfcAdapter? = null
   private var cachedTags: MutableMap<String, Tag> = mutableMapOf()
   private var connectedTech: TagTechnology? = null
@@ -38,7 +39,8 @@ class NfcManagerPlugin: FlutterPlugin, ActivityAware, HostApiPigeon, BroadcastRe
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     HostApiPigeon.setUp(flutterPluginBinding.binaryMessenger, this)
     flutterApi = FlutterApiPigeon(flutterPluginBinding.binaryMessenger)
-    adapter = NfcAdapter.getDefaultAdapter(flutterPluginBinding.applicationContext)
+    applicationContext = flutterPluginBinding.applicationContext
+    adapter = NfcAdapter.getDefaultAdapter(applicationContext)
   }
 
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
@@ -77,6 +79,8 @@ class NfcManagerPlugin: FlutterPlugin, ActivityAware, HostApiPigeon, BroadcastRe
   }
 
   override fun nfcAdapterIsEnabled(): Boolean {
+    if (adapter?.isEnabled == true) return true
+    refreshAdapter()
     return getAdapter().isEnabled
   }
 
@@ -322,7 +326,18 @@ class NfcManagerPlugin: FlutterPlugin, ActivityAware, HostApiPigeon, BroadcastRe
   }
 
   private fun getAdapter(): NfcAdapter {
+    if (adapter == null) refreshAdapter()
     return adapter ?: run { throw FlutterError("not_supported", "NFC is not supported on this device.", null) }
+  }
+
+  // If the process started before the system NFC service was ready (e.g. the
+  // app is relaunched while the device boots), getDefaultAdapter() returned null
+  // and Android keeps that NfcManager cached on the Context for the process
+  // lifetime. Ask again through a fresh Context, which has its own service cache.
+  private fun refreshAdapter() {
+    val base: Context = if (::activity.isInitialized) activity else applicationContext
+    val fresh = NfcAdapter.getDefaultAdapter(base.createConfigurationContext(base.resources.configuration))
+    if (fresh != null) adapter = fresh
   }
 
   private inline fun <reified T: TagTechnology> forceConnect(handle: String, getMethod: (Tag) -> T?): T {
