@@ -647,26 +647,22 @@ extension NfcManagerPlugin: NFCTagReaderSessionDelegate {
     session.connect(to: tags.first!) { error in
       if let error = error {
         // skip tag detection
+        // Nothing has been read yet, so keep polling for the next tag regardless of
+        // shouldInvalidateSessionAfterFirstRead; otherwise the session stalls until it times out.
         print(error)
-        if !self.shouldInvalidateSessionAfterFirstRead {
-          session.restartPolling()
-        }
+        session.restartPolling()
         return
       }
       convert(tags.first!) { tag, pigeon, error in
         if let error = error {
           // skip tag detection
           print(error)
-          if !self.shouldInvalidateSessionAfterFirstRead {
-            session.restartPolling()
-          }
+          session.restartPolling()
           return
         }
         guard let pigeon = pigeon else {
           // skip tag detection
-          if !self.shouldInvalidateSessionAfterFirstRead {
-            session.restartPolling()
-          }
+          session.restartPolling()
           return
         }
 
