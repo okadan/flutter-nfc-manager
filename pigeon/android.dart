@@ -17,8 +17,13 @@ abstract class FlutterApiPigeon {
 
 @HostApi()
 abstract class HostApiPigeon {
+  //  Binder calls to the system NFC service: answered off the UI thread, which they could block for
+  //  seconds on some devices (ANR). Reader mode enable/disable go to their own thread in the plugin.
+  @TaskQueue(type: TaskQueueType.serialBackgroundThread)
   bool nfcAdapterIsEnabled();
+  @TaskQueue(type: TaskQueueType.serialBackgroundThread)
   bool nfcAdapterIsSecureNfcEnabled();
+  @TaskQueue(type: TaskQueueType.serialBackgroundThread)
   bool nfcAdapterIsSecureNfcSupported();
   void nfcAdapterEnableReaderMode({required List<ReaderFlagPigeon> flags});
   void nfcAdapterDisableReaderMode();

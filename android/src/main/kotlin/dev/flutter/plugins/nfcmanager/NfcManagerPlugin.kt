@@ -23,51 +23,90 @@ import android.nfc.tech.NfcF
 import android.nfc.tech.NfcV
 import android.nfc.tech.TagTechnology
 import android.os.Build
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import io.flutter.embedding.engine.plugins.FlutterPlugin
 import io.flutter.embedding.engine.plugins.activity.ActivityAware
 import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding
 import java.util.*
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
+
+private const val MAX_CACHED_TAGS = 16
 
 class NfcManagerPlugin: FlutterPlugin, ActivityAware, HostApiPigeon, BroadcastReceiver() {
   private lateinit var flutterApi: FlutterApiPigeon
-  private lateinit var activity: Activity
+  private lateinit var applicationContext: Context
   private var adapter: NfcAdapter? = null
-  private var cachedTags: MutableMap<String, Tag> = mutableMapOf()
+  //  Written by the binder thread that discovers tags, read and cleared from Dart calls, hence
+  //  synchronized. Bounded: reader mode can now stay on for a whole session (screens hand NFC over
+  //  without disabling it, so disable no longer clears this), and only the latest tags are still
+  //  in the field to be read.
+  private val cachedTags: MutableMap<String, Tag> = Collections.synchronizedMap(
+    object : LinkedHashMap<String, Tag>() {
+      override fun removeEldestEntry(eldest: MutableMap.MutableEntry<String, Tag>?) = size > MAX_CACHED_TAGS
+    }
+  )
   private var connectedTech: TagTechnology? = null
+  private var receiverRegistered = false
+  private val mainHandler = Handler(Looper.getMainLooper())
+
+  //  Reader mode is switched on a background thread: the binder calls to the NFC service can block
+  //  for seconds on some devices, and on the UI thread that is an ANR (see ReaderModeController).
+  private val readerModeExecutor: ExecutorService = Executors.newSingleThreadExecutor { Thread(it, "nfc-reader-mode") }
+  private val readerMode = ReaderModeController(readerModeExecutor, object : ReaderModeController.Backend<Activity> {
+    override fun enable(activity: Activity, flags: Int) {
+      getAdapter().enableReaderMode(activity, { onTagDiscovered(it) }, flags, null)
+    }
+    override fun disable(activity: Activity) {
+      getAdapter().disableReaderMode(activity)
+    }
+    override fun onError(action: String, error: Throwable) {
+      Log.w("NfcManagerPlugin", "Reader mode $action failed", error)
+    }
+  })
 
   override fun onAttachedToEngine(flutterPluginBinding: FlutterPlugin.FlutterPluginBinding) {
     HostApiPigeon.setUp(flutterPluginBinding.binaryMessenger, this)
     flutterApi = FlutterApiPigeon(flutterPluginBinding.binaryMessenger)
-    adapter = NfcAdapter.getDefaultAdapter(flutterPluginBinding.applicationContext)
+    applicationContext = flutterPluginBinding.applicationContext
+    adapter = NfcAdapter.getDefaultAdapter(applicationContext)
   }
 
   override fun onDetachedFromEngine(binding: FlutterPlugin.FlutterPluginBinding) {
     HostApiPigeon.setUp(binding.binaryMessenger, null)
+    if (receiverRegistered) {
+      applicationContext.unregisterReceiver(this)
+      receiverRegistered = false
+    }
+    readerModeExecutor.shutdown()
   }
 
   override fun onAttachedToActivity(binding: ActivityPluginBinding) {
-    activity = binding.activity
+    readerMode.attach(binding.activity)
 
+    //  Once per engine: it used to be registered again on every activity attach, never unregistered.
+    if (receiverRegistered) return
     val intentFilter = IntentFilter(NfcAdapter.ACTION_ADAPTER_STATE_CHANGED)
-
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      activity.applicationContext.registerReceiver(this, intentFilter, RECEIVER_NOT_EXPORTED)
+      applicationContext.registerReceiver(this, intentFilter, RECEIVER_NOT_EXPORTED)
     } else {
-      activity.applicationContext.registerReceiver(this, intentFilter)
+      applicationContext.registerReceiver(this, intentFilter)
     }
+    receiverRegistered = true
   }
 
   override fun onReattachedToActivityForConfigChanges(binding: ActivityPluginBinding) {
-    activity = binding.activity
+    readerMode.attach(binding.activity)
   }
 
   override fun onDetachedFromActivityForConfigChanges() {
-    // noop
+    readerMode.detach()
   }
 
   override fun onDetachedFromActivity() {
-    // noop
+    readerMode.detach()
   }
 
   override fun onReceive(context: Context?, intent: Intent?) {
@@ -95,12 +134,16 @@ class NfcManagerPlugin: FlutterPlugin, ActivityAware, HostApiPigeon, BroadcastRe
     return getAdapter().isSecureNfcSupported
   }
 
+  //  Both return at once: the adapter check stays synchronous (an error Dart can catch), the binder
+  //  call runs on the reader-mode thread, in call order, and is skipped when it would change nothing.
   override fun nfcAdapterEnableReaderMode(flags: List<ReaderFlagPigeon>) {
-    getAdapter().enableReaderMode(activity, { onTagDiscovered(it) }, toInt(flags), null)
+    getAdapter()
+    readerMode.enable(toInt(flags))
   }
 
   override fun nfcAdapterDisableReaderMode() {
-    getAdapter().disableReaderMode(activity)
+    getAdapter()
+    readerMode.disable()
     cachedTags.clear() // Consider when to remove the tag.
   }
 
@@ -331,7 +374,7 @@ class NfcManagerPlugin: FlutterPlugin, ActivityAware, HostApiPigeon, BroadcastRe
     }
     Log.d("NfcManagerPlugin", "Tag discovered and translated OK, handle=$handle")
     cachedTags[handle] = tag
-    activity.runOnUiThread { flutterApi.onTagDiscovered(pigeonTag) { /* no op */ } }
+    mainHandler.post { flutterApi.onTagDiscovered(pigeonTag) { /* no op */ } }
   }
 
   private fun getAdapter(): NfcAdapter {
