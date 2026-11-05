@@ -243,7 +243,7 @@ enum NfcVasCommandConfigurationModeIos {
 // DOC:
 enum NfcReaderErrorCodeIos {
   // DOC:
-  readerSessionInvalidationErrorFirstNDEFTagRead,
+  readerSessionInvalidationErrorFirstNdefTagRead,
 
   // DOC:
   readerSessionInvalidationErrorSessionTerminatedUnexpectedly,
