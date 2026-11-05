@@ -342,7 +342,8 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.sendMiFareISO7816Command(convert(apdu)) { payload, statusWord1, statusWord2, error in
+    guard let apdu = validatedApdu(apdu, completion: completion) else { return }
+    tag.sendMiFareISO7816Command(apdu) { payload, statusWord1, statusWord2, error in
       if let error = error {
         completion(.failure(error))
         return
@@ -360,7 +361,8 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.sendMiFareISO7816Command(NFCISO7816APDU(data: data.data)!) { payload, statusWord1, statusWord2, error in
+    guard let apdu = validatedApdu(data, completion: completion) else { return }
+    tag.sendMiFareISO7816Command(apdu) { payload, statusWord1, statusWord2, error in
       if let error = error {
         completion(.failure(error))
         return
@@ -378,7 +380,8 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.sendCommand(apdu: convert(apdu)) { payload, statusWord1, statusWord2, error in
+    guard let apdu = validatedApdu(apdu, completion: completion) else { return }
+    tag.sendCommand(apdu: apdu) { payload, statusWord1, statusWord2, error in
       if let error = error {
         completion(.failure(error))
         return
@@ -396,7 +399,8 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.sendCommand(apdu: NFCISO7816APDU(data: data.data)!) { payload, statusWord1, statusWord2, error in
+    guard let apdu = validatedApdu(data, completion: completion) else { return }
+    tag.sendCommand(apdu: apdu) { payload, statusWord1, statusWord2, error in
       if let error = error {
         completion(.failure(error))
         return
@@ -428,7 +432,8 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.readSingleBlock(requestFlags: convert(requestFlags), blockNumber: UInt8(blockNumber)) { dataBlock, error in
+    guard let blockNumber = validatedUInt8(blockNumber, name: "blockNumber", completion: completion) else { return }
+    tag.readSingleBlock(requestFlags: convert(requestFlags), blockNumber: blockNumber) { dataBlock, error in
       if let error = error {
         completion(.failure(error))
         return
@@ -442,7 +447,8 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.writeSingleBlock(requestFlags: convert(requestFlags), blockNumber: UInt8(blockNumber), dataBlock: dataBlock.data) { error in
+    guard let blockNumber = validatedUInt8(blockNumber, name: "blockNumber", completion: completion) else { return }
+    tag.writeSingleBlock(requestFlags: convert(requestFlags), blockNumber: blockNumber, dataBlock: dataBlock.data) { error in
       if let error = error {
         completion(.failure(error))
         return
@@ -456,7 +462,8 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.lockBlock(requestFlags: convert(requestFlags), blockNumber: UInt8(blockNumber)) { error in
+    guard let blockNumber = validatedUInt8(blockNumber, name: "blockNumber", completion: completion) else { return }
+    tag.lockBlock(requestFlags: convert(requestFlags), blockNumber: blockNumber) { error in
       if let error = error {
         completion(.failure(error))
         return
@@ -526,7 +533,8 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.writeAFI(requestFlags: convert(requestFlags), afi: UInt8(afi)) { error in
+    guard let afi = validatedUInt8(afi, name: "afi", completion: completion) else { return }
+    tag.writeAFI(requestFlags: convert(requestFlags), afi: afi) { error in
       if let error = error {
         completion(.failure(error))
         return
@@ -554,7 +562,8 @@ public class NfcManagerPlugin: NSObject, FlutterPlugin, HostApiPigeon {
       completion(.failure(FlutterError(code: "tag_not_found", message: "You may have disable the session.", details: nil)))
       return
     }
-    tag.writeDSFID(requestFlags: convert(requestFlags), dsfid: UInt8(dsfId)) { error in
+    guard let dsfId = validatedUInt8(dsfId, name: "dsfId", completion: completion) else { return }
+    tag.writeDSFID(requestFlags: convert(requestFlags), dsfid: dsfId) { error in
       if let error = error {
         completion(.failure(error))
         return
@@ -849,12 +858,36 @@ private func convert(_ value: FeliCaPollingTimeSlotPigeon) -> PollingTimeSlot {
   }
 }
 
-private func convert(_ value: Iso7816ApduPigeon) -> NFCISO7816APDU {
+// Validation helpers complete the request on failure; callers must return when nil is returned.
+private func validatedUInt8<T>(_ value: Int64, name: String, completion: (Result<T, Error>) -> Void) -> UInt8? {
+  guard let value = UInt8(exactly: value) else {
+    completion(.failure(FlutterError(code: "invalid_argument", message: "\(name) must be between 0 and 255.", details: nil)))
+    return nil
+  }
+  return value
+}
+
+private func validatedApdu(_ value: FlutterStandardTypedData, completion: (Result<Iso7816ResponseApduPigeon, Error>) -> Void) -> NFCISO7816APDU? {
+  guard let apdu = NFCISO7816APDU(data: value.data) else {
+    completion(.failure(FlutterError(code: "invalid_argument", message: "Data does not contain a valid ISO 7816 APDU.", details: nil)))
+    return nil
+  }
+  return apdu
+}
+
+private func validatedApdu(_ value: Iso7816ApduPigeon, completion: (Result<Iso7816ResponseApduPigeon, Error>) -> Void) -> NFCISO7816APDU? {
+  guard let instructionClass = UInt8(exactly: value.instructionClass),
+        let instructionCode = UInt8(exactly: value.instructionCode),
+        let p1Parameter = UInt8(exactly: value.p1Parameter),
+        let p2Parameter = UInt8(exactly: value.p2Parameter) else {
+    completion(.failure(FlutterError(code: "invalid_argument", message: "APDU header fields must be between 0 and 255.", details: nil)))
+    return nil
+  }
   return NFCISO7816APDU(
-    instructionClass: UInt8(value.instructionClass),
-    instructionCode: UInt8(value.instructionCode),
-    p1Parameter: UInt8(value.p1Parameter),
-    p2Parameter: UInt8(value.p2Parameter),
+    instructionClass: instructionClass,
+    instructionCode: instructionCode,
+    p1Parameter: p1Parameter,
+    p2Parameter: p2Parameter,
     data: value.data.data,
     expectedResponseLength: Int(value.expectedResponseLength)
   )
