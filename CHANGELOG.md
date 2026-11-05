@@ -1,3 +1,10 @@
+## 4.3.0
+
+* **Breaking:** Rename `NfcReaderErrorCodeIos.readerSessionInvalidationErrorFirstNDEFTagRead` to `readerSessionInvalidationErrorFirstNdefTagRead`.
+* Add missing iOS NFC reader error codes.
+* Fix iOS session cleanup and callbacks from previous sessions.
+* Fix crashes caused by invalid APDU and ISO 15693 command arguments on iOS.
+
 ## 4.2.0
 
 * Add Swift Package Manager support.

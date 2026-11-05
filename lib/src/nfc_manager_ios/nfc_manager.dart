@@ -307,6 +307,12 @@ enum NfcReaderErrorCodeIos {
 
   // DOC:
   readerErrorSecurityViolation,
+
+  // DOC:
+  readerErrorIneligible,
+
+  // DOC:
+  readerErrorAccessNotAccepted,
 }
 
 // DOC:
